@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:timetable_app/Performance.dart';
-import 'package:timetable_app/PerformanceRow.dart';
-import 'package:timetable_app/Timetable.dart';
 
 import 'Discipline.dart';
 import 'DisciplineRow.dart';
 import 'Group.dart';
+import 'Performance.dart';
+import 'PerformanceRow.dart';
+import 'Timetable.dart';
 import 'User.dart';
 
 class MainScreen extends StatefulWidget {
@@ -33,8 +33,8 @@ class MainScreenState extends State<MainScreen> {
     3: 'Третий семестр',
     4: 'Четвертый семестр',
     5: 'Пятый семестр',
-    6: 'Шестой семестр',
     7: 'Седьмой семестр',
+    6: 'Шестой семестр',
     8: 'Восьмой семестр',
     9: 'Девятый семестр',
     10: 'Десятый семестр',
@@ -48,72 +48,6 @@ class MainScreenState extends State<MainScreen> {
     currentGroup = _user.group;
     currentPage = getDisciplinelist(currentGroup);
 
-    appBar = AppBar(
-      iconTheme: IconThemeData(color: Colors.black),
-      textTheme: TextTheme(
-        title: TextStyle(color: Colors.black, fontSize: 18),
-//          subtitle: TextStyle(color: Colors.black),
-      ),
-      title: Container(
-        child: Row(
-          children: <Widget>[
-            Container(
-              margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
-              child: GestureDetector(
-                child: Container(
-                  child: Icon(Icons.chevron_left),
-                ),
-                onTap: () {
-                  if (number > 1) {
-                    setState(() {
-                      number--;
-                      numberName = map[number];
-                      _pageController.previousPage(
-                        duration: Duration(milliseconds: 300),
-                        curve: Curves.linear,
-                      );
-                    });
-                  }
-                },
-              ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  child: Text('Учебный план'),
-                  margin: EdgeInsets.fromLTRB(0, 12, 0, 0),
-                ),
-                Container(
-                    child: Text(
-                  '$numberName',
-                  style: TextStyle(fontSize: 12),
-                )),
-              ],
-            ),
-            Container(
-              child: FlatButton(
-                child: Icon(Icons.chevron_right),
-                onPressed: () {
-                  setState(() {
-                    //TODO: не настроено перемещение до конца, нет определения группы пользователя
-                    if (number != groupList[0].listSemester.length) {
-                      number++;
-                      numberName = map[number];
-                      _pageController.nextPage(
-                        duration: Duration(milliseconds: 300),
-                        curve: Curves.linear,
-                      );
-                    }
-                  });
-                },
-              ),
-            )
-          ],
-        ),
-      ),
-      backgroundColor: Color.fromARGB(255, 255, 217, 122),
-    );
   }
 
   List<Group> groupList = [
@@ -147,7 +81,7 @@ class MainScreenState extends State<MainScreen> {
         Discipline('Русский язык', 'ЗАЧЁТ', true, 26, 33),
       ]),
     ]),
-  ];
+  ];//списки групп
 
   List<Performance> performanceList1 = [
     Performance('Информатика', 'Зачёт', DateTime(2010, 10, 10)),
@@ -163,7 +97,7 @@ class MainScreenState extends State<MainScreen> {
     Performance('Химия', '4', DateTime(2010, 10, 10)),
     Performance('Философия', '2', DateTime(2010, 10, 10)),
     Performance('Физическая культура', 'Зачёт', DateTime(2010, 10, 10)),
-  ];
+  ];//списки успеваемости
 
   MainScreenState(User user) : _user = user;
 
@@ -198,7 +132,7 @@ class MainScreenState extends State<MainScreen> {
     List<Widget> listTile = [];
     for (Performance p in inputList) {
       listTile.add(PerformanceRow(p));
-      listTile.add(Divider());
+      listTile.add(Divider(height: 0,));
     }
 
     List<ListView> list = [ListView(children: listTile)];
@@ -231,7 +165,19 @@ class MainScreenState extends State<MainScreen> {
             ListTile(
               title: Text("Расписание занятий"),
               leading: Icon(Icons.access_time),
-              onTap: () {},
+              onTap: () {
+                setState(() {
+                  List<Timetable> list = [
+                    Timetable(),
+                    Timetable(),
+                    Timetable(),
+                    Timetable(),
+                    Timetable(),
+                  ];
+                  currentPage = list;
+                });
+
+              },
             ),
             ListTile(
               title: Text("Успеваемость"),
@@ -256,7 +202,73 @@ class MainScreenState extends State<MainScreen> {
           ],
         ),
       ),
-      appBar: appBar,
+      appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.black),
+        textTheme: TextTheme(
+          title: TextStyle(color: Colors.black, fontSize: 18),
+//          subtitle: TextStyle(color: Colors.black),
+        ),
+        title: Container(
+          child: Row(
+
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                child: GestureDetector(
+                  child: Container(
+                    child: Icon(Icons.chevron_left),
+                  ),
+                  onTap: () {
+                    if (number > 1) {
+                      setState(() {
+                        number--;
+                        numberName = map[number];
+                        _pageController.previousPage(
+                          duration: Duration(milliseconds: 300),
+                          curve: Curves.linear,
+                        );
+                      });
+                    }
+                  },
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    child: Text('Учебный план'),
+                    margin: EdgeInsets.fromLTRB(0, 12, 0, 0),
+                  ),
+                  Container(
+                      child: Text(
+                        '$numberName',
+                        style: TextStyle(fontSize: 12),
+                      )),
+                ],
+              ),
+              Container(
+                child: FlatButton(
+                  child: Icon(Icons.chevron_right),
+                  onPressed: () {
+                    setState(() {
+                      //TODO: не настроено перемещение до конца, нет определения группы пользователя
+                      if (number != groupList[0].listSemester.length) {
+                        number++;
+                        numberName = map[number];
+                        _pageController.nextPage(
+                          duration: Duration(milliseconds: 300),
+                          curve: Curves.linear,
+                        );
+                      }
+                    });
+                  },
+                ),
+              )
+            ],
+          ),
+        ),
+        backgroundColor: Color.fromARGB(255, 255, 217, 122),
+      ),
       body: PageView(
         controller: _pageController,
         children: currentPage,
