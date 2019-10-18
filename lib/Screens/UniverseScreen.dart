@@ -1,7 +1,7 @@
 export 'package:flutter/material.dart';
 
 
-import 'Universe.dart';
+import 'Models/Universe.dart';
 
 class UniverseScreen extends StatelessWidget{
   @override

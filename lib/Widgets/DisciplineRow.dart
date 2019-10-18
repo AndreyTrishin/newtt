@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'Discipline.dart';
+import 'Models/Discipline.dart';
 import 'DisciplineInfo.dart';
 
 // ignore: must_be_immutable

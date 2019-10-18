@@ -5,7 +5,8 @@ import 'package:timetable_app/Timetable.dart';
 
 import 'DisciplineInfo.dart';
 import 'MainScreen.dart';
-import 'User.dart';
+import 'Models/User.dart';
+
 
 void main() {
   runApp(MaterialApp(

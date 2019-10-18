@@ -1,13 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'Discipline.dart';
+import 'Models/Discipline.dart';
 import 'DisciplineRow.dart';
-import 'Group.dart';
-import 'Performance.dart';
+import 'Models/Group.dart';
+import 'Models/Performance.dart';
+import 'Models/User.dart';
 import 'PerformanceRow.dart';
 import 'Timetable.dart';
-import 'User.dart';
 
 class MainScreen extends StatefulWidget {
   User _user;
@@ -39,7 +39,7 @@ class MainScreenState extends State<MainScreen> {
     9: 'Девятый семестр',
     10: 'Десятый семестр',
     11: 'Одиннадцатый семестр',
-  };
+  }; //список семестров
 
   @override
   void initState() {
@@ -47,7 +47,6 @@ class MainScreenState extends State<MainScreen> {
     _pageController = PageController();
     currentGroup = _user.group;
     currentPage = getDisciplinelist(currentGroup);
-
   }
 
   List<Group> groupList = [
@@ -81,7 +80,7 @@ class MainScreenState extends State<MainScreen> {
         Discipline('Русский язык', 'ЗАЧЁТ', true, 26, 33),
       ]),
     ]),
-  ];//списки групп
+  ]; //списки групп
 
   List<Performance> performanceList1 = [
     Performance('Информатика', 'Зачёт', DateTime(2010, 10, 10)),
@@ -97,7 +96,7 @@ class MainScreenState extends State<MainScreen> {
     Performance('Химия', '4', DateTime(2010, 10, 10)),
     Performance('Философия', '2', DateTime(2010, 10, 10)),
     Performance('Физическая культура', 'Зачёт', DateTime(2010, 10, 10)),
-  ];//списки успеваемости
+  ]; //списки успеваемости
 
   MainScreenState(User user) : _user = user;
 
@@ -132,11 +131,11 @@ class MainScreenState extends State<MainScreen> {
     List<Widget> listTile = [];
     for (Performance p in inputList) {
       listTile.add(PerformanceRow(p));
-      listTile.add(Divider(height: 0,));
+      listTile.add(Divider(
+        height: 0,
+      ));
     }
-
     List<ListView> list = [ListView(children: listTile)];
-
     return list;
   }
 
@@ -176,7 +175,6 @@ class MainScreenState extends State<MainScreen> {
                   ];
                   currentPage = list;
                 });
-
               },
             ),
             ListTile(
@@ -210,7 +208,6 @@ class MainScreenState extends State<MainScreen> {
         ),
         title: Container(
           child: Row(
-
             children: <Widget>[
               Container(
                 margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
@@ -241,9 +238,9 @@ class MainScreenState extends State<MainScreen> {
                   ),
                   Container(
                       child: Text(
-                        '$numberName',
-                        style: TextStyle(fontSize: 12),
-                      )),
+                    '$numberName',
+                    style: TextStyle(fontSize: 12),
+                  )),
                 ],
               ),
               Container(

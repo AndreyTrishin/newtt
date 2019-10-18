@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'Discipline.dart';
+import 'Models/Discipline.dart';
 
 // ignore: must_be_immutable
 class DisciplineInfo extends StatelessWidget {
