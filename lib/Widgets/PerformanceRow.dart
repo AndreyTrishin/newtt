@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:timetable_app/Models/MarkRecord.dart';
 
-import 'Performance.dart';
 
 class PerformanceRow extends StatelessWidget {
-  Performance per;
+  MarkRecord per;
 
   PerformanceRow(this.per);
 
@@ -12,13 +12,13 @@ class PerformanceRow extends StatelessWidget {
     return Container(
       child: ListTile(
         onTap: () {},
-        title: Text(per.name),
-        subtitle: Text('${per.date.day}.${per.date.month}.${per.date.year}'),
+        title: Text(per.subject),
+        subtitle: Text(per.mark == '' ? '' : '${per.date.day < 10 ? '0' + per.date.day.toString() : per.date.day}.${per.date.month < 10 ? '0' + per.date.month.toString(): per.date.month}.${per.date.year}'),
         trailing: Container(
           padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
           margin: EdgeInsets.symmetric(horizontal: 5, vertical: 0),
           color: Colors.white,
-          child: Text(per.value, textAlign: TextAlign.center,),
+          child: Text(per.mark, textAlign: TextAlign.center,),
         ),
       ),
       color: per.color,

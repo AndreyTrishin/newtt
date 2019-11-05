@@ -1,29 +1,28 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:timetable_app/Timetable.dart';
+import 'package:timetable_app/APIRequest.dart';
+import 'package:timetable_app/Models/User.dart';
 
-import 'DisciplineInfo.dart';
 import 'MainScreen.dart';
-import 'Models/User.dart';
 
 
 void main() {
   runApp(MaterialApp(
-//    home: MyHomePage(),
-    initialRoute: '/',
-    routes: {
-      '/': (BuildContext context) => MyHomePage(),
-      '/info': (BuildContext context) => DisciplineInfo(null),
-      '/main': (BuildContext context) => MainScreen(null),
-      '/tt': (BuildContext context) => Timetable(),
-    },
+    home: MyHomePage(),
+//    initialRoute: '/',
+//    routes: {
+//      '/': (BuildContext context) => MyHomePage(),
+//      '/info': (BuildContext context) => DisciplineInfo(null),
+//      '/main': (BuildContext context) => MainScreen(null),
+//      '/tt': (BuildContext context) => Timetable(),
+//    },
     color: Colors.amberAccent,
   ));
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title, User user}) : super(key: key);
+  MyHomePage({Key key, this.title}) : super(key: key);
 
   final String title;
 
@@ -33,14 +32,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   String dropdownValue = "МГПИ";
-  String name, password;
 
-  List<User> userList = [
-    User('Ivanov Ivan', 'ivanov_i@mail.ru', '1234', '1'),
-    User('Petrov', 'petrov_p@mail.ru', '1234', '2'),
-    User('Sergeev', 'sergeev_s@mail.ru', '1234', '3'),
-    User('1', '1@mail.ru', '1', '3'),
-  ];
+  TextEditingController controllerName = TextEditingController(text: 'Иван Иванов');
+  TextEditingController controllerPassword = TextEditingController(text: 'demo');
 
   @override
   Widget build(BuildContext context) {
@@ -70,9 +64,10 @@ class _MyHomePageState extends State<MyHomePage> {
             margin: const EdgeInsets.only(left: 20.0, right: 20.0),
             padding: EdgeInsets.all(10.0),
             child: TextFormField(
-                onChanged: (value) {
-                  name = value;
-                },
+              controller: controllerName,
+//                onSaved: (value) {
+//                  name = value;
+//                },
                 decoration:
                     InputDecoration(labelText: 'Ваша фамилия, имя и отчество')),
           ),
@@ -80,28 +75,23 @@ class _MyHomePageState extends State<MyHomePage> {
             margin: const EdgeInsets.only(left: 20.0, right: 20.0),
             padding: EdgeInsets.all(10.0),
             child: TextFormField(
+              controller: controllerPassword,
               obscureText: true,
               decoration: InputDecoration(labelText: 'Пароль'),
-              onChanged: (value) {
-                password = value;
-              },
+//              onSaved: (value) {
+//                password = value;
+//              },
             ),
           ),
           Container(
             child: Wrap(
               children: <Widget>[
                 RaisedButton(
-                  onPressed: () {
-                    for (User user in userList) {
-                      if (user.name == name) {
-                        if (user.passwrod == password) {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => MainScreen(user)));
-                        } else {}
-                      }
-                    }
+                  onPressed: () async {
+                    User user = await APIRequest().authorisation(controllerName.text, controllerPassword.text);
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
+                      return MainScreen(user);
+                    }));
                   },
                   child: Text('Войти'),
                 ),

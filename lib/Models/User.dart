@@ -1,6 +1,12 @@
 class User {
-  String name, passwrod, email;
-  String group;
+  String id;
+  String name, passwordHash;
+  String recordbookId;
+  String curriculumId;
+  String curriculumName;
+  String academicGroupName;
+  String academicGroupCompoundKey;
+  String specialtyName;
 
-  User(this.name, this.email, this.passwrod, this.group);
+  User(this.id, this.name, this.passwordHash, this.recordbookId, this.curriculumId, this.curriculumName, this.academicGroupName, this.academicGroupCompoundKey, this.specialtyName);
 }

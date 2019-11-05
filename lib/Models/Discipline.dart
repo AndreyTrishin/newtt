@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 
 class Discipline {
-  String name;
+  String subject;
+  String term;
   String type;
-  bool work;
+  bool isControl;
   Color color;
   int labHours;
   int lecHours;
+  int pracHours;
 
-  Discipline(this.name, this.type, this.work, this.labHours, this.lecHours) {
+  Discipline(this.subject, this.term, this.type, this.isControl, this.labHours, this.lecHours, this.pracHours) {
     switch (this.type) {
       case 'ЭКЗАМЕН':
         this.color = Colors.red;

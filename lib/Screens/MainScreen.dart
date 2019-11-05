@@ -1,13 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:timetable_app/APIRequest.dart';
+import 'package:timetable_app/Models/User.dart';
+import 'package:timetable_app/Screens/main.dart';
+import 'package:timetable_app/Widgets/DisciplineRow.dart';
+import 'package:timetable_app/Widgets/PerformanceRow.dart';
 
-import 'Models/Discipline.dart';
-import 'DisciplineRow.dart';
-import 'Models/Group.dart';
-import 'Models/Performance.dart';
-import 'Models/User.dart';
-import 'PerformanceRow.dart';
-import 'Timetable.dart';
 
 class MainScreen extends StatefulWidget {
   User _user;
@@ -22,8 +20,15 @@ class MainScreenState extends State<MainScreen> {
   User _user;
   PageController _pageController;
   String currentGroup;
-  List<Widget> currentPage;
+//  List<Widget> currentPage;
   AppBar appBar;
+
+  APIRequest api = APIRequest();
+
+
+  Widget currentWidget;
+
+  MainScreenState(User user) : _user = user;
 
   int number = 0;
   String numberName = 'Первый семестр';
@@ -45,98 +50,6 @@ class MainScreenState extends State<MainScreen> {
   void initState() {
     super.initState();
     _pageController = PageController();
-    currentGroup = _user.group;
-    currentPage = getDisciplinelist(currentGroup);
-  }
-
-  List<Group> groupList = [
-    Group('3', [
-      Semester(1, [
-        Discipline('Информатика', 'ЭКЗАМЕН', true, 30, 20),
-        Discipline('Биология', 'ЗАЧЁТ', false, 30, 40),
-        Discipline('Физика', 'ЭКЗАМЕН', false, 25, 20),
-        Discipline('Философия', 'ЗАЧЁТ', true, 26, 33),
-        Discipline('Русский язык', 'ЗАЧЁТ', true, 26, 33),
-      ]),
-      Semester(2, [
-        Discipline('Аналитическая химия', 'ЭКЗАМЕН', true, 30, 20),
-        Discipline('Высшая математика', 'ЗАЧЁТ', false, 30, 40),
-        Discipline('Химия', 'ЭКЗАМЕН', false, 25, 20),
-        Discipline('Ботаника', 'ЗАЧЁТ', true, 26, 33),
-        Discipline('Геология', 'ЗАЧЁТ', true, 26, 33),
-      ]),
-      Semester(3, [
-        Discipline('Иностранный язык', 'ЗАЧЁТ', true, 30, 20),
-        Discipline('Физическая культура', 'ЗАЧЁТ', false, 30, 40),
-        Discipline('Информатика', 'ЭКЗАМЕН', false, 25, 20),
-        Discipline('Картография', 'ЭКЗАМЕН', true, 26, 33),
-        Discipline('Русский язык', 'ЗАЧЁТ', true, 26, 33),
-      ]),
-      Semester(4, [
-        Discipline('Иностранный язык', 'ЗАЧЁТ', true, 30, 20),
-        Discipline('Физическая культура', 'ЗАЧЁТ', false, 30, 40),
-        Discipline('Информатика', 'ЭКЗАМЕН', false, 25, 20),
-        Discipline('Картография', 'ЭКЗАМЕН', true, 26, 33),
-        Discipline('Русский язык', 'ЗАЧЁТ', true, 26, 33),
-      ]),
-    ]),
-  ]; //списки групп
-
-  List<Performance> performanceList1 = [
-    Performance('Информатика', 'Зачёт', DateTime(2010, 10, 10)),
-    Performance('Биология', '3', DateTime(2010, 10, 10)),
-    Performance('Физика', '4', DateTime(2010, 10, 10)),
-    Performance('Философия', '5', DateTime(2010, 10, 10)),
-    Performance('Русский язык', 'Зачёт', DateTime(2010, 10, 10)),
-    Performance('Русский язык', 'Незачёт', DateTime(2010, 10, 10)),
-  ];
-  List<Performance> performanceList2 = [
-    Performance('Аналитическая химия', 'Зачёт', DateTime(2010, 10, 10)),
-    Performance('Высшая математика', '5', DateTime(2010, 10, 10)),
-    Performance('Химия', '4', DateTime(2010, 10, 10)),
-    Performance('Философия', '2', DateTime(2010, 10, 10)),
-    Performance('Физическая культура', 'Зачёт', DateTime(2010, 10, 10)),
-  ]; //списки успеваемости
-
-  MainScreenState(User user) : _user = user;
-
-  int getCurrentGroup() {
-    for (int i = 0; i < groupList.length; i++) {
-      if (groupList[i].name == _user.group) {
-        return i;
-      }
-    }
-  }
-
-  List<Widget> getDisciplinelist(String groupName) {
-    List<Widget> list = [];
-    for (Group group in groupList) {
-      if (group.name == groupName) {
-        for (Semester d in group.listSemester) {
-          List<Widget> n = [];
-          for (Discipline s in d.disciplineList) {
-            n.add(DisciplineRow(s));
-            n.add(Divider());
-          }
-          list.add(ListView(
-            children: n,
-          ));
-        }
-      }
-    }
-    return list;
-  }
-
-  List<ListView> getPerformanceList(List<Performance> inputList) {
-    List<Widget> listTile = [];
-    for (Performance p in inputList) {
-      listTile.add(PerformanceRow(p));
-      listTile.add(Divider(
-        height: 0,
-      ));
-    }
-    List<ListView> list = [ListView(children: listTile)];
-    return list;
   }
 
   @override
@@ -148,45 +61,60 @@ class MainScreenState extends State<MainScreen> {
             Container(
               child: UserAccountsDrawerHeader(
                 accountName: Text('${_user.name}'),
-                accountEmail: Text('${_user.email}'),
+                accountEmail: Text('${_user.academicGroupName}'),
               ),
               color: Colors.yellow,
             ),
             ListTile(
               title: Text("Учебный план"),
               leading: Icon(Icons.info),
-              onTap: () {
+              onTap: () async {
+                Navigator.pop(context);
                 setState(() {
-                  currentPage = getDisciplinelist(currentGroup);
+                  currentWidget = Center(child: CircularProgressIndicator(),);
                 });
+                var listDiscipline = await api.getCurriculumLoad(_user.curriculumId);
+                setState(() {
+                  currentWidget = PageView(
+                    children: listDiscipline.map((term){
+                      return ListView(children: term.values.map((discipline){
+                        return DisciplineRow(discipline);
+                      }).toList(),);
+                    }).toList(),
+                  );
+                });
+
+
               },
             ),
             ListTile(
               title: Text("Расписание занятий"),
               leading: Icon(Icons.access_time),
               onTap: () {
-                setState(() {
-                  List<Timetable> list = [
-                    Timetable(),
-                    Timetable(),
-                    Timetable(),
-                    Timetable(),
-                    Timetable(),
-                  ];
-                  currentPage = list;
-                });
+
               },
             ),
             ListTile(
               title: Text("Успеваемость"),
               leading: Icon(Icons.looks_5),
-              onTap: () {
+              onTap: () async {
+                Navigator.pop(context);
                 setState(() {
-                  List<ListView> list1 = getPerformanceList(performanceList1);
-                  List<ListView> list2 = getPerformanceList(performanceList2);
-                  list1.add(list2[0]);
-                  currentPage = list1;
+                  currentWidget = Center(child: CircularProgressIndicator(),);
                 });
+
+                var performanceList = await api.getEducationalPerformance(_user.id, _user.recordbookId);
+
+                setState(() {
+                  currentWidget = PageView(
+                    children: performanceList.map((list){
+                      return ListView(children: list.map((mark){
+                        return PerformanceRow(mark);
+                      }).toList(),);
+                    }).toList(),
+                  );
+                });
+
               },
             ),
             Divider(),
@@ -194,7 +122,9 @@ class MainScreenState extends State<MainScreen> {
               title: Text("Выйти"),
               leading: Icon(Icons.exit_to_app),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+                  return MyHomePage();
+                }));
               },
             ),
           ],
@@ -247,17 +177,7 @@ class MainScreenState extends State<MainScreen> {
                 child: FlatButton(
                   child: Icon(Icons.chevron_right),
                   onPressed: () {
-                    setState(() {
-                      //TODO: не настроено перемещение до конца, нет определения группы пользователя
-                      if (number != groupList[0].listSemester.length) {
-                        number++;
-                        numberName = map[number];
-                        _pageController.nextPage(
-                          duration: Duration(milliseconds: 300),
-                          curve: Curves.linear,
-                        );
-                      }
-                    });
+
                   },
                 ),
               )
@@ -266,16 +186,7 @@ class MainScreenState extends State<MainScreen> {
         ),
         backgroundColor: Color.fromARGB(255, 255, 217, 122),
       ),
-      body: PageView(
-        controller: _pageController,
-        children: currentPage,
-        onPageChanged: (value) {
-          setState(() {
-            number = value + 1;
-            numberName = map[number];
-          });
-        },
-      ),
+      body: currentWidget,
       backgroundColor: Colors.white,
     );
   }

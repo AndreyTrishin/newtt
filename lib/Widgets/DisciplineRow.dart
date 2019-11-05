@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:timetable_app/Models/Discipline.dart';
+import 'package:timetable_app/Screens/DisciplineInfo.dart';
 
-import 'Models/Discipline.dart';
-import 'DisciplineInfo.dart';
 
 // ignore: must_be_immutable
 class DisciplineRow extends StatelessWidget {
@@ -28,7 +28,7 @@ class DisciplineRow extends StatelessWidget {
               width: MediaQuery.of(context).size.width / 1.82,
               height: 33,
               child: Text(
-                _discipline.name,
+                _discipline.subject,
                 style: TextStyle(fontSize: _fontSize),
               ),
             ),
@@ -53,7 +53,7 @@ class DisciplineRow extends StatelessWidget {
                     ),
                     Container(
                       child: Text(
-                        _discipline.work == true ? 'К/Р' : '',
+                        _discipline.isControl == true ? 'К/Р' : '',
                         style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
