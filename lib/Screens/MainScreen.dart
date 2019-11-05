@@ -21,6 +21,7 @@ class MainScreenState extends State<MainScreen> {
   User _user;
   PageController _pageController;
   String currentGroup;
+  var currentWindowName;
 
 //  List<Widget> currentPage;
   AppBar appBar;
@@ -47,67 +48,72 @@ class MainScreenState extends State<MainScreen> {
     11: 'Одиннадцатый семестр',
   }; //список семестров
 
+  _downloadWindow() async {
+    currentWindowName = await sp.loadWindow();
+
+    switch (currentWindowName) {
+      case 'Учебный план':
+        setState(() {
+          currentWindowName = 'Учебный план';
+          currentWidget = Center(
+            child: CircularProgressIndicator(),
+          );
+        });
+        var listDiscipline = await api.getCurriculumLoad(_user.curriculumId);
+        setState(() {
+          currentWidget = PageView(
+            controller: _pageController,
+            children: listDiscipline.map((term) {
+              return ListView(
+                children: term.values.map((discipline) {
+                  return DisciplineRow(discipline);
+                }).toList(),
+              );
+            }).toList(),
+//todo: перелистывание страницы не меняет название
+//                    onPageChanged: (page) {
+//                      setState(() {
+//                        numberName = map[page.toString()];
+//                      });
+//                    },
+          );
+        });
+        break;
+      case 'Успеваемость':
+        setState(() {
+          currentWindowName = 'Успеваемость';
+          currentWidget = Center(
+            child: CircularProgressIndicator(),
+          );
+        });
+
+        var performanceList =
+            await api.getEducationalPerformance(_user.id, _user.recordbookId);
+
+        setState(() {
+          currentWidget = PageView(
+            controller: _pageController,
+            children: performanceList.map((list) {
+              return ListView(
+                children: list.map((mark) {
+                  return PerformanceRow(mark);
+                }).toList(),
+              );
+            }).toList(),
+//todo: перелистывание страницы не меняет название
+//                    onPageChanged: (page) {
+//                        numberName = map[page.toString()];
+//                    },
+          );
+        });
+        break;
+    }
+  }
+
   @override
   initState() {
-    super.initState();
     _pageController = PageController();
-//    var currentWindow = sp.read('currentWindow');
-//    switch (currentWindow){
-//      case 'Учебный план':
-//        setState(() {
-//          currentWidget = Center(
-//            child: CircularProgressIndicator(),
-//          );
-//        });
-//        var listDiscipline =
-//            await api.getCurriculumLoad(_user.curriculumId);
-//        setState(() {
-//          currentWidget = PageView(
-//            controller: _pageController,
-//            children: listDiscipline.map((term) {
-//              return ListView(
-//                children: term.values.map((discipline) {
-//                  return DisciplineRow(discipline);
-//                }).toList(),
-//              );
-//            }).toList(),
-////todo: перелистывание страницы не меняет название
-////                    onPageChanged: (page) {
-////                      setState(() {
-////                        numberName = map[page.toString()];
-////                      });
-////                    },
-//          );
-//        });
-//        break;
-//      case 'Успеваемость':
-//        setState(() {
-//          currentWidget = Center(
-//            child: CircularProgressIndicator(),
-//          );
-//        });
-//
-//        var performanceList = await api.getEducationalPerformance(
-//            _user.id, _user.recordbookId);
-//
-//        setState(() {
-//          currentWidget = PageView(
-//            controller: _pageController,
-//            children: performanceList.map((list) {
-//              return ListView(
-//                children: list.map((mark) {
-//                  return PerformanceRow(mark);
-//                }).toList(),
-//              );
-//            }).toList(),
-////todo: перелистывание страницы не меняет название
-////                    onPageChanged: (page) {
-////                        numberName = map[page.toString()];
-////                    },
-//          );
-//        });
-//        break;
-//    }
+    _downloadWindow();
   }
 
   @override
@@ -127,7 +133,7 @@ class MainScreenState extends State<MainScreen> {
               title: Text("Учебный план"),
               leading: Icon(Icons.info),
               onTap: () async {
-                sp.save('currentWindow', 'Учебный план');
+                sp.setCurrentWindow('Учебный план');
                 Navigator.pop(context);
                 setState(() {
                   currentWidget = Center(
@@ -165,7 +171,7 @@ class MainScreenState extends State<MainScreen> {
               title: Text("Успеваемость"),
               leading: Icon(Icons.looks_5),
               onTap: () async {
-                sp.save('currentWindow', 'Успевамость');
+                sp.setCurrentWindow('Успеваемость');
                 Navigator.pop(context);
                 setState(() {
                   currentWidget = Center(
@@ -241,7 +247,7 @@ class MainScreenState extends State<MainScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Container(
-                    child: Text('Учебный план'),
+                    child: Text(currentWindowName),
                     margin: EdgeInsets.fromLTRB(0, 12, 0, 0),
                   ),
                   Container(

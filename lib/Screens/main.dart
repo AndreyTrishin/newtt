@@ -8,20 +8,13 @@ import 'package:timetable_app/SharedPref.dart';
 import 'MainScreen.dart';
 
 
-void main() {
-//  var currentWindow = SharedPref().read('currentWindow');
-//  Widget currentPage;
+main() async {
+
+  User user = User.fromJson(await SharedPref().read('user'));
+
   
   runApp(MaterialApp(
-    home: MyHomePage(),
-//    home: currentWindow == ''? MyHomePage : MainScreen(User.fromJson(SharedPref().read('user'))),
-//    initialRoute: '/',
-//    routes: {
-//      '/': (BuildContext context) => MyHomePage(),
-//      '/info': (BuildContext context) => DisciplineInfo(null),
-//      '/main': (BuildContext context) => MainScreen(null),
-//      '/tt': (BuildContext context) => Timetable(),
-//    },
+    home: user == null ? MyHomePage : MainScreen(user),
     color: Colors.amberAccent,
   ));
 }
