@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:timetable_app/APIRequest.dart';
 import 'package:timetable_app/Models/User.dart';
 import 'package:timetable_app/Screens/main.dart';
+import 'package:timetable_app/SharedPref.dart';
 import 'package:timetable_app/Widgets/DisciplineRow.dart';
 import 'package:timetable_app/Widgets/PerformanceRow.dart';
 
@@ -16,6 +17,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class MainScreenState extends State<MainScreen> {
+  SharedPref sp = SharedPref();
   User _user;
   PageController _pageController;
   String currentGroup;
@@ -46,9 +48,66 @@ class MainScreenState extends State<MainScreen> {
   }; //список семестров
 
   @override
-  void initState() {
+  initState() {
     super.initState();
     _pageController = PageController();
+//    var currentWindow = sp.read('currentWindow');
+//    switch (currentWindow){
+//      case 'Учебный план':
+//        setState(() {
+//          currentWidget = Center(
+//            child: CircularProgressIndicator(),
+//          );
+//        });
+//        var listDiscipline =
+//            await api.getCurriculumLoad(_user.curriculumId);
+//        setState(() {
+//          currentWidget = PageView(
+//            controller: _pageController,
+//            children: listDiscipline.map((term) {
+//              return ListView(
+//                children: term.values.map((discipline) {
+//                  return DisciplineRow(discipline);
+//                }).toList(),
+//              );
+//            }).toList(),
+////todo: перелистывание страницы не меняет название
+////                    onPageChanged: (page) {
+////                      setState(() {
+////                        numberName = map[page.toString()];
+////                      });
+////                    },
+//          );
+//        });
+//        break;
+//      case 'Успеваемость':
+//        setState(() {
+//          currentWidget = Center(
+//            child: CircularProgressIndicator(),
+//          );
+//        });
+//
+//        var performanceList = await api.getEducationalPerformance(
+//            _user.id, _user.recordbookId);
+//
+//        setState(() {
+//          currentWidget = PageView(
+//            controller: _pageController,
+//            children: performanceList.map((list) {
+//              return ListView(
+//                children: list.map((mark) {
+//                  return PerformanceRow(mark);
+//                }).toList(),
+//              );
+//            }).toList(),
+////todo: перелистывание страницы не меняет название
+////                    onPageChanged: (page) {
+////                        numberName = map[page.toString()];
+////                    },
+//          );
+//        });
+//        break;
+//    }
   }
 
   @override
@@ -60,7 +119,7 @@ class MainScreenState extends State<MainScreen> {
             Container(
               child: UserAccountsDrawerHeader(
                 accountName: Text('${_user.name}'),
-                accountEmail: Text('${_user.academicGroupName}'),
+                accountEmail: Text('${_user.specialtyName}'),
               ),
               color: Colors.yellow,
             ),
@@ -68,6 +127,7 @@ class MainScreenState extends State<MainScreen> {
               title: Text("Учебный план"),
               leading: Icon(Icons.info),
               onTap: () async {
+                sp.save('currentWindow', 'Учебный план');
                 Navigator.pop(context);
                 setState(() {
                   currentWidget = Center(
@@ -105,6 +165,7 @@ class MainScreenState extends State<MainScreen> {
               title: Text("Успеваемость"),
               leading: Icon(Icons.looks_5),
               onTap: () async {
+                sp.save('currentWindow', 'Успевамость');
                 Navigator.pop(context);
                 setState(() {
                   currentWidget = Center(

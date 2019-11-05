@@ -3,13 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:timetable_app/APIRequest.dart';
 import 'package:timetable_app/Models/User.dart';
+import 'package:timetable_app/SharedPref.dart';
 
 import 'MainScreen.dart';
 
 
 void main() {
+//  var currentWindow = SharedPref().read('currentWindow');
+//  Widget currentPage;
+  
   runApp(MaterialApp(
     home: MyHomePage(),
+//    home: currentWindow == ''? MyHomePage : MainScreen(User.fromJson(SharedPref().read('user'))),
 //    initialRoute: '/',
 //    routes: {
 //      '/': (BuildContext context) => MyHomePage(),
@@ -92,6 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
                       return MainScreen(user);
                     }));
+                    SharedPref().save('user', user);
                   },
                   child: Text('Войти'),
                 ),

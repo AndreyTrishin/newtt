@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:timetable_app/Models/Discipline.dart';
 
-
 // ignore: must_be_immutable
 class DisciplineInfo extends StatelessWidget {
   Discipline _discipline;
@@ -37,17 +36,26 @@ class DisciplineInfo extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Container(
-                          child: Text(
-                              'Практические: ${_discipline.labHours} часов')),
+                          child: _discipline.labHours != 0
+                              ? Text(
+                                  'Лабораторные: ${_discipline.labHours} часов')
+                              : null),
                       Container(
-                          child: Text('Лекции: ${_discipline.lecHours} часов')),
+                          child: _discipline.lecHours != 0
+                              ? Text('Лекции: ${_discipline.lecHours} часов')
+                              : null),
+                      Container(
+                          child: _discipline.pracHours != 0
+                              ? Text(
+                                  'Практические: ${_discipline.pracHours} часов')
+                              : null),
                     ],
                   ),
                 ),
               ],
             )),
             Container(
-                child: Row(
+                child: _discipline.type != '' ? Row(
               children: <Widget>[
                 Container(
                     margin: EdgeInsets.all(20),
@@ -59,7 +67,7 @@ class DisciplineInfo extends StatelessWidget {
                   ),
                 ),
               ],
-            )),
+            ) : null),
             Container(
                 child: _discipline.isControl == true
                     ? Row(
@@ -69,7 +77,9 @@ class DisciplineInfo extends StatelessWidget {
                             margin: EdgeInsets.all(20),
                           ),
                           Text(
-                            _discipline.isControl == true ? 'Курсовая работа' : '',
+                            _discipline.isControl == true
+                                ? 'Курсовая работа'
+                                : '',
                             style: TextStyle(
                                 color: Color.fromARGB(255, 100, 100, 100)),
                           ),
