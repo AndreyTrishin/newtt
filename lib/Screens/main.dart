@@ -87,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
               children: <Widget>[
                 RaisedButton(
                   onPressed: () async {
-                    User user = await APIRequest().authorisation(controllerName.text, controllerPassword.text);
+                    User user = await APIRequest.authorisation(controllerName.text, controllerPassword.text);
                     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
                       return MainScreen(user);
                     }));

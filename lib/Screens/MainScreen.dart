@@ -22,13 +22,9 @@ class MainScreenState extends State<MainScreen> {
   SharedPref sp = SharedPref();
   User _user;
   PageController _pageController;
-  String currentGroup;
   var currentWindowName;
 
-//  List<Widget> currentPage;
   AppBar appBar;
-
-  APIRequest api = APIRequest();
 
   Widget currentWidget;
 
@@ -61,7 +57,7 @@ class MainScreenState extends State<MainScreen> {
             child: CircularProgressIndicator(),
           );
         });
-        var listDiscipline = await api.getCurriculumLoad(_user.curriculumId);
+        var listDiscipline = await APIRequest.getCurriculumLoad(_user.curriculumId);
         setState(() {
           currentWidget = PageView(
             controller: _pageController,
@@ -90,7 +86,7 @@ class MainScreenState extends State<MainScreen> {
         });
 
         var performanceList =
-            await api.getEducationalPerformance(_user.id, _user.recordbookId);
+            await APIRequest.getEducationalPerformance(_user.id, _user.recordbookId);
 
         setState(() {
           currentWidget = PageView(
@@ -138,12 +134,13 @@ class MainScreenState extends State<MainScreen> {
                 sp.setCurrentWindow('Учебный план');
                 Navigator.pop(context);
                 setState(() {
+                  currentWindowName = 'Учебный план';
                   currentWidget = Center(
                     child: CircularProgressIndicator(),
                   );
                 });
                 var listDiscipline =
-                    await api.getCurriculumLoad(_user.curriculumId);
+                    await APIRequest.getCurriculumLoad(_user.curriculumId);
                 setState(() {
                   currentWidget = PageView(
                     controller: _pageController,
@@ -170,9 +167,10 @@ class MainScreenState extends State<MainScreen> {
               onTap: () async {
                 Navigator.pop(context);
                 setState(() {
+                  currentWindowName = 'Расписание занятий';
                   currentWidget = Center(child: CircularProgressIndicator(),);
                 });
-                var scheduleElement = await api.getSchedule(_user.academicGroupCompoundKey, '2015-09-10');
+                var scheduleElement = await APIRequest.getSchedule(_user.academicGroupCompoundKey, '2015-09-10');
 
                 setState(() {
                   currentWidget = PageView(
@@ -196,12 +194,13 @@ class MainScreenState extends State<MainScreen> {
                 sp.setCurrentWindow('Успеваемость');
                 Navigator.pop(context);
                 setState(() {
+                  currentWindowName = 'Успеваемость';
                   currentWidget = Center(
                     child: CircularProgressIndicator(),
                   );
                 });
 
-                var performanceList = await api.getEducationalPerformance(
+                var performanceList = await APIRequest.getEducationalPerformance(
                     _user.id, _user.recordbookId);
 
                 setState(() {

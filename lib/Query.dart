@@ -1,5 +1,5 @@
 class Query {
-  getAutorizationQuery(name, password) {
+  static getAutorizationQuery(name, password) {
     return '''<x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:stu="http://sgu-infocom.ru/study">
     <x:Header/>
     <x:Body>
@@ -12,7 +12,7 @@ class Query {
 </x:Envelope>''';
   }
 
-  getRecordbooksQuery(id) {
+  static getRecordbooksQuery(id) {
     return '''<x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:stu="http://sgu-infocom.ru/study">
     <x:Header/>
     <x:Body>
@@ -23,7 +23,7 @@ class Query {
 </x:Envelope>''';
   }
 
-  getEducationalPerformance(userId, recbookId) {
+  static getEducationalPerformance(userId, recbookId) {
     return '''<x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:stu="http://sgu-infocom.ru/study">
     <x:Header/>
     <x:Body>
@@ -35,7 +35,7 @@ class Query {
 </x:Envelope>''';
   }
 
-  getCurriculumLoadQuery(curriculumId, termId) {
+  static getCurriculumLoadQuery(curriculumId, termId) {
     return '''<x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:stu="http://sgu-infocom.ru/study">
     <x:Header/>
     <x:Body>
@@ -47,7 +47,7 @@ class Query {
 </x:Envelope>''';
   }
 
-  getCurriculumTermsQuery(curriculumId) {
+  static getCurriculumTermsQuery(curriculumId) {
     return '''<x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:stu="http://sgu-infocom.ru/study">
     <x:Header/>
     <x:Body>
@@ -58,7 +58,7 @@ class Query {
 </x:Envelope>''';
   }
 
-  getScheduleQuery(key, date) {
+  static getScheduleQuery(key, date) {
     return '''<Envelope xmlns="http://www.w3.org/2003/05/soap-envelope">
        <Body>
           <GetSchedule xmlns="http://sgu-infocom.ru/study">

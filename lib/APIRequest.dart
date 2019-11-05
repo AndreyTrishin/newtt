@@ -13,18 +13,17 @@ import 'package:xml/xml.dart' as xml;
 import 'Models/User.dart';
 
 class APIRequest {
-  String server = 'http://1c-web-test.infocom.local/MobileDemo/ws/Study.1cws';
+  static String server = 'http://1c-web-test.infocom.local/MobileDemo/ws/Study.1cws';
 
-  Query query = Query();
 
-  Future<User> authorisation(name, password) async {
+  static Future<User> authorisation(name, password) async {
     var responceAuth = await http.post(server,
         headers: {
           'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
           'SOAPAction': 'http://sgu-infocom.ru/study#WebStudy:Authorization',
           'Content-Type': 'text/xml;charset=UTF-8',
         },
-        body: query.getAutorizationQuery(
+        body: Query.getAutorizationQuery(
             name, sha1.convert(utf8.encode(password))));
     var resultAuth = xml.parse(responceAuth.body);
 
@@ -35,7 +34,7 @@ class APIRequest {
           'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
           'Content-Type': 'application/xml',
         },
-        body: query.getRecordbooksQuery(
+        body: Query.getRecordbooksQuery(
             resultAuth.findAllElements('m:UserId').first.text));
     var resultRecBook = xml.parse(responceRecBook.body);
 //    var userElement = resultAuth.findAllElements('m:User').first.text;
@@ -57,14 +56,14 @@ class APIRequest {
     return user;
   }
 
-  Future<List<List<MarkRecord>>> getEducationalPerformance(
+  static Future<List<List<MarkRecord>>> getEducationalPerformance(
       userId, recbookId) async {
     var responce = await http.post(server,
         headers: {
           'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
           'Content-Type': 'application/xml',
         },
-        body: query.getEducationalPerformance(userId, recbookId));
+        body: Query.getEducationalPerformance(userId, recbookId));
     var result = xml.parse(responce.body);
 //    print(result);
 
@@ -109,13 +108,13 @@ class APIRequest {
     return listOfMarks;
   }
 
-  Future<List<Map<String, Discipline>>> getCurriculumLoad(curriculumId) async {
+  static Future<List<Map<String, Discipline>>> getCurriculumLoad(curriculumId) async {
     var responceTerms = await http.post(server,
         headers: {
           'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
           'Content-Type': 'application/xml',
         },
-        body: query.getCurriculumTermsQuery(curriculumId));
+        body: Query.getCurriculumTermsQuery(curriculumId));
     var resultTerms = xml.parse(responceTerms.body);
 
     var termsCount =
@@ -136,7 +135,7 @@ class APIRequest {
             'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
             'Content-Type': 'application/xml',
           },
-          body: query.getCurriculumLoadQuery(curriculumId, termList[i - 1].id));
+          body: Query.getCurriculumLoadQuery(curriculumId, termList[i - 1].id));
       var resultLoad = xml.parse(responceLoad.body);
       Map<String, Discipline> mapOfDiscipline = {};
       for (var e in resultLoad.findAllElements('m:CurriculumLoad')) {
@@ -188,13 +187,13 @@ class APIRequest {
     return list;
   }
 
-  Future<ScheduleElement> getSchedule(key, date) async {
+  static Future<ScheduleElement> getSchedule(key, date) async {
     var responce = await http.post(server,
         headers: {
           'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
           'Content-Type': 'application/xml',
         },
-        body: query.getScheduleQuery(key, date));
+        body: Query.getScheduleQuery(key, date));
     var result = xml.parse(responce.body);
     ScheduleElement scheduleElement;
     List<ScheduleCell> lessonList = [];
