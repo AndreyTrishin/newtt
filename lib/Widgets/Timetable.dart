@@ -1,51 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:timetable_app/Models/ScheduleElement.dart';
 
 class Timetable extends StatelessWidget {
-  List<Widget> timeList = [
-    Text('1'),
-    Container(
-        child: Text(
-      '08:15',
-      style: TextStyle(color: Colors.black45),
-    )),
-    Container(
-        margin: EdgeInsets.fromLTRB(0, 40, 0, 0),
-        child: Text(
-          '09:45',
-          style: TextStyle(color: Colors.black45),
-        )),
-  ];
+  double fontSize = 13;
+  ScheduleCell scheduleCell;
+
+  Timetable(this.scheduleCell);
 
   @override
   Widget build(BuildContext context) {
     return Column(
-//      margin: EdgeInsets.all(20),
       children: <Widget>[
         Container(
-          margin: EdgeInsets.fromLTRB(10, 10, 0, 0),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Container(
-                
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: timeList),
-                margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                    children: [
+                      Text(
+                        scheduleCell.dateBegin.toString().substring(11, 16),
+                        style: TextStyle(fontSize: fontSize),
+                      ),
+                      Text(
+                        scheduleCell.dateEnd.toString().substring(11, 16),
+                        style: TextStyle(fontSize: fontSize),
+                      ),
+                    ]),
               ),
               Container(
-//                width: double.infinity,
                 child: Row(
                   mainAxisSize: MainAxisSize.max,
                   children: <Widget>[
                     Container(
-
+                      padding: EdgeInsets.all(10),
                       margin: EdgeInsets.fromLTRB(20, 0, 0, 20),
                       decoration: BoxDecoration(
-                        color: Colors.green,
-                          borderRadius: BorderRadius.circular(4)
-
-                      ),
+                          color: Colors.green,
+                          borderRadius: BorderRadius.circular(4)),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
@@ -53,33 +46,33 @@ class Timetable extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              'Группа',
+                              scheduleCell.lesson.academicGroup,
                               style: TextStyle(
-                                  color: Color.fromARGB(132, 255, 255, 255)),
+                                  color: Color.fromARGB(132, 255, 255, 255),
+                                  fontSize: fontSize),
                             ),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              'Дисциплина',
+                              scheduleCell.lesson.subject,
                               style: TextStyle(color: Colors.white),
                             ),
                           ),
                           Container(
-                            decoration: BoxDecoration(
-                              color: Color.fromARGB(100, 100, 100, 100),
-                              borderRadius: BorderRadius.circular(30)
-                            ),
-                            margin: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                  color: Color.fromARGB(100, 100, 100, 100),
+                                  borderRadius: BorderRadius.circular(30)),
+//                              margin: EdgeInsets.all(8),
 //                            color: Color.fromARGB(100, 100, 100, 100),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                              'Преподаватель',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                                )
-                          ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  scheduleCell.lesson.teacher.teacherName,
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: fontSize),
+                                ),
+                              )),
                         ],
                       ),
                     )
@@ -89,7 +82,9 @@ class Timetable extends StatelessWidget {
             ],
           ),
         ),
-        Divider(height: 0,),
+        Divider(
+          height: 0,
+        ),
       ],
     );
   }

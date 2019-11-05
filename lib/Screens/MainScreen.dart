@@ -5,7 +5,9 @@ import 'package:timetable_app/Models/User.dart';
 import 'package:timetable_app/Screens/main.dart';
 import 'package:timetable_app/SharedPref.dart';
 import 'package:timetable_app/Widgets/DisciplineRow.dart';
+import 'package:timetable_app/Widgets/EmptyTTRow.dart';
 import 'package:timetable_app/Widgets/PerformanceRow.dart';
+import 'package:timetable_app/Widgets/Timetable.dart';
 
 class MainScreen extends StatefulWidget {
   User _user;
@@ -165,7 +167,27 @@ class MainScreenState extends State<MainScreen> {
             ListTile(
               title: Text("Расписание занятий"),
               leading: Icon(Icons.access_time),
-              onTap: () {},
+              onTap: () async {
+                Navigator.pop(context);
+                setState(() {
+                  currentWidget = Center(child: CircularProgressIndicator(),);
+                });
+                var scheduleElement = await api.getSchedule(_user.academicGroupCompoundKey, '2015-09-10');
+
+                setState(() {
+                  currentWidget = PageView(
+                    controller: PageController(initialPage: 1),
+                    children: <Widget>[
+                      Center(child: CircularProgressIndicator(),),
+                      ListView(children: scheduleElement.scheduleCell.map((cell){
+                        return ListTile(title: cell.lesson != null ? Timetable(cell) : EmptyTTRow(cell));
+                      }).toList(),),
+                      Center(child: CircularProgressIndicator(),),
+                    ],
+                  );
+                });
+
+              },
             ),
             ListTile(
               title: Text("Успеваемость"),

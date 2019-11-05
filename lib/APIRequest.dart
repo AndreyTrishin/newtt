@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:timetable_app/Models/Discipline.dart';
 import 'package:timetable_app/Models/MarkRecord.dart';
+import 'package:timetable_app/Models/ScheduleElement.dart';
 import 'package:timetable_app/Models/Term.dart';
 import 'package:timetable_app/Query.dart';
 import 'package:xml/xml.dart' as xml;
@@ -186,4 +187,50 @@ class APIRequest {
     }
     return list;
   }
+
+  Future<ScheduleElement> getSchedule(key, date) async {
+    var responce = await http.post(server,
+        headers: {
+          'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
+          'Content-Type': 'application/xml',
+        },
+        body: query.getScheduleQuery(key, date));
+    var result = xml.parse(responce.body);
+    ScheduleElement scheduleElement;
+    List<ScheduleCell> lessonList = [];
+
+//    var day = result.findAllElements('m:Day');
+//
+//    print(day);
+
+    for (var e in result.findAllElements('m:ScheduleCell')) {
+      var lesson = e.findElements('m:Lesson');
+//      print(lesson);
+      if(lesson.isNotEmpty){
+        lessonList.add(ScheduleCell(
+            DateTime.parse(e.findElements('m:DateBegin').first.text),
+            DateTime.parse(e.findElements('m:DateEnd').first.text),
+            Lesson(
+              e.findAllElements('m:LessonCompoundKey').first.text,
+              e.findElements('m:Lesson').first.findElements('m:Subject').first.text,
+              e.findElements('m:Lesson').first.findElements('m:LessonType').first.text,
+              Teacher(e.findElements('m:Lesson').first.findElements('m:Teacher').first.findElements('m:TeacherId').first.text,
+                  e.findElements('m:Lesson').first.findElements('m:Teacher').first.findElements('m:TeacherName').first.text),
+              e.findElements('m:Lesson').first.findElements('m:Classroom').isNotEmpty ?
+              Classroom(e.findElements('m:Lesson').first.findElements('m:Classroom').first.findElements('m:ClassroomUID').first.text,
+                  e.findElements('m:Lesson').first.findElements('m:Classroom').first.findElements('m:ClassroomName').first.text) : null,
+              e.findElements('m:Lesson').first.findAllElements('m:AcademicGroupName').first.text,
+            )
+        ));
+      }
+      else{
+        lessonList.add(ScheduleCell(
+          DateTime.parse(e.findElements('m:DateBegin').first.text),
+          DateTime.parse(e.findElements('m:DateEnd').first.text), null));
+      }
+    }
+    scheduleElement = ScheduleElement(result.findAllElements('m:Day').first.findAllElements('m:Date').first.text, result.findAllElements('m:DayOfWeek').first.text, lessonList);
+
+    return scheduleElement;
+    }
 }

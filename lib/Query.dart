@@ -57,4 +57,20 @@ class Query {
     </x:Body>
 </x:Envelope>''';
   }
+
+  getScheduleQuery(key, date) {
+    return '''<Envelope xmlns="http://www.w3.org/2003/05/soap-envelope">
+       <Body>
+          <GetSchedule xmlns="http://sgu-infocom.ru/study">
+             <DateBegin>$date</DateBegin>
+             <DateEnd>$date</DateEnd>
+             <RecordbookRef></RecordbookRef>
+             <ScheduleObjectId>$key</ScheduleObjectId>
+             <ScheduleObjectType>AcademicGroup</ScheduleObjectType>
+             <ScheduleType>Full</ScheduleType>
+             <UserRef></UserRef>
+          </GetSchedule>
+       </Body>
+    </Envelope>''';
+  }
 }
