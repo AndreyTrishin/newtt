@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:timetable_app/Models/Discipline.dart';
 import 'package:timetable_app/Models/MarkRecord.dart';
@@ -55,7 +56,8 @@ class APIRequest {
     return user;
   }
 
-  Future<List<List<MarkRecord>>> getEducationalPerformance(userId, recbookId) async {
+  Future<List<List<MarkRecord>>> getEducationalPerformance(
+      userId, recbookId) async {
     var responce = await http.post(server,
         headers: {
           'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
@@ -137,37 +139,48 @@ class APIRequest {
       var resultLoad = xml.parse(responceLoad.body);
       Map<String, Discipline> mapOfDiscipline = {};
       for (var e in resultLoad.findAllElements('m:CurriculumLoad')) {
-        bool isControl = e.findElements('m:Term').first.text == 'true';
-        Discipline discipline = Discipline(
-            e.findElements('m:Subject').first.text,
-            e.findElements('m:Term').first.text,
-            '',
-            isControl,
-            0,
-            0,
-            0);
+        if (mapOfDiscipline[e.findElements('m:Subject').first.text] == null) {
+          mapOfDiscipline[e.findElements('m:Subject').first.text] = Discipline(
+              e.findElements('m:Subject').first.text,
+              e.findElements('m:Term').first.text,
+              '',
+              false,
+              0,
+              0,
+              0, Colors.black);
+        }
+
 
         switch (e.findElements('m:LoadType').first.text) {
           case 'Лабораторные':
-            discipline.labHours =
+            mapOfDiscipline[e.findElements('m:Subject').first.text].labHours =
                 int.parse(e.findElements('m:Amount').first.text);
             break;
           case 'Практические':
-            discipline.pracHours =
+            mapOfDiscipline[e.findElements('m:Subject').first.text].pracHours =
                 int.parse(e.findElements('m:Amount').first.text);
             break;
           case 'Лекции':
-            discipline.lecHours =
+            mapOfDiscipline[e.findElements('m:Subject').first.text].lecHours =
                 int.parse(e.findElements('m:Amount').first.text);
             break;
           case 'Экзамен':
-            discipline.type = 'Экзамен';
+            mapOfDiscipline[e.findElements('m:Subject').first.text].type =
+                'Экзамен';
+            mapOfDiscipline[e.findElements('m:Subject').first.text].color =
+            Colors.red;
             break;
           case 'Зачет':
-            discipline.type = 'Зачет';
+            mapOfDiscipline[e.findElements('m:Subject').first.text].type =
+                'Зачет';
+            mapOfDiscipline[e.findElements('m:Subject').first.text].color =
+            Colors.deepPurple;
+            break;
+          case 'Курсовая работа':
+            mapOfDiscipline[e.findElements('m:Subject').first.text].isControl =
+                true;
             break;
         }
-        mapOfDiscipline[e.findElements('m:Subject').first.text] = discipline;
       }
       list.add(mapOfDiscipline);
     }

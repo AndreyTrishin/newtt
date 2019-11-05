@@ -10,17 +10,5 @@ class Discipline {
   int lecHours;
   int pracHours;
 
-  Discipline(this.subject, this.term, this.type, this.isControl, this.labHours, this.lecHours, this.pracHours) {
-    switch (this.type) {
-      case 'ЭКЗАМЕН':
-        this.color = Colors.red;
-        break;
-      case 'ЗАЧЁТ':
-        this.color = Colors.deepPurpleAccent;
-        break;
-      default:
-        this.color = Colors.black;
-        break;
-    }
-  }
+  Discipline(this.subject, this.term, this.type, this.isControl, this.labHours, this.lecHours, this.pracHours, this.color);
 }

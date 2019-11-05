@@ -6,7 +6,6 @@ import 'package:timetable_app/Screens/main.dart';
 import 'package:timetable_app/Widgets/DisciplineRow.dart';
 import 'package:timetable_app/Widgets/PerformanceRow.dart';
 
-
 class MainScreen extends StatefulWidget {
   User _user;
 
@@ -20,11 +19,11 @@ class MainScreenState extends State<MainScreen> {
   User _user;
   PageController _pageController;
   String currentGroup;
+
 //  List<Widget> currentPage;
   AppBar appBar;
 
   APIRequest api = APIRequest();
-
 
   Widget currentWidget;
 
@@ -71,28 +70,36 @@ class MainScreenState extends State<MainScreen> {
               onTap: () async {
                 Navigator.pop(context);
                 setState(() {
-                  currentWidget = Center(child: CircularProgressIndicator(),);
-                });
-                var listDiscipline = await api.getCurriculumLoad(_user.curriculumId);
-                setState(() {
-                  currentWidget = PageView(
-                    children: listDiscipline.map((term){
-                      return ListView(children: term.values.map((discipline){
-                        return DisciplineRow(discipline);
-                      }).toList(),);
-                    }).toList(),
+                  currentWidget = Center(
+                    child: CircularProgressIndicator(),
                   );
                 });
-
-
+                var listDiscipline =
+                    await api.getCurriculumLoad(_user.curriculumId);
+                setState(() {
+                  currentWidget = PageView(
+                    controller: _pageController,
+                    children: listDiscipline.map((term) {
+                      return ListView(
+                        children: term.values.map((discipline) {
+                          return DisciplineRow(discipline);
+                        }).toList(),
+                      );
+                    }).toList(),
+//todo: перелистывание страницы не меняет название
+//                    onPageChanged: (page) {
+//                      setState(() {
+//                        numberName = map[page.toString()];
+//                      });
+//                    },
+                  );
+                });
               },
             ),
             ListTile(
               title: Text("Расписание занятий"),
               leading: Icon(Icons.access_time),
-              onTap: () {
-
-              },
+              onTap: () {},
             ),
             ListTile(
               title: Text("Успеваемость"),
@@ -100,21 +107,30 @@ class MainScreenState extends State<MainScreen> {
               onTap: () async {
                 Navigator.pop(context);
                 setState(() {
-                  currentWidget = Center(child: CircularProgressIndicator(),);
-                });
-
-                var performanceList = await api.getEducationalPerformance(_user.id, _user.recordbookId);
-
-                setState(() {
-                  currentWidget = PageView(
-                    children: performanceList.map((list){
-                      return ListView(children: list.map((mark){
-                        return PerformanceRow(mark);
-                      }).toList(),);
-                    }).toList(),
+                  currentWidget = Center(
+                    child: CircularProgressIndicator(),
                   );
                 });
 
+                var performanceList = await api.getEducationalPerformance(
+                    _user.id, _user.recordbookId);
+
+                setState(() {
+                  currentWidget = PageView(
+                    controller: _pageController,
+                    children: performanceList.map((list) {
+                      return ListView(
+                        children: list.map((mark) {
+                          return PerformanceRow(mark);
+                        }).toList(),
+                      );
+                    }).toList(),
+//todo: перелистывание страницы не меняет название
+//                    onPageChanged: (page) {
+//                        numberName = map[page.toString()];
+//                    },
+                  );
+                });
               },
             ),
             Divider(),
@@ -122,7 +138,8 @@ class MainScreenState extends State<MainScreen> {
               title: Text("Выйти"),
               leading: Icon(Icons.exit_to_app),
               onTap: () {
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) {
                   return MyHomePage();
                 }));
               },
@@ -150,11 +167,11 @@ class MainScreenState extends State<MainScreen> {
                       setState(() {
                         number--;
                         numberName = map[number];
-                        _pageController.previousPage(
-                          duration: Duration(milliseconds: 300),
-                          curve: Curves.linear,
-                        );
                       });
+                      _pageController.previousPage(
+                        duration: Duration(milliseconds: 300),
+                        curve: Curves.linear,
+                      );
                     }
                   },
                 ),
@@ -177,7 +194,14 @@ class MainScreenState extends State<MainScreen> {
                 child: FlatButton(
                   child: Icon(Icons.chevron_right),
                   onPressed: () {
-
+                    setState(() {
+                      number++;
+                      numberName = map[number];
+                    });
+                    _pageController.nextPage(
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.linear,
+                    );
                   },
                 ),
               )

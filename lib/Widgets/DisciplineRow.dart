@@ -6,7 +6,7 @@ import 'package:timetable_app/Screens/DisciplineInfo.dart';
 // ignore: must_be_immutable
 class DisciplineRow extends StatelessWidget {
   Discipline _discipline;
-  double _fontSize = 16;
+  double _fontSize = 13;
 
   DisciplineRow(this._discipline);
 
@@ -36,14 +36,14 @@ class DisciplineRow extends StatelessWidget {
             Container(
                 margin: EdgeInsets.fromLTRB(0, 20, 0, 10),
                 width: MediaQuery.of(context).size.width / 4.5,
-                height: 40,
+                height: 33,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: <Widget>[
                     Container(
                       margin: EdgeInsets.fromLTRB(0, 5, 0, 0),
                       child: Text(
-                        _discipline.type,
+                        _discipline.type.toUpperCase(),
                         textAlign: TextAlign.right,
                         style: TextStyle(
                             fontSize: _fontSize,
@@ -55,7 +55,7 @@ class DisciplineRow extends StatelessWidget {
                       child: Text(
                         _discipline.isControl == true ? 'К/Р' : '',
                         style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 11,
                             fontWeight: FontWeight.bold,
                             color: Color.fromARGB(255, 100, 100, 100)),
                         textAlign: TextAlign.right,
