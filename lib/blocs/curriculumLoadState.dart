@@ -3,25 +3,24 @@ import 'package:flutter/material.dart';
 import 'package:timetable_app/Models/Discipline.dart';
 
 @immutable
-class CurriculumLoadState extends Equatable{
+abstract class CurriculumLoadState extends Equatable {
   CurriculumLoadState([List props = const []]) : super(props);
 }
 
-class CurriculumLoadLoading extends CurriculumLoadState{
+class CurriculumLoadUninitialized extends CurriculumLoadState {}
 
+class CurriculumLoadLoading extends CurriculumLoadState {
   @override
-  String toString() {
-    return 'CurriculumLoadLoading';
-  }
+  String toString() => 'CurriculumLoadLoading';
 }
 
 class CurriculumLoadLoaded extends CurriculumLoadState {
-  final List<Discipline> disciplines;
+  final List<Map<String, Discipline>> disciplines;
 
-  CurriculumLoadLoaded([this.disciplines = const []]) : super([disciplines]);
+  CurriculumLoadLoaded(this.disciplines);
 
   @override
-  String toString() => 'TodosLoaded { todos: $disciplines }';
+  String toString() => 'CurriculumLoadLoaded { disciplines: $disciplines }';
 }
 
 class CurriculumLoadNotLoaded extends CurriculumLoadState {
