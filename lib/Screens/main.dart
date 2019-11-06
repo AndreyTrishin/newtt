@@ -1,23 +1,47 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:timetable_app/APIRequest.dart';
 import 'package:timetable_app/Models/User.dart';
+import 'package:timetable_app/Screens/Test/TestBlocCurriculumLoad.dart';
 import 'package:timetable_app/SharedPref.dart';
-
-import 'MainScreen.dart';
-
+import 'package:timetable_app/blocs/curriculumLoadBloc/curriculumLoadBloc.dart';
+import 'package:timetable_app/blocs/curriculumLoadBloc/curriculumLoadEvent.dart';
 
 main() async {
+//  User user;
+//
+//  try{
+//    user = User.fromJson(await SharedPref().read('user'));
+//  } catch(_){
+//    user = null;
+//  }
 
-  User user = User.fromJson(await SharedPref().read('user'));
-
-  
-  runApp(MaterialApp(
+  runApp(App());
+//      MaterialApp(
 //    home: MyHomePage(),
-    home: user == null ? MyHomePage : MainScreen(user),
-    color: Colors.amberAccent,
-  ));
+////    home: user == null ? MyHomePage() : MainScreen(user),
+//    color: Colors.amberAccent,
+//  ));
+}
+
+class App extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Infinite Scroll',
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Учебный план'),
+        ),
+//        body: TestBlocCurriculumLoad().add(LoadCurriculumLoad()),
+        body: BlocProvider(
+          builder: (context) => CurriculumLoadBloc()..add(LoadCurriculumLoad()),
+          child: CurriculumLoad(),
+        ),
+      ),
+    );
+  }
 }
 
 class MyHomePage extends StatefulWidget {
@@ -32,8 +56,10 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String dropdownValue = "МГПИ";
 
-  TextEditingController controllerName = TextEditingController(text: 'Иван Иванов');
-  TextEditingController controllerPassword = TextEditingController(text: 'demo');
+  TextEditingController controllerName =
+      TextEditingController(text: 'Иван Иванов');
+  TextEditingController controllerPassword =
+      TextEditingController(text: 'demo');
 
   @override
   Widget build(BuildContext context) {
@@ -63,10 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
             margin: const EdgeInsets.only(left: 20.0, right: 20.0),
             padding: EdgeInsets.all(10.0),
             child: TextFormField(
-              controller: controllerName,
-//                onSaved: (value) {
-//                  name = value;
-//                },
+                controller: controllerName,
                 decoration:
                     InputDecoration(labelText: 'Ваша фамилия, имя и отчество')),
           ),
@@ -77,9 +100,6 @@ class _MyHomePageState extends State<MyHomePage> {
               controller: controllerPassword,
               obscureText: true,
               decoration: InputDecoration(labelText: 'Пароль'),
-//              onSaved: (value) {
-//                password = value;
-//              },
             ),
           ),
           Container(
@@ -87,9 +107,13 @@ class _MyHomePageState extends State<MyHomePage> {
               children: <Widget>[
                 RaisedButton(
                   onPressed: () async {
-                    User user = await APIRequest.authorisation(controllerName.text, controllerPassword.text);
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context){
-                      return MainScreen(user);
+                    User user = await APIRequest.authorisation(
+                        controllerName.text, controllerPassword.text);
+                    CurriculumLoad test = CurriculumLoad();
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return test;
+//                      return MainScreen(user);
                     }));
                     SharedPref().save('user', user);
                   },
@@ -104,6 +128,3 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
-
-

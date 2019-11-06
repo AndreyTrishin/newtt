@@ -4,7 +4,8 @@ import 'package:timetable_app/Models/Discipline.dart';
 
 @immutable
 abstract class CurriculumLoadState extends Equatable {
-  CurriculumLoadState([List props = const []]) : super(props);
+  @override
+  List<Object> get props => [];
 }
 
 class CurriculumLoadUninitialized extends CurriculumLoadState {}
@@ -17,7 +18,10 @@ class CurriculumLoadLoading extends CurriculumLoadState {
 class CurriculumLoadLoaded extends CurriculumLoadState {
   final List<Map<String, Discipline>> disciplines;
 
-  CurriculumLoadLoaded(this.disciplines);
+  @override
+  List<Object> get props => [disciplines];
+
+  CurriculumLoadLoaded({this.disciplines});
 
   @override
   String toString() => 'CurriculumLoadLoaded { disciplines: $disciplines }';

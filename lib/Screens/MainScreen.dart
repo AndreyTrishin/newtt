@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:timetable_app/APIRequest.dart';
 import 'package:timetable_app/Models/User.dart';
-import 'package:timetable_app/Screens/main.dart';
 import 'package:timetable_app/SharedPref.dart';
 import 'package:timetable_app/Widgets/DisciplineRow.dart';
 import 'package:timetable_app/Widgets/EmptyTTRow.dart';
@@ -228,7 +227,7 @@ class MainScreenState extends State<MainScreen> {
               onTap: () {
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) {
-                  return MyHomePage();
+//                  return MyHomePage();
                 }));
               },
             ),
@@ -268,7 +267,7 @@ class MainScreenState extends State<MainScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Container(
-                    child: Text(currentWindowName),
+                    child: Text(''),
                     margin: EdgeInsets.fromLTRB(0, 12, 0, 0),
                   ),
                   Container(
