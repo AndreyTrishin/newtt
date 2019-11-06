@@ -21,7 +21,16 @@ class _CurriculumLoadState extends State<CurriculumLoad> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Учебный план'),),
+      appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 255, 217, 122),
+        title: Text('Учебный план', style: TextStyle(color: Colors.black),),
+        leading: FlatButton(
+          child: Icon(Icons.dehaze),
+          onPressed: () {
+            Scaffold.of(context).openDrawer();
+          },
+        ),
+      ),
       body: BlocProvider(
         builder: (context) => CurriculumLoadBloc()..add(LoadCurriculumLoad()),
         child: BlocBuilder<CurriculumLoadBloc, CurriculumLoadState>(

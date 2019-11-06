@@ -5,7 +5,7 @@ import 'package:timetable_app/Models/User.dart';
 import 'package:timetable_app/SharedPref.dart';
 import 'package:timetable_app/Widgets/CurriculumLoad.dart';
 import 'package:timetable_app/Widgets/EmptyTTRow.dart';
-import 'package:timetable_app/Widgets/PerformanceRow.dart';
+import 'package:timetable_app/Widgets/PerformancePage.dart';
 import 'package:timetable_app/Widgets/Timetable.dart';
 
 import 'main.dart';
@@ -60,29 +60,7 @@ class MainScreenState extends State<MainScreen> {
       case 'Успеваемость':
         setState(() {
           currentWindowName = 'Успеваемость';
-          currentWidget = Center(
-            child: CircularProgressIndicator(),
-          );
-        });
-
-        var performanceList =
-            await APIRequest.getEducationalPerformance(_user.id, _user.recordbookId);
-
-        setState(() {
-          currentWidget = PageView(
-//            controller: _pageController,
-            children: performanceList.map((list) {
-              return ListView(
-                children: list.map((mark) {
-                  return PerformanceRow(mark);
-                }).toList(),
-              );
-            }).toList(),
-//todo: перелистывание страницы не меняет название
-//                    onPageChanged: (page) {
-//                        numberName = map[page.toString()];
-//                    },
-          );
+          currentWidget = PerformancePage();
         });
         break;
     }
@@ -173,29 +151,7 @@ class MainScreenState extends State<MainScreen> {
                 Navigator.pop(context);
                 setState(() {
                   currentWindowName = 'Успеваемость';
-                  currentWidget = Center(
-                    child: CircularProgressIndicator(),
-                  );
-                });
-
-                var performanceList = await APIRequest.getEducationalPerformance(
-                    _user.id, _user.recordbookId);
-
-                setState(() {
-                  currentWidget = PageView(
-//                    controller: _pageController,
-                    children: performanceList.map((list) {
-                      return ListView(
-                        children: list.map((mark) {
-                          return PerformanceRow(mark);
-                        }).toList(),
-                      );
-                    }).toList(),
-//todo: перелистывание страницы не меняет название
-//                    onPageChanged: (page) {
-//                        numberName = map[page.toString()];
-//                    },
-                  );
+                  currentWidget = PerformancePage();
                 });
               },
             ),

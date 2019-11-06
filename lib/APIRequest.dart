@@ -13,8 +13,8 @@ import 'package:xml/xml.dart' as xml;
 import 'Models/User.dart';
 
 class APIRequest {
-  static String server = 'http://1c-web-test.infocom.local/MobileDemo/ws/Study.1cws';
-
+  static String server =
+      'http://1c-web-test.infocom.local/MobileDemo/ws/Study.1cws';
 
   static Future<User> authorisation(name, password) async {
     var responceAuth = await http.post(server,
@@ -70,7 +70,7 @@ class APIRequest {
     List<List<MarkRecord>> listOfMarks = [];
     String term = 'Первый семестр';
     List<MarkRecord> list = [];
-
+//todo: не отображается последний семестр
     for (var e in result.findAllElements('m:MarkRecord')) {
       if (term == e.findAllElements('m:Term').first.text) {
         list.add(MarkRecord(
@@ -87,28 +87,35 @@ class APIRequest {
           e.findAllElements('m:TypeOfTheControl').first.text,
         ));
       } else {
-        listOfMarks.add(list);
-        list = [];
-        term = e.findAllElements('m:Term').first.text;
-        list.add(MarkRecord(
-          e.findAllElements('m:Block').first.text,
-          e.findAllElements('m:Subject').first.text,
-          DateTime.parse(e.findAllElements('m:Date').first.text),
-          e.findAllElements('m:Term').first.text,
-          e.findAllElements('m:Unit').first.text,
-          e.findAllElements('m:Mark').first.text,
-          e.findAllElements('m:Credits').first.text,
-          e.findAllElements('m:Theme').first.text,
-          int.parse(e.findAllElements('m:ClassroomLoad').first.text),
-          int.parse(e.findAllElements('m:TotalLoad').first.text),
-          e.findAllElements('m:TypeOfTheControl').first.text,
-        ));
+        if(e.findAllElements('m:Term').isNotEmpty){
+          listOfMarks.add(list);
+          term = e.findAllElements('m:Term').first.text;
+          list = [];
+          list.add(MarkRecord(
+            e.findAllElements('m:Block').first.text,
+            e.findAllElements('m:Subject').first.text,
+            DateTime.parse(e.findAllElements('m:Date').first.text),
+            e.findAllElements('m:Term').first.text,
+            e.findAllElements('m:Unit').first.text,
+            e.findAllElements('m:Mark').first.text,
+            e.findAllElements('m:Credits').first.text,
+            e.findAllElements('m:Theme').first.text,
+            int.parse(e.findAllElements('m:ClassroomLoad').first.text),
+            int.parse(e.findAllElements('m:TotalLoad').first.text),
+            e.findAllElements('m:TypeOfTheControl').first.text,
+          ));
+        } else{
+          listOfMarks.add(list);
+        }
+
+
       }
     }
     return listOfMarks;
   }
 
-  static Future<List<Map<String, Discipline>>> getCurriculumLoad(curriculumId) async {
+  static Future<List<Map<String, Discipline>>> getCurriculumLoad(
+      curriculumId) async {
     var responceTerms = await http.post(server,
         headers: {
           'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
@@ -147,9 +154,9 @@ class APIRequest {
               false,
               0,
               0,
-              0, Colors.black);
+              0,
+              Colors.black);
         }
-
 
         switch (e.findElements('m:LoadType').first.text) {
           case 'Лабораторные':
@@ -168,13 +175,13 @@ class APIRequest {
             mapOfDiscipline[e.findElements('m:Subject').first.text].type =
                 'Экзамен';
             mapOfDiscipline[e.findElements('m:Subject').first.text].color =
-            Colors.red;
+                Colors.red;
             break;
           case 'Зачет':
             mapOfDiscipline[e.findElements('m:Subject').first.text].type =
                 'Зачет';
             mapOfDiscipline[e.findElements('m:Subject').first.text].color =
-            Colors.deepPurple;
+                Colors.deepPurple;
             break;
           case 'Курсовая работа':
             mapOfDiscipline[e.findElements('m:Subject').first.text].isControl =
@@ -205,31 +212,88 @@ class APIRequest {
     for (var e in result.findAllElements('m:ScheduleCell')) {
       var lesson = e.findElements('m:Lesson');
 //      print(lesson);
-      if(lesson.isNotEmpty){
+      if (lesson.isNotEmpty) {
         lessonList.add(ScheduleCell(
             DateTime.parse(e.findElements('m:DateBegin').first.text),
             DateTime.parse(e.findElements('m:DateEnd').first.text),
             Lesson(
               e.findAllElements('m:LessonCompoundKey').first.text,
-              e.findElements('m:Lesson').first.findElements('m:Subject').first.text,
-              e.findElements('m:Lesson').first.findElements('m:LessonType').first.text,
-              Teacher(e.findElements('m:Lesson').first.findElements('m:Teacher').first.findElements('m:TeacherId').first.text,
-                  e.findElements('m:Lesson').first.findElements('m:Teacher').first.findElements('m:TeacherName').first.text),
-              e.findElements('m:Lesson').first.findElements('m:Classroom').isNotEmpty ?
-              Classroom(e.findElements('m:Lesson').first.findElements('m:Classroom').first.findElements('m:ClassroomUID').first.text,
-                  e.findElements('m:Lesson').first.findElements('m:Classroom').first.findElements('m:ClassroomName').first.text) : null,
-              e.findElements('m:Lesson').first.findAllElements('m:AcademicGroupName').first.text,
-            )
-        ));
-      }
-      else{
+              e
+                  .findElements('m:Lesson')
+                  .first
+                  .findElements('m:Subject')
+                  .first
+                  .text,
+              e
+                  .findElements('m:Lesson')
+                  .first
+                  .findElements('m:LessonType')
+                  .first
+                  .text,
+              Teacher(
+                  e
+                      .findElements('m:Lesson')
+                      .first
+                      .findElements('m:Teacher')
+                      .first
+                      .findElements('m:TeacherId')
+                      .first
+                      .text,
+                  e
+                      .findElements('m:Lesson')
+                      .first
+                      .findElements('m:Teacher')
+                      .first
+                      .findElements('m:TeacherName')
+                      .first
+                      .text),
+              e
+                      .findElements('m:Lesson')
+                      .first
+                      .findElements('m:Classroom')
+                      .isNotEmpty
+                  ? Classroom(
+                      e
+                          .findElements('m:Lesson')
+                          .first
+                          .findElements('m:Classroom')
+                          .first
+                          .findElements('m:ClassroomUID')
+                          .first
+                          .text,
+                      e
+                          .findElements('m:Lesson')
+                          .first
+                          .findElements('m:Classroom')
+                          .first
+                          .findElements('m:ClassroomName')
+                          .first
+                          .text)
+                  : null,
+              e
+                  .findElements('m:Lesson')
+                  .first
+                  .findAllElements('m:AcademicGroupName')
+                  .first
+                  .text,
+            )));
+      } else {
         lessonList.add(ScheduleCell(
-          DateTime.parse(e.findElements('m:DateBegin').first.text),
-          DateTime.parse(e.findElements('m:DateEnd').first.text), null));
+            DateTime.parse(e.findElements('m:DateBegin').first.text),
+            DateTime.parse(e.findElements('m:DateEnd').first.text),
+            null));
       }
     }
-    scheduleElement = ScheduleElement(result.findAllElements('m:Day').first.findAllElements('m:Date').first.text, result.findAllElements('m:DayOfWeek').first.text, lessonList);
+    scheduleElement = ScheduleElement(
+        result
+            .findAllElements('m:Day')
+            .first
+            .findAllElements('m:Date')
+            .first
+            .text,
+        result.findAllElements('m:DayOfWeek').first.text,
+        lessonList);
 
     return scheduleElement;
-    }
+  }
 }
