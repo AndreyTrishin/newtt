@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:timetable_app/APIRequest.dart';
 import 'package:timetable_app/Models/User.dart';
 import 'package:timetable_app/SharedPref.dart';
-import 'package:timetable_app/Widgets/DisciplineRow.dart';
+import 'package:timetable_app/Widgets/CurriculumLoad.dart';
 import 'package:timetable_app/Widgets/EmptyTTRow.dart';
 import 'package:timetable_app/Widgets/PerformanceRow.dart';
 import 'package:timetable_app/Widgets/Timetable.dart';
+
+import 'main.dart';
 
 class MainScreen extends StatefulWidget {
   User _user;
@@ -20,7 +22,7 @@ class MainScreen extends StatefulWidget {
 class MainScreenState extends State<MainScreen> {
   SharedPref sp = SharedPref();
   User _user;
-  PageController _pageController;
+//  PageController _pageController;
   var currentWindowName;
 
   AppBar appBar;
@@ -52,28 +54,7 @@ class MainScreenState extends State<MainScreen> {
       case 'Учебный план':
         setState(() {
           currentWindowName = 'Учебный план';
-          currentWidget = Center(
-            child: CircularProgressIndicator(),
-          );
-        });
-        var listDiscipline = await APIRequest.getCurriculumLoad(_user.curriculumId);
-        setState(() {
-          currentWidget = PageView(
-            controller: _pageController,
-            children: listDiscipline.map((term) {
-              return ListView(
-                children: term.values.map((discipline) {
-                  return DisciplineRow(discipline);
-                }).toList(),
-              );
-            }).toList(),
-//todo: перелистывание страницы не меняет название
-//                    onPageChanged: (page) {
-//                      setState(() {
-//                        numberName = map[page.toString()];
-//                      });
-//                    },
-          );
+          currentWidget = CurriculumLoad();
         });
         break;
       case 'Успеваемость':
@@ -89,7 +70,7 @@ class MainScreenState extends State<MainScreen> {
 
         setState(() {
           currentWidget = PageView(
-            controller: _pageController,
+//            controller: _pageController,
             children: performanceList.map((list) {
               return ListView(
                 children: list.map((mark) {
@@ -109,7 +90,7 @@ class MainScreenState extends State<MainScreen> {
 
   @override
   initState() {
-    _pageController = PageController();
+//    _pageController = PageController();
     _downloadWindow();
   }
 
@@ -133,31 +114,29 @@ class MainScreenState extends State<MainScreen> {
                 sp.setCurrentWindow('Учебный план');
                 Navigator.pop(context);
                 setState(() {
-                  currentWindowName = 'Учебный план';
-                  currentWidget = Center(
-                    child: CircularProgressIndicator(),
-                  );
+//                  currentWindowName = 'Учебный план';
+                  currentWidget = CurriculumLoad();
                 });
-                var listDiscipline =
-                    await APIRequest.getCurriculumLoad(_user.curriculumId);
-                setState(() {
-                  currentWidget = PageView(
-                    controller: _pageController,
-                    children: listDiscipline.map((term) {
-                      return ListView(
-                        children: term.values.map((discipline) {
-                          return DisciplineRow(discipline);
-                        }).toList(),
-                      );
-                    }).toList(),
-//todo: перелистывание страницы не меняет название
-//                    onPageChanged: (page) {
-//                      setState(() {
-//                        numberName = map[page.toString()];
-//                      });
-//                    },
-                  );
-                });
+//                var listDiscipline =
+//                    await APIRequest.getCurriculumLoad(_user.curriculumId);
+//                setState(() {
+//                  currentWidget = PageView(
+//                    controller: _pageController,
+//                    children: listDiscipline.map((term) {
+//                      return ListView(
+//                        children: term.values.map((discipline) {
+//                          return DisciplineRow(discipline);
+//                        }).toList(),
+//                      );
+//                    }).toList(),
+////todo: перелистывание страницы не меняет название
+////                    onPageChanged: (page) {
+////                      setState(() {
+////                        numberName = map[page.toString()];
+////                      });
+////                    },
+//                  );
+//                });
               },
             ),
             ListTile(
@@ -204,7 +183,7 @@ class MainScreenState extends State<MainScreen> {
 
                 setState(() {
                   currentWidget = PageView(
-                    controller: _pageController,
+//                    controller: _pageController,
                     children: performanceList.map((list) {
                       return ListView(
                         children: list.map((mark) {
@@ -227,76 +206,76 @@ class MainScreenState extends State<MainScreen> {
               onTap: () {
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) {
-//                  return MyHomePage();
+                  return MyHomePage();
                 }));
               },
             ),
           ],
         ),
       ),
-      appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.black),
-        textTheme: TextTheme(
-          title: TextStyle(color: Colors.black, fontSize: 18),
-//          subtitle: TextStyle(color: Colors.black),
-        ),
-        title: Container(
-          child: Row(
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
-                child: GestureDetector(
-                  child: Container(
-                    child: Icon(Icons.chevron_left),
-                  ),
-                  onTap: () {
-                    if (number > 1) {
-                      setState(() {
-                        number--;
-                        numberName = map[number];
-                      });
-                      _pageController.previousPage(
-                        duration: Duration(milliseconds: 300),
-                        curve: Curves.linear,
-                      );
-                    }
-                  },
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    child: Text(''),
-                    margin: EdgeInsets.fromLTRB(0, 12, 0, 0),
-                  ),
-                  Container(
-                      child: Text(
-                    '$numberName',
-                    style: TextStyle(fontSize: 12),
-                  )),
-                ],
-              ),
-              Container(
-                child: FlatButton(
-                  child: Icon(Icons.chevron_right),
-                  onPressed: () {
-                    setState(() {
-                      number++;
-                      numberName = map[number];
-                    });
-                    _pageController.nextPage(
-                      duration: Duration(milliseconds: 300),
-                      curve: Curves.linear,
-                    );
-                  },
-                ),
-              )
-            ],
-          ),
-        ),
-        backgroundColor: Color.fromARGB(255, 255, 217, 122),
-      ),
+//      appBar: AppBar(
+//        iconTheme: IconThemeData(color: Colors.black),
+//        textTheme: TextTheme(
+//          title: TextStyle(color: Colors.black, fontSize: 18),
+////          subtitle: TextStyle(color: Colors.black),
+//        ),
+//        title: Container(
+//          child: Row(
+//            children: <Widget>[
+//              Container(
+//                margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
+//                child: GestureDetector(
+//                  child: Container(
+//                    child: Icon(Icons.chevron_left),
+//                  ),
+//                  onTap: () {
+//                    if (number > 1) {
+//                      setState(() {
+//                        number--;
+//                        numberName = map[number];
+//                      });
+//                      _pageController.previousPage(
+//                        duration: Duration(milliseconds: 300),
+//                        curve: Curves.linear,
+//                      );
+//                    }
+//                  },
+//                ),
+//              ),
+//              Column(
+//                crossAxisAlignment: CrossAxisAlignment.start,
+//                children: <Widget>[
+//                  Container(
+//                    child: Text(''),
+//                    margin: EdgeInsets.fromLTRB(0, 12, 0, 0),
+//                  ),
+//                  Container(
+//                      child: Text(
+//                    '$numberName',
+//                    style: TextStyle(fontSize: 12),
+//                  )),
+//                ],
+//              ),
+//              Container(
+//                child: FlatButton(
+//                  child: Icon(Icons.chevron_right),
+//                  onPressed: () {
+//                    setState(() {
+//                      number++;
+//                      numberName = map[number];
+//                    });
+//                    _pageController.nextPage(
+//                      duration: Duration(milliseconds: 300),
+//                      curve: Curves.linear,
+//                    );
+//                  },
+//                ),
+//              )
+//            ],
+//          ),
+//        ),
+//        backgroundColor: Color.fromARGB(255, 255, 217, 122),
+//      ),
       body: currentWidget,
       backgroundColor: Colors.white,
     );

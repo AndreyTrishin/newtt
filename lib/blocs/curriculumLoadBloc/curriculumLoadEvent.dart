@@ -5,6 +5,4 @@ abstract class CurriculumLoadEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class LoadCurriculumLoad extends CurriculumLoadEvent {
-
-}
+class LoadCurriculumLoad extends CurriculumLoadEvent {}

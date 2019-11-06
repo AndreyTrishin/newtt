@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:timetable_app/APIRequest.dart';
 import 'package:timetable_app/Models/User.dart';
-import 'package:timetable_app/Screens/Test/TestBlocCurriculumLoad.dart';
 import 'package:timetable_app/SharedPref.dart';
-import 'package:timetable_app/blocs/curriculumLoadBloc/curriculumLoadBloc.dart';
-import 'package:timetable_app/blocs/curriculumLoadBloc/curriculumLoadEvent.dart';
+
+import 'MainScreen.dart';
 
 main() async {
 //  User user;
@@ -17,31 +15,13 @@ main() async {
 //    user = null;
 //  }
 
-  runApp(App());
-//      MaterialApp(
-//    home: MyHomePage(),
-////    home: user == null ? MyHomePage() : MainScreen(user),
-//    color: Colors.amberAccent,
-//  ));
-}
-
-class App extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Infinite Scroll',
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Учебный план'),
-        ),
-//        body: TestBlocCurriculumLoad().add(LoadCurriculumLoad()),
-        body: BlocProvider(
-          builder: (context) => CurriculumLoadBloc()..add(LoadCurriculumLoad()),
-          child: CurriculumLoad(),
-        ),
-      ),
-    );
-  }
+  runApp(
+//      MaterialApp(home: CurriculumLoad()));
+      MaterialApp(
+    home: MyHomePage(),
+//    home: user == null ? MyHomePage() : MainScreen(user),
+    color: Colors.amberAccent,
+  ));
 }
 
 class MyHomePage extends StatefulWidget {
@@ -109,11 +89,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   onPressed: () async {
                     User user = await APIRequest.authorisation(
                         controllerName.text, controllerPassword.text);
-                    CurriculumLoad test = CurriculumLoad();
-                    Navigator.push(context,
+//                    CurriculumLoad test = CurriculumLoad();
+                    Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (context) {
-                      return test;
-//                      return MainScreen(user);
+//                      return test;
+                      return MainScreen(user);
                     }));
                     SharedPref().save('user', user);
                   },
