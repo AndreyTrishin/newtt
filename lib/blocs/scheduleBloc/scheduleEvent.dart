@@ -7,3 +7,5 @@ class ScheduleEvent extends Equatable {
 }
 
 class ScheduleLoad extends ScheduleEvent {}
+
+class ScheduleDayChange extends ScheduleEvent{}

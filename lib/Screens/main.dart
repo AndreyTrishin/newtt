@@ -5,6 +5,7 @@ import 'package:timetable_app/Models/User.dart';
 import 'package:timetable_app/SharedPref.dart';
 
 import 'MainScreen.dart';
+import 'UnivercityList.dart';
 
 main() async {
 //  User user;
@@ -18,6 +19,8 @@ main() async {
   runApp(
 //      MaterialApp(home: CurriculumLoad()));
       MaterialApp(
+    title: 'Университет',
+
     home: MyHomePage(),
 //    home: user == null ? MyHomePage() : MainScreen(user),
     color: Colors.amberAccent,
@@ -40,52 +43,59 @@ class _MyHomePageState extends State<MyHomePage> {
       TextEditingController(text: 'Иван Иванов');
   TextEditingController controllerPassword =
       TextEditingController(text: 'demo');
+  TextEditingController controllerUniverse = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Container(
-            padding: EdgeInsets.all(10.0),
-            child: DropdownButton<String>(
-              value: dropdownValue,
-              onChanged: (String newValue) {
-                setState(() {
-                  dropdownValue = newValue;
-                });
-              },
-              items: <String>['МГПИ', 'НГАСУ', 'ФГБОУ']
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.only(left: 20.0, right: 20.0),
-            padding: EdgeInsets.all(10.0),
-            child: TextFormField(
-                controller: controllerName,
-                decoration:
-                    InputDecoration(labelText: 'Ваша фамилия, имя и отчество')),
-          ),
-          Container(
-            margin: const EdgeInsets.only(left: 20.0, right: 20.0),
-            padding: EdgeInsets.all(10.0),
-            child: TextFormField(
-              controller: controllerPassword,
-              obscureText: true,
-              decoration: InputDecoration(labelText: 'Пароль'),
-            ),
-          ),
-          Container(
-            child: Wrap(
-              children: <Widget>[
-                RaisedButton(
+      body: Container(
+        decoration: BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage('res/background_login_page.png'),
+                fit: BoxFit.cover)),
+        child: Container(
+          margin: EdgeInsets.fromLTRB(0, 100, 0, 0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.all(10.0),
+                child: TextFormField(
+                  readOnly: true,
+                  controller: controllerUniverse,
+                  decoration:
+                      InputDecoration(suffixIcon: Icon(Icons.arrow_drop_down), labelText: 'Название ВУЗа'),
+                  onTap: () async {
+                    controllerUniverse.text = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => UnivercityList()));
+                  },
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.only(left: 20.0, right: 20.0),
+                padding: EdgeInsets.all(10.0),
+                child: TextFormField(
+                    controller: controllerName,
+                    decoration: InputDecoration(
+                        labelText: 'Ваша фамилия, имя и отчество')),
+              ),
+              Container(
+                margin: const EdgeInsets.only(left: 20.0, right: 20.0),
+                padding: EdgeInsets.all(10.0),
+                child: TextFormField(
+                  controller: controllerPassword,
+                  obscureText: true,
+                  decoration: InputDecoration(labelText: 'Пароль'),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 30),
+                alignment: Alignment.centerRight,
+                child: RaisedButton(
+                  color: Colors.red,
                   onPressed: () async {
                     User user = await APIRequest.authorisation(
                         controllerName.text, controllerPassword.text);
@@ -97,13 +107,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     }));
                     SharedPref().save('user', user);
                   },
-                  child: Text('Войти'),
+                  child: Text('ВОЙТИ', style: TextStyle(color: Colors.white),),
                 ),
-              ],
-              crossAxisAlignment: WrapCrossAlignment.end,
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

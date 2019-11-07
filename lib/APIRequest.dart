@@ -7,6 +7,7 @@ import 'package:timetable_app/Models/Discipline.dart';
 import 'package:timetable_app/Models/MarkRecord.dart';
 import 'package:timetable_app/Models/ScheduleElement.dart';
 import 'package:timetable_app/Models/Term.dart';
+import 'package:timetable_app/Models/Universe.dart';
 import 'package:timetable_app/Query.dart';
 import 'package:xml/xml.dart' as xml;
 
@@ -110,7 +111,7 @@ class APIRequest {
     return listOfMarks;
   }
 
-  static Future<List<Map<String, Discipline>>> getCurriculumLoad(
+  static Future<List<List<Discipline>>> getCurriculumLoad(
       curriculumId) async {
     var responceTerms = await http.post(server,
         headers: {
@@ -130,7 +131,7 @@ class APIRequest {
         int.parse(term.findElements('m:TermNumber').first.text),
       ));
     }
-    List<Map<String, Discipline>> list = [];
+    List<List<Discipline>> list = [];
 
     for (int i = 1; i <= termsCount; i++) {
       var responceLoad = await http.post(server,
@@ -185,7 +186,10 @@ class APIRequest {
             break;
         }
       }
-      list.add(mapOfDiscipline);
+      List<Discipline> disciplineList = mapOfDiscipline.values.toList();
+
+      disciplineList.sort((a, b) => b.type.compareTo(a.type));
+      list.add(disciplineList);
     }
     return list;
   }
@@ -205,7 +209,12 @@ class APIRequest {
       var lesson = e.findElements('m:Lesson');
       Color color;
       if (lesson.isNotEmpty) {
-        switch( e.findElements('m:Lesson').first.findElements('m:LessonType').first.text){
+        switch (e
+            .findElements('m:Lesson')
+            .first
+            .findElements('m:LessonType')
+            .first
+            .text) {
           case 'Лекции':
             color = Color.fromARGB(255, 0, 164, 116);
             break;
@@ -221,67 +230,66 @@ class APIRequest {
             DateTime.parse(e.findElements('m:DateBegin').first.text),
             DateTime.parse(e.findElements('m:DateEnd').first.text),
             Lesson(
-              e.findAllElements('m:LessonCompoundKey').first.text,
-              e
-                  .findElements('m:Lesson')
-                  .first
-                  .findElements('m:Subject')
-                  .first
-                  .text,
-              e
-                  .findElements('m:Lesson')
-                  .first
-                  .findElements('m:LessonType')
-                  .first
-                  .text,
-              Teacher(
-                  e
-                      .findElements('m:Lesson')
-                      .first
-                      .findElements('m:Teacher')
-                      .first
-                      .findElements('m:TeacherId')
-                      .first
-                      .text,
-                  e
-                      .findElements('m:Lesson')
-                      .first
-                      .findElements('m:Teacher')
-                      .first
-                      .findElements('m:TeacherName')
-                      .first
-                      .text),
-              e
-                      .findElements('m:Lesson')
-                      .first
-                      .findElements('m:Classroom')
-                      .isNotEmpty
-                  ? Classroom(
-                      e
-                          .findElements('m:Lesson')
-                          .first
-                          .findElements('m:Classroom')
-                          .first
-                          .findElements('m:ClassroomUID')
-                          .first
-                          .text,
-                      e
-                          .findElements('m:Lesson')
-                          .first
-                          .findElements('m:Classroom')
-                          .first
-                          .findElements('m:ClassroomName')
-                          .first
-                          .text)
-                  : null,
-              e
-                  .findElements('m:Lesson')
-                  .first
-                  .findAllElements('m:AcademicGroupName')
-                  .first
-                  .text,
-              color
-            )));
+                e.findAllElements('m:LessonCompoundKey').first.text,
+                e
+                    .findElements('m:Lesson')
+                    .first
+                    .findElements('m:Subject')
+                    .first
+                    .text,
+                e
+                    .findElements('m:Lesson')
+                    .first
+                    .findElements('m:LessonType')
+                    .first
+                    .text,
+                Teacher(
+                    e
+                        .findElements('m:Lesson')
+                        .first
+                        .findElements('m:Teacher')
+                        .first
+                        .findElements('m:TeacherId')
+                        .first
+                        .text,
+                    e
+                        .findElements('m:Lesson')
+                        .first
+                        .findElements('m:Teacher')
+                        .first
+                        .findElements('m:TeacherName')
+                        .first
+                        .text),
+                e
+                        .findElements('m:Lesson')
+                        .first
+                        .findElements('m:Classroom')
+                        .isNotEmpty
+                    ? Classroom(
+                        e
+                            .findElements('m:Lesson')
+                            .first
+                            .findElements('m:Classroom')
+                            .first
+                            .findElements('m:ClassroomUID')
+                            .first
+                            .text,
+                        e
+                            .findElements('m:Lesson')
+                            .first
+                            .findElements('m:Classroom')
+                            .first
+                            .findElements('m:ClassroomName')
+                            .first
+                            .text)
+                    : null,
+                e
+                    .findElements('m:Lesson')
+                    .first
+                    .findAllElements('m:AcademicGroupName')
+                    .first
+                    .text,
+                color)));
       } else {
         lessonList.add(ScheduleCell(
             DateTime.parse(e.findElements('m:DateBegin').first.text),
@@ -300,5 +308,22 @@ class APIRequest {
         lessonList);
 
     return scheduleElement;
+  }
+
+  static Future<List<Universe>> getUnivercity() async {
+    var responce = await http.get('http://81.177.140.25/university.xml');
+
+    var result = xml.parse(utf8.decode(responce.bodyBytes));
+
+    List<Universe> list = [];
+
+    for (var e in result.findAllElements('university')) {
+      list.add(Universe(
+        int.parse(e.findAllElements('id').first.text),
+        e.findAllElements('name').first.text,
+        e.findAllElements('city').first.text,
+      ));
+    }
+    return list;
   }
 }

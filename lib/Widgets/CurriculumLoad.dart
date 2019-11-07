@@ -34,7 +34,7 @@ class CurriculumLoad extends StatelessWidget {
 
   AppBarBloc _appBarBloc;
 
-  static List<Map<String, Discipline>> disciplines = [];
+  static List<List<Discipline>> disciplines = [];
 
 
   @override
@@ -59,7 +59,6 @@ class CurriculumLoad extends StatelessWidget {
                           child: Icon(Icons.chevron_left),
                           onPressed: () {
                             _appBarBloc..add(AppBarPageChange(pageNumber -1));
-//                              _performanceBloc..add(PerformancePageChange(-1));
                             _controller.previousPage(
                                 duration: Duration(milliseconds: 150),
                                 curve: Curves.linear);
@@ -72,7 +71,7 @@ class CurriculumLoad extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              'Успеваемость',
+                              'Учебный план',
                               style: TextStyle(color: Colors.black),
                             ),
                             Text(
@@ -180,7 +179,7 @@ class CurriculumLoad extends StatelessWidget {
                 controller: _controller,
                 children: disciplines.map<Widget>((term) {
                   return ListView(
-                    children: term.values.map<Widget>((discipline) {
+                    children: term.map<Widget>((discipline) {
                       return DisciplineRow(discipline);
                     }).toList(),
                   );

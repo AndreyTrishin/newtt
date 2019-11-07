@@ -1,97 +1,71 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:timetable_app/Models/User.dart';
 import 'package:timetable_app/SharedPref.dart';
-import 'package:timetable_app/Widgets/CurriculumLoad.dart';
-import 'package:timetable_app/Widgets/PerformancePage.dart';
-import 'package:timetable_app/Widgets/SchedulePage.dart';
+import 'package:timetable_app/blocs/mainBloc/mainBloc.dart';
+import 'package:timetable_app/blocs/mainBloc/mainEvent.dart';
+import 'package:timetable_app/blocs/mainBloc/mainState.dart';
 
 import 'main.dart';
 
-class MainScreen extends StatefulWidget {
-  User _user;
-
-  MainScreen(User user) : _user = user;
-
-  @override
-  createState() => MainScreenState(_user);
-}
-
-class MainScreenState extends State<MainScreen> {
+class MainScreen extends StatelessWidget {
   SharedPref sp = SharedPref();
-  User _user;
-//  PageController _pageController;
+  final User _user;
   var currentWindowName;
 
-  AppBar appBar;
+  MainScreen(this._user);
 
-  Widget currentWidget;
-
-  MainScreenState(User user) : _user = user;
-
-  int number = 0;
-  String numberName = 'Первый семестр';
-
+  MainBloc _mainBloc;
 
   _downloadWindow() async {
     currentWindowName = await sp.loadWindow();
-
     switch (currentWindowName) {
       case 'Учебный план':
-        setState(() {
-          currentWindowName = 'Учебный план';
-          currentWidget = CurriculumLoad(_user);
-        });
+        _mainBloc.add(MainCurriculumLoadLoad());
+        break;
+      case 'Расписание занятий':
+        _mainBloc.add(MainScheduleLoad());
         break;
       case 'Успеваемость':
-        setState(() {
-          currentWindowName = 'Успеваемость';
-          currentWidget = PerformancePage(_user);
-        });
+        _mainBloc.add(MainPerformanceLoad());
         break;
     }
   }
 
-  @override
-  initState() {
-    _downloadWindow();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    _mainBloc = MainBloc(_user);
+    _downloadWindow();
     return Scaffold(
       drawer: Drawer(
         child: ListView(
           children: <Widget>[
-            Container(
-              child: UserAccountsDrawerHeader(
-                accountName: Text('${_user.name}'),
-                accountEmail: Text('${_user.specialtyName}'),
-              ),
-              color: Colors.yellow,
+            //todo: сделать стрелку справа от имени
+            UserAccountsDrawerHeader(
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: AssetImage('res/background_drawer_header.png'),
+                      fit: BoxFit.cover)),
+              accountName: Text('${_user.name}'),
+              accountEmail: Text('${_user.specialtyName}'),
             ),
+            //todo: сделать изменение цвета выбранного пункта
             ListTile(
               title: Text("Учебный план"),
               leading: Icon(Icons.info),
               onTap: () async {
                 sp.setCurrentWindow('Учебный план');
                 Navigator.pop(context);
-                setState(() {
-//                  currentWindowName = 'Учебный план';
-                  currentWidget = CurriculumLoad(_user);
-                });
+                _mainBloc.add(MainCurriculumLoadLoad());
               },
             ),
             ListTile(
               title: Text("Расписание занятий"),
               leading: Icon(Icons.access_time),
               onTap: () async {
+                sp.setCurrentWindow('Расписание занятий');
                 Navigator.pop(context);
-                setState(() {
-//                  currentWindowName = 'Расписание занятий';
-                  currentWidget = SchedulePage(_user);
-                });
-
+                _mainBloc.add(MainScheduleLoad());
               },
             ),
             ListTile(
@@ -100,12 +74,11 @@ class MainScreenState extends State<MainScreen> {
               onTap: () async {
                 sp.setCurrentWindow('Успеваемость');
                 Navigator.pop(context);
-                setState(() {
-                  currentWindowName = 'Успеваемость';
-                  currentWidget = PerformancePage(_user);
-                });
+                _mainBloc.add(MainPerformanceLoad());
               },
             ),
+            //todo: сделать кнопку выхода снизу экрана
+
             Divider(),
             ListTile(
               title: Text("Выйти"),
@@ -120,70 +93,22 @@ class MainScreenState extends State<MainScreen> {
           ],
         ),
       ),
-//      appBar: AppBar(
-//        iconTheme: IconThemeData(color: Colors.black),
-//        textTheme: TextTheme(
-//          title: TextStyle(color: Colors.black, fontSize: 18),
-////          subtitle: TextStyle(color: Colors.black),
-//        ),
-//        title: Container(
-//          child: Row(
-//            children: <Widget>[
-//              Container(
-//                margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
-//                child: GestureDetector(
-//                  child: Container(
-//                    child: Icon(Icons.chevron_left),
-//                  ),
-//                  onTap: () {
-//                    if (number > 1) {
-//                      setState(() {
-//                        number--;
-//                        numberName = map[number];
-//                      });
-//                      _pageController.previousPage(
-//                        duration: Duration(milliseconds: 300),
-//                        curve: Curves.linear,
-//                      );
-//                    }
-//                  },
-//                ),
-//              ),
-//              Column(
-//                crossAxisAlignment: CrossAxisAlignment.start,
-//                children: <Widget>[
-//                  Container(
-//                    child: Text(''),
-//                    margin: EdgeInsets.fromLTRB(0, 12, 0, 0),
-//                  ),
-//                  Container(
-//                      child: Text(
-//                    '$numberName',
-//                    style: TextStyle(fontSize: 12),
-//                  )),
-//                ],
-//              ),
-//              Container(
-//                child: FlatButton(
-//                  child: Icon(Icons.chevron_right),
-//                  onPressed: () {
-//                    setState(() {
-//                      number++;
-//                      numberName = map[number];
-//                    });
-//                    _pageController.nextPage(
-//                      duration: Duration(milliseconds: 300),
-//                      curve: Curves.linear,
-//                    );
-//                  },
-//                ),
-//              )
-//            ],
-//          ),
-//        ),
-//        backgroundColor: Color.fromARGB(255, 255, 217, 122),
-//      ),
-      body: currentWidget,
+      body: BlocBuilder(
+        bloc: _mainBloc,
+        builder: (context, state) {
+          if (state is MainCurriculumLoadChange) {
+            return state.currentWidget;
+          } else if (state is MainScheduleChange) {
+            return state.currentWidget;
+          } else if (state is MainPerformanceChange) {
+            return state.currentWidget;
+          } else {
+            return Center(
+              child: Text('Ошибка'),
+            );
+          }
+        },
+      ),
       backgroundColor: Colors.white,
     );
   }

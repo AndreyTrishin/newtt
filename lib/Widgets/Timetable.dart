@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:timetable_app/Models/ScheduleElement.dart';
+import 'package:timetable_app/Screens/TimeTableInfo.dart';
 
 class Timetable extends StatelessWidget {
   double fontSize = 12;
+  int numberLesson;
   ScheduleCell scheduleCell;
 
-  Timetable(this.scheduleCell);
+  Timetable(this.scheduleCell, this.numberLesson);
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
       height: 110,
       child: Column(
         children: <Widget>[
@@ -23,11 +26,15 @@ class Timetable extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
+                          numberLesson.toString(),
+                          style: TextStyle(fontSize: fontSize),
+                        ),
+                        Text(
                           scheduleCell.dateBegin.toString().substring(11, 16),
                           style: TextStyle(fontSize: fontSize),
                         ),
                         Container(
-                          margin: EdgeInsets.fromLTRB(0, 70, 0, 0),
+                          margin: EdgeInsets.fromLTRB(0, 55, 0, 0),
                           child: Text(
                             scheduleCell.dateEnd.toString().substring(11, 16),
                             style: TextStyle(fontSize: fontSize),
@@ -36,7 +43,7 @@ class Timetable extends StatelessWidget {
                       ]),
                 ),
                 Container(
-                  width: MediaQuery.of(context).size.width - 65,
+                  width: MediaQuery.of(context).size.width - 50,
                   child: Container(
                     padding: EdgeInsets.all(10),
                     margin: EdgeInsets.fromLTRB(10, 0, 0, 10),
@@ -44,6 +51,11 @@ class Timetable extends StatelessWidget {
                         color: scheduleCell.lesson.color,
                         borderRadius: BorderRadius.circular(4)),
                     child: ListTile(
+                      onTap: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (context) {
+                          return TimetableInfo(scheduleCell);
+                        }));
+                      },
                       trailing: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: <Widget>[

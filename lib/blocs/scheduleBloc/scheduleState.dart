@@ -18,7 +18,5 @@ class ScheduleLoaded extends ScheduleState{
 
   @override
   List<Object> get props => [scheduleElement];
-
-
 }
 

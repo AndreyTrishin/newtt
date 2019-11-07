@@ -16,7 +16,7 @@ class CurriculumLoadLoading extends CurriculumLoadState {
 }
 
 class CurriculumLoadLoaded extends CurriculumLoadState {
-  final List<Map<String, Discipline>> disciplines;
+  final List<List<Discipline>> disciplines;
 
   @override
   List<Object> get props => [disciplines];
