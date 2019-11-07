@@ -20,3 +20,13 @@ class PerformanceLoaded extends PerformanceState{
 }
 
 class PerformanceNotLoaded extends PerformanceState {}
+
+class PerformancePageChanged extends PerformanceState{
+  int newPageNumber;
+
+  PerformancePageChanged(this.newPageNumber);
+
+  @override
+  List<Object> get props => [this.newPageNumber];
+
+}

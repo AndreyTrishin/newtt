@@ -1,3 +1,5 @@
+import 'package:timetable_app/Models/Universe.dart';
+
 class ScheduleElement {
   String date;
   String dayOfWeek;
@@ -15,15 +17,17 @@ class ScheduleCell {
 }
 
 class Lesson {
+
   String lessonCompoundKey;
   String subject;
   String lessonType;
   Teacher teacher;
   Classroom classroom;
   String academicGroup;
+  Color color;
 
   Lesson(this.lessonCompoundKey, this.subject, this.lessonType, this.teacher,
-      this.classroom, this.academicGroup);
+      this.classroom, this.academicGroup, this.color);
 }
 
 class Classroom {

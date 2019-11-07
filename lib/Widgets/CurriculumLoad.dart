@@ -1,29 +1,160 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:timetable_app/Models/Discipline.dart';
 import 'package:timetable_app/Models/Universe.dart';
+import 'package:timetable_app/Models/User.dart';
 import 'package:timetable_app/Widgets/DisciplineRow.dart';
+import 'package:timetable_app/blocs/appBarBloc/AppBarBloc.dart';
+import 'package:timetable_app/blocs/appBarBloc/AppBarEvent.dart';
+import 'package:timetable_app/blocs/appBarBloc/AppBarState.dart';
 import 'package:timetable_app/blocs/curriculumLoadBloc/curriculumLoadBloc.dart';
 import 'package:timetable_app/blocs/curriculumLoadBloc/curriculumLoadEvent.dart';
 import 'package:timetable_app/blocs/curriculumLoadBloc/curriculumLoadState.dart';
 
-class CurriculumLoad extends StatefulWidget {
-  @override
-  _CurriculumLoadState createState() => _CurriculumLoadState();
-}
+class CurriculumLoad extends StatelessWidget {
+  User _user;
 
-class _CurriculumLoadState extends State<CurriculumLoad> {
-//  CurriculumLoadBloc _curriculumLoadBloc;
+  CurriculumLoad(this._user);
+  PageController _controller = PageController();
+  String pageName = 'Первый семестр';
+  int pageNumber = 1;
 
-  @override
-  void initState() {
-    super.initState();
-  }
+  Map<int, String> mapTerms = {
+    1: 'Первый семестр',
+    2: 'Второй семестр',
+    3: 'Третий семестр',
+    4: 'Четвертый семестр',
+    5: 'Пятый семестр',
+    7: 'Седьмой семестр',
+    6: 'Шестой семестр',
+    8: 'Восьмой семестр',
+    9: 'Девятый семестр',
+    10: 'Десятый семестр',
+    11: 'Одиннадцатый семестр',
+  }; //список семестров
+
+  AppBarBloc _appBarBloc;
+
+  static List<Map<String, Discipline>> disciplines = [];
+
 
   @override
   Widget build(BuildContext context) {
+    _appBarBloc = AppBarBloc(_user, disciplines);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 255, 217, 122),
-        title: Text('Учебный план', style: TextStyle(color: Colors.black),),
+        title: Container(
+          child: BlocBuilder(
+              bloc: _appBarBloc,
+              builder: (context, state) {
+                if (state is AppBarUnitialized) {
+                  pageName = mapTerms[pageNumber];
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      Container(
+                        width: 40,
+                        child: FlatButton(
+                          shape: CircleBorder(),
+                          child: Icon(Icons.chevron_left),
+                          onPressed: () {
+                            _appBarBloc..add(AppBarPageChange(pageNumber -1));
+//                              _performanceBloc..add(PerformancePageChange(-1));
+                            _controller.previousPage(
+                                duration: Duration(milliseconds: 150),
+                                curve: Curves.linear);
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              'Успеваемость',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            Text(
+                              pageName,
+                              style:
+                              TextStyle(fontSize: 13, color: Colors.black),
+                            ),
+                          ],
+                        ),
+                      ),
+                      FlatButton(
+                        shape: CircleBorder(),
+                        child: Icon(Icons.chevron_right),
+                        onPressed: () {
+
+                          _controller.nextPage(
+                              duration: Duration(milliseconds: 150),
+                              curve: Curves.linear);
+                          _appBarBloc..add(AppBarPageChange(pageNumber + 1));
+                        },
+                      ),
+                    ],
+                  );
+                } else if (state is AppBarPageChanged) {
+                  pageNumber = state.newPage;
+                  pageName = mapTerms[pageNumber];
+                  print(pageNumber.toString() + ' ' + pageName);
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      Container(
+                        width: 40,
+                        child: FlatButton(
+                          shape: CircleBorder(),
+                          child: Icon(Icons.chevron_left),
+                          onPressed: () {
+
+                            _appBarBloc..add(AppBarPageChange(pageNumber -1));
+//                              _performanceBloc..add(PerformancePageChange(-1));
+                            _controller.previousPage(
+                                duration: Duration(milliseconds: 150),
+                                curve: Curves.linear);
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              'Успеваемость',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            Text(
+                              pageName,
+                              style:
+                              TextStyle(fontSize: 13, color: Colors.black),
+                            ),
+                          ],
+                        ),
+                      ),
+                      FlatButton(
+                        shape: CircleBorder(),
+                        child: Icon(Icons.chevron_right),
+                        onPressed: () {
+                          _appBarBloc..add(AppBarPageChange(pageNumber + 1));
+
+                          _controller.nextPage(
+                              duration: Duration(milliseconds: 150),
+                              curve: Curves.linear);
+                        },
+                      ),
+                    ],
+                  );
+                }
+                return Text(
+                  'Успеваемость',
+                  style: TextStyle(color: Colors.black),
+                );
+              }),
+        ),
         leading: FlatButton(
           child: Icon(Icons.dehaze),
           onPressed: () {
@@ -32,17 +163,22 @@ class _CurriculumLoadState extends State<CurriculumLoad> {
         ),
       ),
       body: BlocProvider(
-        builder: (context) => CurriculumLoadBloc()..add(LoadCurriculumLoad()),
+        builder: (context) => CurriculumLoadBloc(_user)..add(LoadCurriculumLoad()),
         child: BlocBuilder<CurriculumLoadBloc, CurriculumLoadState>(
-          bloc: CurriculumLoadBloc()..add(LoadCurriculumLoad()),
+          bloc: CurriculumLoadBloc(_user)..add(LoadCurriculumLoad()),
           builder: (context, state) {
             if (state is CurriculumLoadLoading) {
               return Center(
                 child: CircularProgressIndicator(),
               );
             } else if (state is CurriculumLoadLoaded) {
+              disciplines = state.disciplines;
               return PageView(
-                children: state.disciplines.map<Widget>((term) {
+                onPageChanged: (value) {
+                  _appBarBloc..add(AppBarPageChange(value + 1));
+                },
+                controller: _controller,
+                children: disciplines.map<Widget>((term) {
                   return ListView(
                     children: term.values.map<Widget>((discipline) {
                       return DisciplineRow(discipline);
@@ -63,11 +199,5 @@ class _CurriculumLoadState extends State<CurriculumLoad> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-//    _curriculumLoadBloc.close();
-    super.dispose();
   }
 }

@@ -70,7 +70,6 @@ class APIRequest {
     List<List<MarkRecord>> listOfMarks = [];
     String term = 'Первый семестр';
     List<MarkRecord> list = [];
-//todo: не отображается последний семестр
     for (var e in result.findAllElements('m:MarkRecord')) {
       if (term == e.findAllElements('m:Term').first.text) {
         list.add(MarkRecord(
@@ -86,31 +85,28 @@ class APIRequest {
           int.parse(e.findAllElements('m:TotalLoad').first.text),
           e.findAllElements('m:TypeOfTheControl').first.text,
         ));
+      } else if (e != null) {
+        listOfMarks.add(list);
+        term = e.findAllElements('m:Term').first.text;
+        list = [];
+        list.add(MarkRecord(
+          e.findAllElements('m:Block').first.text,
+          e.findAllElements('m:Subject').first.text,
+          DateTime.parse(e.findAllElements('m:Date').first.text),
+          e.findAllElements('m:Term').first.text,
+          e.findAllElements('m:Unit').first.text,
+          e.findAllElements('m:Mark').first.text,
+          e.findAllElements('m:Credits').first.text,
+          e.findAllElements('m:Theme').first.text,
+          int.parse(e.findAllElements('m:ClassroomLoad').first.text),
+          int.parse(e.findAllElements('m:TotalLoad').first.text),
+          e.findAllElements('m:TypeOfTheControl').first.text,
+        ));
       } else {
-        if(e.findAllElements('m:Term').isNotEmpty){
-          listOfMarks.add(list);
-          term = e.findAllElements('m:Term').first.text;
-          list = [];
-          list.add(MarkRecord(
-            e.findAllElements('m:Block').first.text,
-            e.findAllElements('m:Subject').first.text,
-            DateTime.parse(e.findAllElements('m:Date').first.text),
-            e.findAllElements('m:Term').first.text,
-            e.findAllElements('m:Unit').first.text,
-            e.findAllElements('m:Mark').first.text,
-            e.findAllElements('m:Credits').first.text,
-            e.findAllElements('m:Theme').first.text,
-            int.parse(e.findAllElements('m:ClassroomLoad').first.text),
-            int.parse(e.findAllElements('m:TotalLoad').first.text),
-            e.findAllElements('m:TypeOfTheControl').first.text,
-          ));
-        } else{
-          listOfMarks.add(list);
-        }
-
-
+        listOfMarks.add(list);
       }
     }
+    listOfMarks.add(list);
     return listOfMarks;
   }
 
@@ -205,14 +201,22 @@ class APIRequest {
     ScheduleElement scheduleElement;
     List<ScheduleCell> lessonList = [];
 
-//    var day = result.findAllElements('m:Day');
-//
-//    print(day);
-
     for (var e in result.findAllElements('m:ScheduleCell')) {
       var lesson = e.findElements('m:Lesson');
-//      print(lesson);
+      Color color;
       if (lesson.isNotEmpty) {
+        switch( e.findElements('m:Lesson').first.findElements('m:LessonType').first.text){
+          case 'Лекции':
+            color = Color.fromARGB(255, 0, 164, 116);
+            break;
+          case 'Практические':
+            color = Color.fromARGB(255, 48, 74, 197);
+            break;
+          case 'Зачет':
+            color = Color.fromARGB(255, 48, 74, 197);
+            break;
+        }
+//        print(e.findElements('m:Lesson').first.findElements('m:LessonType').first.text);
         lessonList.add(ScheduleCell(
             DateTime.parse(e.findElements('m:DateBegin').first.text),
             DateTime.parse(e.findElements('m:DateEnd').first.text),
@@ -276,6 +280,7 @@ class APIRequest {
                   .findAllElements('m:AcademicGroupName')
                   .first
                   .text,
+              color
             )));
       } else {
         lessonList.add(ScheduleCell(

@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:timetable_app/Models/User.dart';
 import 'package:timetable_app/blocs/curriculumLoadBloc/curriculumLoadEvent.dart';
 
 import '../../APIRequest.dart';
@@ -8,6 +9,9 @@ import 'curriculumLoadState.dart';
 class CurriculumLoadBloc
     extends Bloc<CurriculumLoadEvent, CurriculumLoadState> {
 
+  User _user;
+
+  CurriculumLoadBloc(this._user);
 
   @override
   get initialState => CurriculumLoadLoading();
@@ -19,7 +23,7 @@ class CurriculumLoadBloc
     if (event is LoadCurriculumLoad) {
       try {
         if (currentState is CurriculumLoadLoading) {
-          final disciplines = await APIRequest.getCurriculumLoad('000000012');
+          final disciplines = await APIRequest.getCurriculumLoad(_user.curriculumId);
           yield CurriculumLoadLoaded(disciplines: disciplines);
           return;
         }
@@ -40,13 +44,4 @@ class CurriculumLoadBloc
       next,
     );
   }
-
-//  Stream<CurriculumLoadState> _mapLoadCurriculumLoadToState() async* {
-//    try {
-//      final disciplines = await APIRequest.getCurriculumLoad('000000012');
-//      yield CurriculumLoadLoaded(disciplines);
-//    } catch (_) {
-//      yield CurriculumLoadNotLoaded();
-//    }
-//  }
 }

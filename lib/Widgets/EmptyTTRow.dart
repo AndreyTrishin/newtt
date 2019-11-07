@@ -10,37 +10,42 @@ class EmptyTTRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        Container(
-//          margin: EdgeInsets.fromLTRB(10, 10, 0, 0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        scheduleCell.dateBegin.toString().substring(11, 16),
-                        style: TextStyle(fontSize: fontSize),
-                      ),
-                      Text(
-                        scheduleCell.dateEnd.toString().substring(11, 16),
-                        style: TextStyle(fontSize: fontSize),
-                      ),
-                    ]),
-              ),
-              Container()
-            ],
+    return Container(
+      height: 110,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Container(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          scheduleCell.dateBegin.toString().substring(11, 16),
+                          style: TextStyle(fontSize: fontSize),
+                        ),
+                        Container(
+                          margin: EdgeInsets.fromLTRB(0, 70, 0, 10),
+                          child: Text(
+                            scheduleCell.dateEnd.toString().substring(11, 16),
+                            style: TextStyle(fontSize: fontSize),
+                          ),
+                        ),
+                      ]),
+                ),
+                Container()
+              ],
+            ),
           ),
-        ),
-        Divider(
-          height: 0,
-        ),
-      ],
+          Divider(
+            height: 0,
+          ),
+        ],
+      ),
     );
   }
 }

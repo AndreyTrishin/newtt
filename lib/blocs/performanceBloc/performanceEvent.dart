@@ -11,3 +11,13 @@ class PerformanceLoad extends PerformanceEvent {
   @override
   String toString() => 'PerformanceLoad';
 }
+
+class PerformancePageChange extends PerformanceEvent{
+
+  final int val;
+
+  PerformancePageChange(this.val);
+
+  @override
+  String toString() => 'PerformancePageChange';
+}

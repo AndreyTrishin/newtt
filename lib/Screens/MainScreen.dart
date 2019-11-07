@@ -1,12 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:timetable_app/APIRequest.dart';
 import 'package:timetable_app/Models/User.dart';
 import 'package:timetable_app/SharedPref.dart';
 import 'package:timetable_app/Widgets/CurriculumLoad.dart';
-import 'package:timetable_app/Widgets/EmptyTTRow.dart';
 import 'package:timetable_app/Widgets/PerformancePage.dart';
-import 'package:timetable_app/Widgets/Timetable.dart';
+import 'package:timetable_app/Widgets/SchedulePage.dart';
 
 import 'main.dart';
 
@@ -33,19 +31,7 @@ class MainScreenState extends State<MainScreen> {
 
   int number = 0;
   String numberName = 'Первый семестр';
-  Map<int, String> map = {
-    1: 'Первый семестр',
-    2: 'Второй семестр',
-    3: 'Третий семестр',
-    4: 'Четвертый семестр',
-    5: 'Пятый семестр',
-    7: 'Седьмой семестр',
-    6: 'Шестой семестр',
-    8: 'Восьмой семестр',
-    9: 'Девятый семестр',
-    10: 'Десятый семестр',
-    11: 'Одиннадцатый семестр',
-  }; //список семестров
+
 
   _downloadWindow() async {
     currentWindowName = await sp.loadWindow();
@@ -54,13 +40,13 @@ class MainScreenState extends State<MainScreen> {
       case 'Учебный план':
         setState(() {
           currentWindowName = 'Учебный план';
-          currentWidget = CurriculumLoad();
+          currentWidget = CurriculumLoad(_user);
         });
         break;
       case 'Успеваемость':
         setState(() {
           currentWindowName = 'Успеваемость';
-          currentWidget = PerformancePage();
+          currentWidget = PerformancePage(_user);
         });
         break;
     }
@@ -68,7 +54,6 @@ class MainScreenState extends State<MainScreen> {
 
   @override
   initState() {
-//    _pageController = PageController();
     _downloadWindow();
   }
 
@@ -93,28 +78,8 @@ class MainScreenState extends State<MainScreen> {
                 Navigator.pop(context);
                 setState(() {
 //                  currentWindowName = 'Учебный план';
-                  currentWidget = CurriculumLoad();
+                  currentWidget = CurriculumLoad(_user);
                 });
-//                var listDiscipline =
-//                    await APIRequest.getCurriculumLoad(_user.curriculumId);
-//                setState(() {
-//                  currentWidget = PageView(
-//                    controller: _pageController,
-//                    children: listDiscipline.map((term) {
-//                      return ListView(
-//                        children: term.values.map((discipline) {
-//                          return DisciplineRow(discipline);
-//                        }).toList(),
-//                      );
-//                    }).toList(),
-////todo: перелистывание страницы не меняет название
-////                    onPageChanged: (page) {
-////                      setState(() {
-////                        numberName = map[page.toString()];
-////                      });
-////                    },
-//                  );
-//                });
               },
             ),
             ListTile(
@@ -123,22 +88,8 @@ class MainScreenState extends State<MainScreen> {
               onTap: () async {
                 Navigator.pop(context);
                 setState(() {
-                  currentWindowName = 'Расписание занятий';
-                  currentWidget = Center(child: CircularProgressIndicator(),);
-                });
-                var scheduleElement = await APIRequest.getSchedule(_user.academicGroupCompoundKey, '2015-09-10');
-
-                setState(() {
-                  currentWidget = PageView(
-                    controller: PageController(initialPage: 1),
-                    children: <Widget>[
-                      Center(child: CircularProgressIndicator(),),
-                      ListView(children: scheduleElement.scheduleCell.map((cell){
-                        return ListTile(title: cell.lesson != null ? Timetable(cell) : EmptyTTRow(cell));
-                      }).toList(),),
-                      Center(child: CircularProgressIndicator(),),
-                    ],
-                  );
+//                  currentWindowName = 'Расписание занятий';
+                  currentWidget = SchedulePage(_user);
                 });
 
               },
@@ -151,7 +102,7 @@ class MainScreenState extends State<MainScreen> {
                 Navigator.pop(context);
                 setState(() {
                   currentWindowName = 'Успеваемость';
-                  currentWidget = PerformancePage();
+                  currentWidget = PerformancePage(_user);
                 });
               },
             ),
