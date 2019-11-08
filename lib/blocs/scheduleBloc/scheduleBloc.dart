@@ -15,7 +15,7 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState>{
   ScheduleBloc(this._user);
 
 
-  Widget getWidgetList(ScheduleElement element){
+  static Widget getWidgetList(ScheduleElement element){
     int i = 0;
     return ListView(children: element.scheduleCell.map((cell){
         i++;
@@ -30,8 +30,8 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState>{
   Stream<ScheduleState> mapEventToState(ScheduleEvent event) async* {
     if(event is ScheduleLoad){
       yield ScheduleLoaded(await APIRequest.getSchedule(_user.academicGroupCompoundKey, '2015-09-10'));
+    } else if(event is ScheduleDayChange){
+      yield ScheduleDayChanged(await APIRequest.getSchedule(_user.academicGroupCompoundKey, event.date.toString().substring(0, 10)));
     }
-
   }
-
 }

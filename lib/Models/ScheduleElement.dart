@@ -6,6 +6,13 @@ class ScheduleElement {
   List<ScheduleCell> scheduleCell;
 
   ScheduleElement(this.date, this.dayOfWeek, this.scheduleCell);
+
+  @override
+  String toString() {
+    return '$date, $dayOfWeek, ${scheduleCell.isNotEmpty}';
+  }
+
+
 }
 
 class ScheduleCell {

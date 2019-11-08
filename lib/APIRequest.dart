@@ -111,8 +111,7 @@ class APIRequest {
     return listOfMarks;
   }
 
-  static Future<List<List<Discipline>>> getCurriculumLoad(
-      curriculumId) async {
+  static Future<List<List<Discipline>>> getCurriculumLoad(curriculumId) async {
     var responceTerms = await http.post(server,
         headers: {
           'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
@@ -203,109 +202,59 @@ class APIRequest {
         body: Query.getScheduleQuery(key, date));
     var result = xml.parse(responce.body);
     ScheduleElement scheduleElement;
-    List<ScheduleCell> lessonList = [];
 
-    for (var e in result.findAllElements('m:ScheduleCell')) {
-      var lesson = e.findElements('m:Lesson');
-      Color color;
-      if (lesson.isNotEmpty) {
-        switch (e
-            .findElements('m:Lesson')
-            .first
-            .findElements('m:LessonType')
-            .first
-            .text) {
-          case 'Лекции':
-            color = Color.fromARGB(255, 0, 164, 116);
-            break;
-          case 'Практические':
-            color = Color.fromARGB(255, 48, 74, 197);
-            break;
-          case 'Зачет':
-            color = Color.fromARGB(255, 48, 74, 197);
-            break;
-        }
+    List<ScheduleCell> lessonList = [];
+    try{
+      for (var e in result.findAllElements('m:ScheduleCell')) {
+        var lesson = e.findElements('m:Lesson');
+        Color color;
+        if (lesson.isNotEmpty) {
+          switch (e.findElements('m:Lesson').first.findElements('m:LessonType').first.text) {
+            case 'Лекции':
+              color = Color.fromARGB(255, 0, 164, 116);
+              break;
+            case 'Практические':
+              color = Color.fromARGB(255, 48, 74, 197);
+              break;
+            case 'Зачет':
+              color = Color.fromARGB(255, 48, 74, 197);
+              break;
+          }
 //        print(e.findElements('m:Lesson').first.findElements('m:LessonType').first.text);
-        lessonList.add(ScheduleCell(
-            DateTime.parse(e.findElements('m:DateBegin').first.text),
-            DateTime.parse(e.findElements('m:DateEnd').first.text),
-            Lesson(
-                e.findAllElements('m:LessonCompoundKey').first.text,
-                e
-                    .findElements('m:Lesson')
-                    .first
-                    .findElements('m:Subject')
-                    .first
-                    .text,
-                e
-                    .findElements('m:Lesson')
-                    .first
-                    .findElements('m:LessonType')
-                    .first
-                    .text,
-                Teacher(
-                    e
-                        .findElements('m:Lesson')
-                        .first
-                        .findElements('m:Teacher')
-                        .first
-                        .findElements('m:TeacherId')
-                        .first
-                        .text,
-                    e
-                        .findElements('m:Lesson')
-                        .first
-                        .findElements('m:Teacher')
-                        .first
-                        .findElements('m:TeacherName')
-                        .first
-                        .text),
-                e
-                        .findElements('m:Lesson')
-                        .first
-                        .findElements('m:Classroom')
-                        .isNotEmpty
-                    ? Classroom(
-                        e
-                            .findElements('m:Lesson')
-                            .first
-                            .findElements('m:Classroom')
-                            .first
-                            .findElements('m:ClassroomUID')
-                            .first
-                            .text,
-                        e
-                            .findElements('m:Lesson')
-                            .first
-                            .findElements('m:Classroom')
-                            .first
-                            .findElements('m:ClassroomName')
-                            .first
-                            .text)
-                    : null,
-                e
-                    .findElements('m:Lesson')
-                    .first
-                    .findAllElements('m:AcademicGroupName')
-                    .first
-                    .text,
-                color)));
-      } else {
-        lessonList.add(ScheduleCell(
-            DateTime.parse(e.findElements('m:DateBegin').first.text),
-            DateTime.parse(e.findElements('m:DateEnd').first.text),
-            null));
+          lessonList.add(ScheduleCell(
+              DateTime.parse(e.findElements('m:DateBegin').first.text),
+              DateTime.parse(e.findElements('m:DateEnd').first.text),
+              Lesson(
+                  e.findAllElements('m:LessonCompoundKey').first.text,
+                  e.findElements('m:Lesson').first.findElements('m:Subject').first.text,
+                  e.findElements('m:Lesson').first.findElements('m:LessonType').first.text,
+                  Teacher(
+                      e.findElements('m:Lesson').first.findElements('m:Teacher').first.findElements('m:TeacherId').first.text,
+                      e.findElements('m:Lesson').first.findElements('m:Teacher').first.findElements('m:TeacherName').first.text),
+                  e.findElements('m:Lesson').first.findElements('m:Classroom').isNotEmpty
+                      ? Classroom(
+                      e.findElements('m:Lesson').first.findElements('m:Classroom').first.findElements('m:ClassroomUID').first.text,
+                      e.findElements('m:Lesson').first.findElements('m:Classroom').first.findElements('m:ClassroomName').first.text)
+                      : null,
+                  e.findElements('m:Lesson').first.findAllElements('m:AcademicGroupName').first.text,
+                  color)));
+        } else {
+          lessonList.add(ScheduleCell(
+              DateTime.parse(e.findElements('m:DateBegin').first.text),
+              DateTime.parse(e.findElements('m:DateEnd').first.text),
+              null));
+        }
       }
+      scheduleElement = ScheduleElement(
+          result.findAllElements('m:Day').first.findAllElements('m:Date').first.text,
+          result.findAllElements('m:DayOfWeek').first.text,
+          lessonList);
+    } catch(_){
+      scheduleElement = ScheduleElement(
+          date,
+          '',
+          null);
     }
-    scheduleElement = ScheduleElement(
-        result
-            .findAllElements('m:Day')
-            .first
-            .findAllElements('m:Date')
-            .first
-            .text,
-        result.findAllElements('m:DayOfWeek').first.text,
-        lessonList);
 
     return scheduleElement;
   }

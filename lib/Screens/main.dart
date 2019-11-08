@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:timetable_app/APIRequest.dart';
 import 'package:timetable_app/Models/User.dart';
 import 'package:timetable_app/SharedPref.dart';
@@ -8,19 +9,15 @@ import 'MainScreen.dart';
 import 'UnivercityList.dart';
 
 main() async {
-//  User user;
-//
-//  try{
-//    user = User.fromJson(await SharedPref().read('user'));
-//  } catch(_){
-//    user = null;
-//  }
+  User user;
+  try {
+    user = User.fromJson(await SharedPref().read('user'));
+  } catch (_) {
+    user = null;
+  }
 
-  runApp(
-//      MaterialApp(home: CurriculumLoad()));
-      MaterialApp(
+  runApp(MaterialApp(
     title: 'Университет',
-
     home: MyHomePage(),
 //    home: user == null ? MyHomePage() : MainScreen(user),
     color: Colors.amberAccent,
@@ -44,16 +41,22 @@ class _MyHomePageState extends State<MyHomePage> {
   TextEditingController controllerPassword =
       TextEditingController(text: 'demo');
   TextEditingController controllerUniverse = TextEditingController();
+  InputBorder inputBorder;
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage('res/background_login_page.png'),
-                fit: BoxFit.cover)),
+        color: Color.fromARGB(255, 255, 248, 226),
         child: Container(
+          decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage('res/background_login_page.png'),
+                  fit: BoxFit.cover)),
           margin: EdgeInsets.fromLTRB(0, 100, 0, 0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -64,8 +67,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: TextFormField(
                   readOnly: true,
                   controller: controllerUniverse,
-                  decoration:
-                      InputDecoration(suffixIcon: Icon(Icons.arrow_drop_down), labelText: 'Название ВУЗа'),
+                  decoration: InputDecoration(
+//                    hoverColor: Colors.black,
+                      suffixIcon: Icon(Icons.arrow_drop_down),
+                      labelText: 'Название ВУЗа'),
                   onTap: () async {
                     controllerUniverse.text = await Navigator.push(
                         context,
@@ -77,9 +82,11 @@ class _MyHomePageState extends State<MyHomePage> {
               Container(
                 margin: const EdgeInsets.only(left: 20.0, right: 20.0),
                 padding: EdgeInsets.all(10.0),
-                child: TextFormField(
+                child: TextField(
+                    cursorColor: Colors.red,
                     controller: controllerName,
                     decoration: InputDecoration(
+                        focusedBorder: inputBorder,
                         labelText: 'Ваша фамилия, имя и отчество')),
               ),
               Container(
@@ -107,7 +114,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     }));
                     SharedPref().save('user', user);
                   },
-                  child: Text('ВОЙТИ', style: TextStyle(color: Colors.white),),
+                  child: Text(
+                    'ВОЙТИ',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
             ],

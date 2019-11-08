@@ -7,7 +7,7 @@ class AppBarBloc extends Bloc<AppBarEvent, AppBarState> {
   final User _user;
   final List list;
 
-  AppBarBloc(this._user, this.list);
+  AppBarBloc([this._user, this.list]);
 
   @override
   // TODO: implement initialState
@@ -15,8 +15,10 @@ class AppBarBloc extends Bloc<AppBarEvent, AppBarState> {
 
   @override
   Stream<AppBarState> mapEventToState(AppBarEvent event) async* {
-    if (event is AppBarPageChange) {
-      if (event.newPage != 0 && event.newPage != list.length +1) {
+    if (event is AppBarPageChange && list != null) {
+      if (event.newPage != 0 && event.newPage != list.length + 1) {
+        yield AppBarPageChanged(event.newPage);
+      } else {
         yield AppBarPageChanged(event.newPage);
       }
     }

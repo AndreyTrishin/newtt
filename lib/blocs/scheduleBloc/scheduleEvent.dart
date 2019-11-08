@@ -8,4 +8,18 @@ class ScheduleEvent extends Equatable {
 
 class ScheduleLoad extends ScheduleEvent {}
 
-class ScheduleDayChange extends ScheduleEvent{}
+class ScheduleDayChange extends ScheduleEvent{
+  final DateTime date;
+
+  ScheduleDayChange(this.date);
+
+  @override
+  List<Object> get props => [date];
+
+  @override
+  String toString() {
+    return 'ScheduleDayChange: {date: $date}';
+  }
+
+
+}

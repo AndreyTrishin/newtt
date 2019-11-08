@@ -20,3 +20,17 @@ class ScheduleLoaded extends ScheduleState{
   List<Object> get props => [scheduleElement];
 }
 
+class ScheduleDayChanged extends ScheduleState{
+  final ScheduleElement scheduleElement;
+
+  ScheduleDayChanged(this.scheduleElement);
+
+
+  @override
+  String toString() {
+    return 'ScheduleDayChanged: {${scheduleElement.date}}';
+  }
+
+  @override
+  List<Object> get props => [scheduleElement];
+}
