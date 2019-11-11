@@ -7,18 +7,18 @@ class ScheduleAppBarEvent extends Equatable{
 }
 
 class ScheduleAppBarPageChange extends ScheduleAppBarEvent{
-  final int newPage;
+  final DateTime newDate;
 
-  ScheduleAppBarPageChange(this.newPage);
+  ScheduleAppBarPageChange(this.newDate);
 
   @override
   List<Object> get props {
-    return [newPage];
+    return [newDate];
   }
 
   @override
   String toString() {
-    return 'ScheduleAppBarPageChange: {$newPage}';
+    return 'ScheduleAppBarPageChange: {$newDate}';
   }
 
 

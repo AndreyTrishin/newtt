@@ -15,10 +15,13 @@ class AppBarBloc extends Bloc<AppBarEvent, AppBarState> {
 
   @override
   Stream<AppBarState> mapEventToState(AppBarEvent event) async* {
-    if (event is AppBarPageChange && list != null) {
-      if (event.newPage != 0 && event.newPage != list.length + 1) {
-        yield AppBarPageChanged(event.newPage);
-      } else {
+    if (event is AppBarPageChange) {
+      if (list != null) {
+        if (event.newPage != 0 && event.newPage != list.length + 1) {
+          yield AppBarPageChanged(event.newPage);
+        }
+      }
+      else {
         yield AppBarPageChanged(event.newPage);
       }
     }

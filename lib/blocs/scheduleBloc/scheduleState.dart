@@ -21,6 +21,8 @@ class ScheduleLoaded extends ScheduleState{
 }
 
 class ScheduleDayChanged extends ScheduleState{
+
+
   final ScheduleElement scheduleElement;
 
   ScheduleDayChanged(this.scheduleElement);

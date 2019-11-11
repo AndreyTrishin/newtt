@@ -50,7 +50,7 @@ class CurriculumLoad extends StatelessWidget {
                 if (state is AppBarUnitialized) {
                   pageName = mapTerms[pageNumber];
                   return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+//                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
                       Container(
                         width: 40,
@@ -82,16 +82,24 @@ class CurriculumLoad extends StatelessWidget {
                           ],
                         ),
                       ),
-                      FlatButton(
-                        shape: CircleBorder(),
-                        child: Icon(Icons.chevron_right),
-                        onPressed: () {
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: Container(
+                            width: 40,
+                            child: FlatButton(
+                              shape: CircleBorder(),
+                              child: Icon(Icons.chevron_right),
+                              onPressed: () {
 
-                          _controller.nextPage(
-                              duration: Duration(milliseconds: 150),
-                              curve: Curves.linear);
-                          _appBarBloc..add(AppBarPageChange(pageNumber + 1));
-                        },
+                                _controller.nextPage(
+                                    duration: Duration(milliseconds: 150),
+                                    curve: Curves.linear);
+                                _appBarBloc..add(AppBarPageChange(pageNumber + 1));
+                              },
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   );
@@ -123,7 +131,7 @@ class CurriculumLoad extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              'Успеваемость',
+                              'Учебный план',
                               style: TextStyle(color: Colors.black),
                             ),
                             Text(

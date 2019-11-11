@@ -85,16 +85,24 @@ class PerformancePage extends StatelessWidget {
                           ],
                         ),
                       ),
-                      FlatButton(
-                        shape: CircleBorder(),
-                        child: Icon(Icons.chevron_right),
-                        onPressed: () {
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: Container(
+                            width: 40,
+                            child: FlatButton(
+                              shape: CircleBorder(),
+                              child: Icon(Icons.chevron_right),
+                              onPressed: () {
 
-                          _controller.nextPage(
-                              duration: Duration(milliseconds: 150),
-                              curve: Curves.linear);
-                          _appBarBloc..add(AppBarPageChange(pageNumber + 1));
-                        },
+                                _controller.nextPage(
+                                    duration: Duration(milliseconds: 150),
+                                    curve: Curves.linear);
+                                _appBarBloc..add(AppBarPageChange(pageNumber + 1));
+                              },
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   );

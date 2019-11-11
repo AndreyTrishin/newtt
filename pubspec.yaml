@@ -29,6 +29,7 @@ dependencies:
   shared_preferences: 0.5.4+3
   flutter_bloc: 2.0.0
   equatable: 0.6.0
+  intl: 0.16.0
 
 dev_dependencies:
   flutter_test:
@@ -49,6 +50,8 @@ flutter:
     - res/background_drawer_header.png
     - res/background_drawer_header.png
     - res/background_login_page.png
+    - res/ic_type_20dp_54a.png
+    - res/ic_nav_marks_18dp_black.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
