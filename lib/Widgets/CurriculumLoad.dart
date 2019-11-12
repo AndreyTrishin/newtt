@@ -14,6 +14,7 @@ class CurriculumLoad extends StatelessWidget {
   User _user;
 
   CurriculumLoad(this._user);
+
   PageController _controller = PageController();
   String pageName = 'Первый семестр';
   int pageNumber = 1;
@@ -36,7 +37,6 @@ class CurriculumLoad extends StatelessWidget {
 
   static List<List<Discipline>> disciplines = [];
 
-
   @override
   Widget build(BuildContext context) {
     _appBarBloc = AppBarBloc(_user, disciplines);
@@ -44,124 +44,73 @@ class CurriculumLoad extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 255, 217, 122),
         title: Container(
-          child: BlocBuilder(
-              bloc: _appBarBloc,
-              builder: (context, state) {
-                if (state is AppBarUnitialized) {
-                  pageName = mapTerms[pageNumber];
-                  return Row(
+            child: Row(
 //                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: <Widget>[
-                      Container(
-                        width: 40,
-                        child: FlatButton(
-                          shape: CircleBorder(),
-                          child: Icon(Icons.chevron_left),
-                          onPressed: () {
-                            _appBarBloc..add(AppBarPageChange(pageNumber -1));
-                            _controller.previousPage(
-                                duration: Duration(milliseconds: 150),
-                                curve: Curves.linear);
-                          },
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              'Учебный план',
-                              style: TextStyle(color: Colors.black),
-                            ),
-                            Text(
-                              pageName,
-                              style:
-                              TextStyle(fontSize: 13, color: Colors.black),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Container(
-                            width: 40,
-                            child: FlatButton(
-                              shape: CircleBorder(),
-                              child: Icon(Icons.chevron_right),
-                              onPressed: () {
-
-                                _controller.nextPage(
-                                    duration: Duration(milliseconds: 150),
-                                    curve: Curves.linear);
-                                _appBarBloc..add(AppBarPageChange(pageNumber + 1));
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                } else if (state is AppBarPageChanged) {
-                  pageNumber = state.newPage;
-                  pageName = mapTerms[pageNumber];
-                  print(pageNumber.toString() + ' ' + pageName);
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: <Widget>[
-                      Container(
-                        width: 40,
-                        child: FlatButton(
-                          shape: CircleBorder(),
-                          child: Icon(Icons.chevron_left),
-                          onPressed: () {
-
-                            _appBarBloc..add(AppBarPageChange(pageNumber -1));
-//                              _performanceBloc..add(PerformancePageChange(-1));
-                            _controller.previousPage(
-                                duration: Duration(milliseconds: 150),
-                                curve: Curves.linear);
-                          },
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              'Учебный план',
-                              style: TextStyle(color: Colors.black),
-                            ),
-                            Text(
-                              pageName,
-                              style:
-                              TextStyle(fontSize: 13, color: Colors.black),
-                            ),
-                          ],
-                        ),
-                      ),
-                      FlatButton(
-                        shape: CircleBorder(),
-                        child: Icon(Icons.chevron_right),
-                        onPressed: () {
-                          _appBarBloc..add(AppBarPageChange(pageNumber + 1));
-
-                          _controller.nextPage(
-                              duration: Duration(milliseconds: 150),
-                              curve: Curves.linear);
-                        },
-                      ),
-                    ],
-                  );
-                }
-                return Text(
-                  'Успеваемость',
-                  style: TextStyle(color: Colors.black),
-                );
-              }),
-        ),
+          children: <Widget>[
+            Container(
+              width: 40,
+              child: FlatButton(
+                shape: CircleBorder(),
+                child: Icon(Icons.chevron_left),
+                onPressed: () {
+                  _appBarBloc..add(AppBarPageChange(pageNumber - 1));
+                  _controller.previousPage(
+                      duration: Duration(milliseconds: 150),
+                      curve: Curves.linear);
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    'Учебный план',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  BlocBuilder(
+                    bloc: _appBarBloc,
+                    builder: (context, state) {
+                      if (state is AppBarUnitialized) {
+                        return Text(
+                          pageName,
+                          style: TextStyle(fontSize: 13, color: Colors.black),
+                        );
+                      } else if (state is AppBarPageChanged) {
+                        pageNumber = state.newPage;
+                        return Text(
+                          mapTerms[state.newPage],
+                          style: TextStyle(fontSize: 13, color: Colors.black),
+                        );
+                      } else {
+                        return Text('Ошибка');
+                      }
+                    },
+                  )
+                ],
+              ),
+            ),
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: Container(
+                  width: 40,
+                  child: FlatButton(
+                    shape: CircleBorder(),
+                    child: Icon(Icons.chevron_right),
+                    onPressed: () {
+                      _controller.nextPage(
+                          duration: Duration(milliseconds: 150),
+                          curve: Curves.linear);
+                      _appBarBloc..add(AppBarPageChange(pageNumber + 1));
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ],
+        )),
         leading: FlatButton(
           child: Icon(Icons.dehaze),
           onPressed: () {
@@ -170,7 +119,8 @@ class CurriculumLoad extends StatelessWidget {
         ),
       ),
       body: BlocProvider(
-        builder: (context) => CurriculumLoadBloc(_user)..add(LoadCurriculumLoad()),
+        builder: (context) =>
+            CurriculumLoadBloc(_user)..add(LoadCurriculumLoad()),
         child: BlocBuilder<CurriculumLoadBloc, CurriculumLoadState>(
           bloc: CurriculumLoadBloc(_user)..add(LoadCurriculumLoad()),
           builder: (context, state) {

@@ -72,9 +72,15 @@ class DisciplineInfo extends StatelessWidget {
                 child: _discipline.isControl == true
                     ? Row(
                         children: <Widget>[
-                          Container(
-                            child: Icon(Icons.receipt),
-                            margin: EdgeInsets.all(20),
+                          Padding(
+                            padding: const EdgeInsets.all(22.5),
+                            child: Container(
+                                height: 20,
+                                width: 20,
+                                child: Image.asset(
+                                  'res/ic_drive_document_18dp_black_54a.png',
+                                  fit: BoxFit.scaleDown,
+                                )),
                           ),
                           Text(
                             _discipline.isControl == true

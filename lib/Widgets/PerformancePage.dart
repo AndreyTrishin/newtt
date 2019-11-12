@@ -46,124 +46,74 @@ class PerformancePage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 255, 217, 122),
         title: Container(
-          child: BlocBuilder(
-              bloc: _appBarBloc,
-              builder: (context, state) {
-                if (state is AppBarUnitialized) {
-                  pageName = mapTerms[pageNumber];
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: <Widget>[
-                      Container(
-                        width: 40,
-                        child: FlatButton(
-                          shape: CircleBorder(),
-                          child: Icon(Icons.chevron_left),
-                          onPressed: () {
-                            _appBarBloc..add(AppBarPageChange(pageNumber -1));
-//                              _performanceBloc..add(PerformancePageChange(-1));
-                            _controller.previousPage(
-                                duration: Duration(milliseconds: 150),
-                                curve: Curves.linear);
-                          },
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              'Успеваемость',
-                              style: TextStyle(color: Colors.black),
-                            ),
-                            Text(
-                              pageName,
-                              style:
-                                  TextStyle(fontSize: 13, color: Colors.black),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Container(
-                            width: 40,
-                            child: FlatButton(
-                              shape: CircleBorder(),
-                              child: Icon(Icons.chevron_right),
-                              onPressed: () {
+            child: Row(
 
-                                _controller.nextPage(
-                                    duration: Duration(milliseconds: 150),
-                                    curve: Curves.linear);
-                                _appBarBloc..add(AppBarPageChange(pageNumber + 1));
-                              },
-                            ),
-                          ),
-                        ),
+              children: <Widget>[
+                Container(
+                  width: 40,
+                  height: 40,
+                  child: FlatButton(
+                    shape: CircleBorder(),
+                    child: Icon(Icons.chevron_left),
+                    onPressed: () {
+                      _appBarBloc..add(AppBarPageChange(pageNumber - 1));
+                      _controller.previousPage(
+                          duration: Duration(milliseconds: 150),
+                          curve: Curves.linear);
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        'Успеваемость',
+                        style: TextStyle(color: Colors.black),
                       ),
+                      BlocBuilder(
+                        bloc: _appBarBloc,
+                        builder: (context, state) {
+                          if (state is AppBarUnitialized) {
+                            return Text(
+                              pageName,
+                              style: TextStyle(fontSize: 13, color: Colors.black),
+                            );
+                          } else if (state is AppBarPageChanged) {
+                            pageNumber = state.newPage;
+                            return Text(
+                              mapTerms[state.newPage],
+                              style: TextStyle(fontSize: 13, color: Colors.black),
+                            );
+                          } else {
+                            return Text('Ошибка');
+                          }
+                        },
+                      )
                     ],
-                  );
-                } else if (state is AppBarPageChanged) {
-                  pageNumber = state.newPage;
-                  pageName = mapTerms[pageNumber];
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: <Widget>[
-                      Container(
-                        width: 40,
-                        child: FlatButton(
-                          shape: CircleBorder(),
-                          child: Icon(Icons.chevron_left),
-                          onPressed: () {
-
-                            _appBarBloc..add(AppBarPageChange(pageNumber -1));
-//                              _performanceBloc..add(PerformancePageChange(-1));
-                            _controller.previousPage(
-                                duration: Duration(milliseconds: 150),
-                                curve: Curves.linear);
-                          },
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              'Успеваемость',
-                              style: TextStyle(color: Colors.black),
-                            ),
-                            Text(
-                              pageName,
-                              style:
-                              TextStyle(fontSize: 13, color: Colors.black),
-                            ),
-                          ],
-                        ),
-                      ),
-                      FlatButton(
+                  ),
+                ),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Container(
+                      width: 40,
+                      child: FlatButton(
                         shape: CircleBorder(),
                         child: Icon(Icons.chevron_right),
                         onPressed: () {
-                          _appBarBloc..add(AppBarPageChange(pageNumber + 1));
-
                           _controller.nextPage(
                               duration: Duration(milliseconds: 150),
                               curve: Curves.linear);
+                          _appBarBloc..add(AppBarPageChange(pageNumber + 1));
                         },
                       ),
-                    ],
-                  );
-                }
-                return Text(
-                  'Успеваемость',
-                  style: TextStyle(color: Colors.black),
-                );
-              }),
-        ),
+                    ),
+                  ),
+                ),
+              ],
+            )),
         leading: FlatButton(
           child: Icon(Icons.dehaze),
           onPressed: () {

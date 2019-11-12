@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:timetable_app/APIRequest.dart';
 import 'package:timetable_app/Models/User.dart';
+import 'package:timetable_app/Screens/TeacerScreen.dart';
 import 'package:timetable_app/SharedPref.dart';
 
 import 'MainScreen.dart';
@@ -106,13 +107,36 @@ class _MyHomePageState extends State<MyHomePage> {
                   onPressed: () async {
                     User user = await APIRequest.authorisation(
                         controllerName.text, controllerPassword.text);
-//                    CurriculumLoad test = CurriculumLoad();
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text('Выберите роль пользователя'),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: Text('Обучающийся'),
+                                onPressed: () {
+                                  Navigator.pushReplacement(context,
+                                      MaterialPageRoute(builder: (context) {
 //                      return test;
-                      return MainScreen(user);
-                    }));
-                    SharedPref().save('user', user);
+                                        return MainScreen(user);
+                                      }));
+                                },
+                              ),
+                              FlatButton(
+                                child: Text('Преподаватель'),
+                                onPressed: (){
+                                  Navigator.pushReplacement(context,
+                                      MaterialPageRoute(builder: (context) {
+                                        return TeacherScreen();
+                                      }));
+                                },
+                              ),
+                            ],
+                          );
+                        });
+//                    CurriculumLoad test = CurriculumLoad();
+//                    SharedPref().save('user', user);
                   },
                   child: Text(
                     'ВОЙТИ',
