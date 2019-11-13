@@ -5,16 +5,16 @@ import 'package:timetable_app/blocs/universeBloc/universeState.dart';
 
 import '../../APIRequest.dart';
 
-class UniverseBloc extends Bloc<UniverseEvent, UniverseState>{
+class UniversityBloc extends Bloc<UniversityEvent, UniversityState>{
   @override
   // TODO: implement initialState
-  UniverseState get initialState => UniverseLoading();
+  UniversityState get initialState => UniversityLoading();
 
   @override
-  Stream<UniverseState> mapEventToState(UniverseEvent event) async* {
-    if(event is UniverseLoad){
-      List<Universe> list = await APIRequest.getUnivercity();
-      yield UniverseLoaded(list);
+  Stream<UniversityState> mapEventToState(UniversityEvent event) async* {
+    if(event is UniversityLoad){
+      List<University> list = await APIRequest.getUnivercity();
+      yield UniversityLoaded(list);
     }
   }
 }

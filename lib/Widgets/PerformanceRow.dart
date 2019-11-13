@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:timetable_app/Models/MarkRecord.dart';
 
 
@@ -14,7 +15,7 @@ class PerformanceRow extends StatelessWidget {
       child: ListTile(
         onTap: () {},
         title: Text(per.subject, style: TextStyle(fontSize: fontSize),),
-        subtitle: Text(per.mark == '' ? '' : '${per.date.day < 10 ? '0' + per.date.day.toString() : per.date.day}.${per.date.month < 10 ? '0' + per.date.month.toString(): per.date.month}.${per.date.year}', style: TextStyle(fontSize: fontSize),),
+        subtitle: Text(per.mark == '' ? '' : DateFormat('dd.MM.yy').format(per.date), style: TextStyle(fontSize: fontSize),),
         trailing: Container(
           padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
           margin: EdgeInsets.symmetric(horizontal: 5, vertical: 0),

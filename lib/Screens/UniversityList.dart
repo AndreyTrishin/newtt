@@ -4,11 +4,11 @@ import 'package:timetable_app/blocs/universeBloc/universeBloc.dart';
 import 'package:timetable_app/blocs/universeBloc/universeEvent.dart';
 import 'package:timetable_app/blocs/universeBloc/universeState.dart';
 
-class UnivercityList extends StatelessWidget {
-  UniverseBloc _universeBloc;
+class UniversityList extends StatelessWidget {
+  UniversityBloc _universityBloc;
   @override
   Widget build(BuildContext context) {
-    _universeBloc = UniverseBloc()..add(UniverseLoad());
+    _universityBloc = UniversityBloc()..add(UniversityLoad());
     // TODO: implement build
     return Scaffold(
         appBar: AppBar(
@@ -21,15 +21,15 @@ class UnivercityList extends StatelessWidget {
           ),
         ),
         body: BlocBuilder(
-          bloc: _universeBloc,
+          bloc: _universityBloc,
           builder: (context, state) {
-            if (state is UniverseLoading) {
+            if (state is UniversityLoading) {
               return Center(
                 child: CircularProgressIndicator(),
               );
-            } else if (state is UniverseLoaded) {
+            } else if (state is UniversityLoaded) {
               return ListView(
-                children: state.universeList.map((universe) {
+                children: state.universityList.map((universe) {
                   return ListTile(
                     onTap: (){
                       Navigator.pop(context, universe.name);

@@ -20,6 +20,4 @@ class ScheduleAppBarPageChange extends ScheduleAppBarEvent{
   String toString() {
     return 'ScheduleAppBarPageChange: {$newDate}';
   }
-
-
 }

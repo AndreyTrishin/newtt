@@ -30,6 +30,7 @@ dependencies:
   flutter_bloc: 2.0.0
   equatable: 0.6.0
   intl: 0.16.0
+  flutter_screenutil: 0.6.0
 
 dev_dependencies:
   flutter_test:

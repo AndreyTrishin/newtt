@@ -1,21 +1,21 @@
 import 'package:equatable/equatable.dart';
 import 'package:timetable_app/Models/Universe.dart';
 
-class UniverseState extends Equatable {
+class UniversityState extends Equatable {
   @override
   // TODO: implement props
   List<Object> get props => [];
 }
 
-class UniverseLoading extends UniverseState {}
+class UniversityLoading extends UniversityState {}
 
-class UniverseLoaded extends UniverseState {
-  final List<Universe> universeList;
+class UniversityLoaded extends UniversityState {
+  final List<University> universityList;
 
-  UniverseLoaded(this.universeList);
+  UniversityLoaded(this.universityList);
 
   @override
-  List<Object> get props => universeList;
+  List<Object> get props => universityList;
 }
 
-class UniverseNotLoaded extends UniverseState {}
+class UniversityNotLoaded extends UniversityState {}

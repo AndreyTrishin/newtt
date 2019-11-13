@@ -3,11 +3,11 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:timetable_app/APIRequest.dart';
 import 'package:timetable_app/Models/User.dart';
-import 'package:timetable_app/Screens/TeacerScreen.dart';
+import 'package:timetable_app/Screens/TeacherScreen.dart';
 import 'package:timetable_app/SharedPref.dart';
 
-import 'MainScreen.dart';
-import 'UnivercityList.dart';
+import 'Screens/MainScreen.dart';
+import 'Screens/UniversityList.dart';
 
 main() async {
   User user;
@@ -76,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     controllerUniverse.text = await Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => UnivercityList()));
+                            builder: (context) => UniversityList()));
                   },
                 ),
               ),
@@ -105,36 +105,41 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: RaisedButton(
                   color: Colors.red,
                   onPressed: () async {
-                    User user = await APIRequest.authorisation(
-                        controllerName.text, controllerPassword.text);
-                    showDialog(
+                    User user = await APIRequest.authorisation(controllerName.text, controllerPassword.text);
+                    var current = await showDialog(
                         context: context,
                         builder: (context) {
                           return AlertDialog(
                             title: Text('Выберите роль пользователя'),
                             actions: <Widget>[
                               FlatButton(
-                                child: Text('Обучающийся'),
+                                child: Text('Обучающийся', style: TextStyle(color: Colors.black),),
                                 onPressed: () {
                                   Navigator.pushReplacement(context,
                                       MaterialPageRoute(builder: (context) {
+                                        user.currentRole = 'Обучающийся';
 //                      return test;
                                         return MainScreen(user);
                                       }));
                                 },
+                                highlightColor: Color.fromARGB(30, 0, 0, 0),
                               ),
                               FlatButton(
-                                child: Text('Преподаватель'),
+                                child: Text('Преподаватель', style: TextStyle(color: Colors.black),),
                                 onPressed: (){
                                   Navigator.pushReplacement(context,
                                       MaterialPageRoute(builder: (context) {
-                                        return TeacherScreen();
+                                        user.currentRole = 'Преподаватель';
+                                        return TeacherScreen(user);
                                       }));
                                 },
+                                highlightColor: Color.fromARGB(30, 0, 0, 0),
+
                               ),
                             ],
                           );
                         });
+                    print(current);
 //                    CurriculumLoad test = CurriculumLoad();
 //                    SharedPref().save('user', user);
                   },

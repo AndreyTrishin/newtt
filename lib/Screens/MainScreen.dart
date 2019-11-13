@@ -2,40 +2,39 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:timetable_app/Models/User.dart';
-import 'package:timetable_app/SharedPref.dart';
 import 'package:timetable_app/blocs/mainBloc/mainBloc.dart';
 import 'package:timetable_app/blocs/mainBloc/mainEvent.dart';
 import 'package:timetable_app/blocs/mainBloc/mainState.dart';
 
-import 'main.dart';
+import '../main.dart';
 
 class MainScreen extends StatelessWidget {
-  SharedPref sp = SharedPref();
+//  SharedPref sp = SharedPref();
   final User _user;
   var currentWindowName;
 
   MainScreen(this._user);
 
   MainBloc _mainBloc;
-
-  _downloadWindow() async {
-    currentWindowName = await sp.loadWindow();
-    switch (currentWindowName) {
-      case 'Учебный план':
-        _mainBloc.add(MainCurriculumLoadLoad());
-        break;
-      case 'Расписание занятий':
-        _mainBloc.add(MainScheduleLoad());
-        break;
-      case 'Успеваемость':
-        _mainBloc.add(MainPerformanceLoad());
-        break;
-    }
-  }
+//
+//  _downloadWindow() async {
+//    currentWindowName = await sp.loadWindow();
+//    switch (currentWindowName) {
+//      case 'Учебный план':
+//        _mainBloc.add(MainCurriculumLoadLoad());
+//        break;
+//      case 'Расписание занятий':
+//        _mainBloc.add(MainScheduleLoad());
+//        break;
+//      case 'Успеваемость':
+//        _mainBloc.add(MainPerformanceLoad());
+//        break;
+//    }
+//  }
 
   Widget build(BuildContext context) {
     _mainBloc = MainBloc(_user);
-    _downloadWindow();
+//    _downloadWindow();
     return Scaffold(
       drawer: Drawer(
         child: Container(
@@ -55,7 +54,7 @@ class MainScreen extends StatelessWidget {
                 title: Text("Учебный план"),
                 leading: Icon(Icons.info, color: Colors.black,),
                 onTap: () async {
-                  sp.setCurrentWindow('Учебный план');
+//                  sp.setCurrentWindow('Учебный план');
                   Navigator.pop(context);
                   _mainBloc.add(MainCurriculumLoadLoad());
                 },
@@ -64,7 +63,7 @@ class MainScreen extends StatelessWidget {
                 title: Text("Расписание занятий"),
                 leading: Icon(Icons.access_time, color: Colors.black,),
                 onTap: () async {
-                  sp.setCurrentWindow('Расписание занятий');
+//                  sp.setCurrentWindow('Расписание занятий');
                   Navigator.pop(context);
                   _mainBloc.add(MainScheduleLoad());
                 },
@@ -79,7 +78,7 @@ class MainScreen extends StatelessWidget {
                       fit: BoxFit.scaleDown,
                     )),
                 onTap: () async {
-                  sp.setCurrentWindow('Успеваемость');
+//                  sp.setCurrentWindow('Успеваемость');
                   Navigator.pop(context);
                   _mainBloc.add(MainPerformanceLoad());
                 },
@@ -110,7 +109,7 @@ class MainScreen extends StatelessWidget {
         ),
       ),
       body: BlocBuilder(
-        bloc: _mainBloc,
+        bloc: _mainBloc..add(MainCurriculumLoadLoad()),
         builder: (context, state) {
           if (state is MainCurriculumLoadChange) {
             return state.currentWidget;

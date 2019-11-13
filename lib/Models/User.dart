@@ -7,12 +7,22 @@ class User {
   String academicGroupName;
   String academicGroupCompoundKey;
   String specialtyName;
+  String currentRole;
 
-  User(this.id, this.name, this.password, this.recordbookId, this.curriculumId, this.curriculumName, this.academicGroupName, this.academicGroupCompoundKey, this.specialtyName);
+  User(
+      this.id,
+      this.name,
+      this.password,
+      this.recordbookId,
+      this.curriculumId,
+      this.curriculumName,
+      this.academicGroupName,
+      this.academicGroupCompoundKey,
+      this.specialtyName,
+      [this.currentRole]);
 
   User.fromJson(Map<String, dynamic> json)
-      :
-        id = json['id'],
+      : id = json['id'],
         name = json['name'],
         password = json['password'],
         recordbookId = json['recordbookId'],
@@ -20,18 +30,19 @@ class User {
         curriculumName = json['curriculumName'],
         academicGroupName = json['academicGroupName'],
         academicGroupCompoundKey = json['academicGroupCompoundKey'],
-        specialtyName = json['specialtyName'];
+        specialtyName = json['specialtyName'],
+        currentRole = json['currentRole'];
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-    'password': password,
-    'recordbookId': recordbookId,
-    'curriculumId': curriculumId,
-    'curriculumName': curriculumName,
-    'academicGroupName': academicGroupName,
-    'academicGroupCompoundKey': academicGroupCompoundKey,
-    'specialtyName': specialtyName,
-  };
-
+        'id': id,
+        'name': name,
+        'password': password,
+        'recordbookId': recordbookId,
+        'curriculumId': curriculumId,
+        'curriculumName': curriculumName,
+        'academicGroupName': academicGroupName,
+        'academicGroupCompoundKey': academicGroupCompoundKey,
+        'specialtyName': specialtyName,
+        'currentRole': currentRole,
+      };
 }

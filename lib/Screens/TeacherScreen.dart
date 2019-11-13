@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:timetable_app/Models/Universe.dart';
 import 'package:timetable_app/Models/User.dart';
 import 'package:timetable_app/blocs/scheduleAppBarBloc/ScheduleAppBarBloc.dart';
 import 'package:timetable_app/blocs/scheduleAppBarBloc/ScheduleAppBarState.dart';
@@ -9,19 +9,22 @@ import 'package:timetable_app/blocs/scheduleBloc/scheduleBloc.dart';
 import 'package:timetable_app/blocs/scheduleBloc/scheduleEvent.dart';
 import 'package:timetable_app/blocs/scheduleBloc/scheduleState.dart';
 
-class SchedulePage extends StatelessWidget {
-  User _user;
+import '../main.dart';
 
-  SchedulePage(this._user);
+class TeacherScreen extends StatelessWidget {
+  final User _user;
+
+  TeacherScreen(this._user);
+
+  ScheduleAppBarBloc _appBarBloc;
+  ScheduleBloc _scheduleBloc;
 
   PageController _controller = PageController(initialPage: 5000);
 
-  ScheduleBloc _scheduleBloc;
   int currentDay = 5000;
   int day = 0;
 
   int pageNumber = 1;
-  ScheduleAppBarBloc _appBarBloc;
   String currentDate = '2015-09-10';
 
   Map<int, String> dayMap = {
@@ -39,21 +42,53 @@ class SchedulePage extends StatelessWidget {
     _appBarBloc = ScheduleAppBarBloc();
     _scheduleBloc = ScheduleBloc(_user);
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 255, 217, 122),
-        leading: Container(
-          child: FlatButton(
-            child: Icon(Icons.dehaze),
-            onPressed: () {
-              Scaffold.of(context).openDrawer();
-            },
-          ),
+      drawer: Drawer(
+        child: Column(
+          children: <Widget>[
+            UserAccountsDrawerHeader(
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: AssetImage('res/background_drawer_header.png'),
+                      fit: BoxFit.cover)),
+              accountName: Text('${_user.name}'),
+              accountEmail: Text('Преподаватель'),
+            ),
+            ListTile(
+              leading: Icon(Icons.access_time),
+              title: Text('Расписание занятий'),
+            ),
+            Expanded(
+              child: Align(
+                alignment: Alignment.bottomLeft,
+                child: Container(
+//                    decoration: BoxDecoration(border: Border.fromBorderSide(BorderSide(width: 1))),
+                  child: ListTile(
+                    title: Text("Выйти"),
+                    leading: Icon(Icons.exit_to_app),
+                    onTap: () {
+                      Navigator.pushReplacement(context,
+                          MaterialPageRoute(builder: (context) {
+                        return MyHomePage();
+                      }));
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
+      ),
+      appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: Colors.black,
+        ),
+        backgroundColor: Color.fromARGB(255, 255, 217, 122),
         title: Row(
-
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Container(
-              width: 40,
+              margin: EdgeInsets.all(0),
+              width: 60,
               child: FlatButton(
                 shape: CircleBorder(),
                 child: Icon(Icons.chevron_left),
@@ -65,7 +100,7 @@ class SchedulePage extends StatelessWidget {
               ),
             ),
             Container(
-              width: MediaQuery.of(context).size.width/2 - 10,
+              width: MediaQuery.of(context).size.width / 2 - 40,
               child: BlocBuilder(
                 bloc: _appBarBloc,
                 builder: (context, state) {
@@ -86,7 +121,8 @@ class SchedulePage extends StatelessWidget {
                       ],
                     );
                   } else if (state is ScheduleAppBarDateChanged) {
-                    currentDate = DateFormat('yyyy-MM-dd').format(state.newDate);
+                    currentDate =
+                        DateFormat('yyyy-MM-dd').format(state.newDate);
 
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -109,7 +145,7 @@ class SchedulePage extends StatelessWidget {
               ),
             ),
             Container(
-              width: 40,
+              width: 60,
               child: FlatButton(
                 shape: CircleBorder(),
                 child: Icon(Icons.chevron_right),

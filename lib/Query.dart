@@ -58,7 +58,7 @@ class Query {
 </x:Envelope>''';
   }
 
-  static getScheduleQuery(key, date) {
+  static getScheduleQuery(key, date, type) {
     return '''<Envelope xmlns="http://www.w3.org/2003/05/soap-envelope">
        <Body>
           <GetSchedule xmlns="http://sgu-infocom.ru/study">
@@ -66,7 +66,7 @@ class Query {
              <DateEnd>$date</DateEnd>
              <RecordbookRef></RecordbookRef>
              <ScheduleObjectId>$key</ScheduleObjectId>
-             <ScheduleObjectType>AcademicGroup</ScheduleObjectType>
+             <ScheduleObjectType>$type</ScheduleObjectType>
              <ScheduleType>Full</ScheduleType>
              <UserRef></UserRef>
           </GetSchedule>

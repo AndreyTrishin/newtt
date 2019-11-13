@@ -1,8 +1,8 @@
 export 'package:flutter/material.dart';
 
-class Universe{
+class University{
   int id;
   String name, city;
 
-  Universe(this.id, this.name, this.city);
+  University(this.id, this.name, this.city);
 }
