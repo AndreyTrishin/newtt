@@ -45,4 +45,11 @@ class User {
         'specialtyName': specialtyName,
         'currentRole': currentRole,
       };
+
+  @override
+  String toString() {
+    return '$id, $name, $password, $recordbookId, $specialtyName';
+  }
+
+
 }

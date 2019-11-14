@@ -14,46 +14,52 @@ import 'package:xml/xml.dart' as xml;
 import 'Models/User.dart';
 
 class APIRequest {
-  static String server =
-      'http://81.177.140.25/0/Study.1cws';
+  static String getServer(id){
+    return 'http://81.177.140.25/$id/Study.1cws';
+  }
+  static int idServer;
+  static String server;
 
   static Future<User> authorisation(name, password) async {
-    var responceAuth = await http.post(server,
-        headers: {
-          'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
-          'SOAPAction': 'http://sgu-infocom.ru/study#WebStudy:Authorization',
-          'Content-Type': 'text/xml;charset=UTF-8',
-        },
-        body: Query.getAutorizationQuery(
-            name, sha1.convert(utf8.encode(password))));
-    var resultAuth = xml.parse(responceAuth.body);
+    server = getServer(idServer);
+    print(server);
+    print(idServer);
 
-//    print(resultAuth);
+    User user;
+    try{
+      var responceAuth = await http.post(server,
+          headers: {
+            'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
+            'SOAPAction': 'http://sgu-infocom.ru/study#WebStudy:Authorization',
+            'Content-Type': 'text/xml;charset=UTF-8',
+          },
+          body: Query.getAutorizationQuery(
+              name, sha1.convert(utf8.encode(password))));
+      var resultAuth = xml.parse(responceAuth.body);
 
-    var responceRecBook = await http.post(server,
-        headers: {
-          'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
-          'Content-Type': 'application/xml',
-        },
-        body: Query.getRecordbooksQuery(
-            resultAuth.findAllElements('m:UserId').first.text));
-    var resultRecBook = xml.parse(responceRecBook.body);
-//    var userElement = resultAuth.findAllElements('m:User').first.text;
-//    print(userElement);
-//    print(resultRecBook);
-
-    User user = User(
-      resultAuth.findAllElements('m:UserId').first.text,
-      resultAuth.findAllElements('m:Login').first.text,
-      resultAuth.findAllElements('m:PasswordHash').first.text,
-      resultRecBook.findAllElements('m:RecordbookId').first.text,
-      resultRecBook.findAllElements('m:CurriculumId').first.text,
-      resultRecBook.findAllElements('m:CurriculumName').first.text,
-      resultRecBook.findAllElements('m:AcademicGroupName').first.text,
-      resultRecBook.findAllElements('m:AcademicGroupCompoundKey').first.text,
-      resultRecBook.findAllElements('m:SpecialtyName').first.text
-    );
-    print(user.name);
+      var responceRecBook = await http.post(server,
+          headers: {
+            'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
+            'Content-Type': 'application/xml',
+          },
+          body: Query.getRecordbooksQuery(
+              resultAuth.findAllElements('m:UserId').first.text));
+      var resultRecBook = xml.parse(responceRecBook.body);
+      user = User(
+          resultAuth.findAllElements('m:UserId').first.text,
+          resultAuth.findAllElements('m:Login').first.text,
+          resultAuth.findAllElements('m:PasswordHash').first.text,
+          resultRecBook.findAllElements('m:RecordbookId').first.text,
+          resultRecBook.findAllElements('m:CurriculumId').first.text,
+          resultRecBook.findAllElements('m:CurriculumName').first.text,
+          resultRecBook.findAllElements('m:AcademicGroupName').first.text,
+          resultRecBook.findAllElements('m:AcademicGroupCompoundKey').first.text,
+          resultRecBook.findAllElements('m:SpecialtyName').first.text
+      );
+    } catch (_){
+      user = null;
+    }
+    print(user);
     return user;
   }
 
@@ -66,6 +72,7 @@ class APIRequest {
         },
         body: Query.getEducationalPerformance(userId, recbookId));
     var result = xml.parse(responce.body);
+    String r = result.toString();
 //    print(result);
 
     List<List<MarkRecord>> listOfMarks = [];
@@ -87,6 +94,7 @@ class APIRequest {
           e.findAllElements('m:TypeOfTheControl').first.text,
         ));
       } else if (e != null) {
+
         listOfMarks.add(list);
         term = e.findAllElements('m:Term').first.text;
         list = [];
@@ -214,6 +222,12 @@ class APIRequest {
               color = Color.fromARGB(255, 0, 164, 116);
               break;
             case 'Практические':
+              color = Color.fromARGB(255, 48, 74, 197);
+              break;
+            case 'Курсовой проект':
+              color = Color.fromARGB(255, 48, 74, 197);
+              break;
+            case 'Лабораторные':
               color = Color.fromARGB(255, 48, 74, 197);
               break;
             case 'Зачет':

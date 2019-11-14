@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:timetable_app/Models/Discipline.dart';
 import 'package:timetable_app/Screens/DisciplineInfo.dart';
 
@@ -25,7 +26,7 @@ class DisciplineRow extends StatelessWidget {
             //Название дисциплины---------------------
             Container(
               margin: EdgeInsets.fromLTRB(10, 25, 0, 10),
-              width: MediaQuery.of(context).size.width / 1.82,
+              width: ScreenUtil.getInstance().setWidth(600),
               height: 33,
               child: Text(
                 _discipline.subject,
@@ -35,7 +36,7 @@ class DisciplineRow extends StatelessWidget {
             //Тип и работа ----------------------
             Container(
                 margin: EdgeInsets.fromLTRB(0, 20, 0, 10),
-                width: MediaQuery.of(context).size.width / 4.5,
+                width: ScreenUtil.getInstance().setWidth(250),
                 height: 33,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -63,14 +64,17 @@ class DisciplineRow extends StatelessWidget {
                     )
                   ],
                 )),
-            Align(
-              child: Container(
-                margin: EdgeInsets.symmetric(
-                    horizontal: MediaQuery.of(context).size.width / 20,
-                    vertical: 15),
-                width: 10,
-                height: 30,
-                child: Icon(Icons.arrow_forward_ios),
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: Container(
+                  margin: EdgeInsets.symmetric(
+                      horizontal: ScreenUtil.getInstance().setWidth(50),
+                      vertical: 15),
+                  width: 10,
+                  height: 30,
+                  child: Icon(Icons.arrow_forward_ios),
+                ),
               ),
             ),
           ],

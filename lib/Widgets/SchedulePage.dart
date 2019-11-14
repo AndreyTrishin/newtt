@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:timetable_app/Models/User.dart';
+import 'package:timetable_app/Widgets/LoadWidget.dart';
 import 'package:timetable_app/blocs/scheduleAppBarBloc/ScheduleAppBarBloc.dart';
 import 'package:timetable_app/blocs/scheduleAppBarBloc/ScheduleAppBarState.dart';
 import 'package:timetable_app/blocs/scheduleAppBarBloc/scheduleAppBarEvent.dart';
@@ -22,7 +24,7 @@ class SchedulePage extends StatelessWidget {
 
   int pageNumber = 1;
   ScheduleAppBarBloc _appBarBloc;
-  String currentDate = '2015-09-10';
+  String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
   Map<int, String> dayMap = {
     1: 'Понедельник',
@@ -50,10 +52,9 @@ class SchedulePage extends StatelessWidget {
           ),
         ),
         title: Row(
-
           children: <Widget>[
             Container(
-              width: 40,
+              width: ScreenUtil.getInstance().setWidth(120),
               child: FlatButton(
                 shape: CircleBorder(),
                 child: Icon(Icons.chevron_left),
@@ -65,7 +66,7 @@ class SchedulePage extends StatelessWidget {
               ),
             ),
             Container(
-              width: MediaQuery.of(context).size.width/2 - 10,
+              width: ScreenUtil.getInstance().setWidth(500),
               child: BlocBuilder(
                 bloc: _appBarBloc,
                 builder: (context, state) {
@@ -76,17 +77,18 @@ class SchedulePage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          'Четверг',
+                          dayMap[DateTime.now().weekday],
                           style: TextStyle(color: Colors.black),
                         ),
                         Text(
-                          '10.09',
+                          DateFormat('dd.MM').format(DateTime.now()),
                           style: TextStyle(fontSize: 13, color: Colors.black),
                         ),
                       ],
                     );
                   } else if (state is ScheduleAppBarDateChanged) {
-                    currentDate = DateFormat('yyyy-MM-dd').format(state.newDate);
+                    currentDate =
+                        DateFormat('yyyy-MM-dd').format(state.newDate);
 
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -109,7 +111,7 @@ class SchedulePage extends StatelessWidget {
               ),
             ),
             Container(
-              width: 40,
+              width: ScreenUtil.getInstance().setWidth(120),
               child: FlatButton(
                 shape: CircleBorder(),
                 child: Icon(Icons.chevron_right),
@@ -124,7 +126,7 @@ class SchedulePage extends StatelessWidget {
               child: Align(
                 alignment: Alignment.centerRight,
                 child: Container(
-                  width: 40,
+                  width: ScreenUtil.getInstance().setWidth(120),
                   child: FlatButton(
                     shape: CircleBorder(),
                     child: Icon(Icons.event),
@@ -146,13 +148,12 @@ class SchedulePage extends StatelessWidget {
         ),
       ),
       body: Container(
+        margin: EdgeInsets.fromLTRB(0, ScreenUtil.getInstance().setHeight(30), 0, 0),
         child: BlocBuilder(
           bloc: _scheduleBloc..add(ScheduleLoad()),
           builder: (context, state) {
             if (state is ScheduleLoading) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
+              return LoadWidget();
             } else if (state is ScheduleLoaded) {
               return PageView.builder(
                 onPageChanged: (value) {
@@ -168,11 +169,10 @@ class SchedulePage extends StatelessWidget {
                 controller: _controller,
                 itemBuilder: (context, position) {
                   return position != currentDay
-                      ? Center(
-                          child: CircularProgressIndicator(),
-                        )
+                      ? LoadWidget()
                       : (state.scheduleElement.scheduleCell != null
-                          ? ScheduleBloc.getWidgetList(state.scheduleElement, _user)
+                          ? ScheduleBloc.getWidgetList(
+                              state.scheduleElement, _user)
                           : Center(
                               child: Text('Свободный день'),
                             ));
@@ -186,19 +186,18 @@ class SchedulePage extends StatelessWidget {
                   currentDay = value;
                   _appBarBloc
                     ..add(ScheduleAppBarPageChange(
-                        DateTime.parse('2015-09-10').add(Duration(days: day))));
+                        DateTime.now().add(Duration(days: day))));
                   _scheduleBloc
                     ..add(ScheduleDayChange(
-                        DateTime.parse('2015-09-10').add(Duration(days: day))));
+                        DateTime.now().add(Duration(days: day))));
                 },
                 controller: _controller,
                 itemBuilder: (context, position) {
                   return position != currentDay
-                      ? Center(
-                          child: CircularProgressIndicator(),
-                        )
+                      ? LoadWidget()
                       : (state.scheduleElement.scheduleCell != null
-                          ? ScheduleBloc.getWidgetList(state.scheduleElement, _user)
+                          ? ScheduleBloc.getWidgetList(
+                              state.scheduleElement, _user)
                           : Center(
                               child: Text('Свободный день'),
                             ));

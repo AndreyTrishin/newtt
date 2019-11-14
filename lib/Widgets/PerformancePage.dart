@@ -10,6 +10,8 @@ import 'package:timetable_app/blocs/performanceBloc/performanceBloc.dart';
 import 'package:timetable_app/blocs/performanceBloc/performanceEvent.dart';
 import 'package:timetable_app/blocs/performanceBloc/performanceState.dart';
 
+import 'LoadWidget.dart';
+
 class PerformancePage extends StatelessWidget {
   PageController _controller = PageController();
   String pageName = 'Первый семестр';
@@ -41,7 +43,7 @@ class PerformancePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _performanceBloc = PerformanceBloc(_user);
-    _appBarBloc = AppBarBloc(_user, markList);
+    _appBarBloc = AppBarBloc(_user);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 255, 217, 122),
@@ -56,10 +58,13 @@ class PerformancePage extends StatelessWidget {
                     shape: CircleBorder(),
                     child: Icon(Icons.chevron_left),
                     onPressed: () {
-                      _appBarBloc..add(AppBarPageChange(pageNumber - 1));
                       _controller.previousPage(
                           duration: Duration(milliseconds: 150),
                           curve: Curves.linear);
+                      if (pageNumber != 1) {
+                        pageNumber--;
+                        _appBarBloc..add(AppBarPageChange(pageNumber));
+                      }
                     },
                   ),
                 ),
@@ -78,13 +83,15 @@ class PerformancePage extends StatelessWidget {
                           if (state is AppBarUnitialized) {
                             return Text(
                               pageName,
-                              style: TextStyle(fontSize: 13, color: Colors.black),
+                              style: TextStyle(
+                                  fontSize: 13, color: Colors.black),
                             );
                           } else if (state is AppBarPageChanged) {
                             pageNumber = state.newPage;
                             return Text(
                               mapTerms[state.newPage],
-                              style: TextStyle(fontSize: 13, color: Colors.black),
+                              style: TextStyle(
+                                  fontSize: 13, color: Colors.black),
                             );
                           } else {
                             return Text('Ошибка');
@@ -106,7 +113,10 @@ class PerformancePage extends StatelessWidget {
                           _controller.nextPage(
                               duration: Duration(milliseconds: 150),
                               curve: Curves.linear);
-                          _appBarBloc..add(AppBarPageChange(pageNumber + 1));
+                          if (pageNumber != markList.length) {
+                            pageNumber++;
+                            _appBarBloc..add(AppBarPageChange(pageNumber));
+                          }
                         },
                       ),
                     ),
@@ -127,25 +137,41 @@ class PerformancePage extends StatelessWidget {
         builder: (context, state) {
           if (state is PerformanceLoading) {
             return Center(
-              child: CircularProgressIndicator(),
+              child: LoadWidget(),
             );
           }
           if (state is PerformanceLoaded) {
             markList = state.performanceList;
-            return PageView(
-              onPageChanged: (value) {
-                _appBarBloc..add(AppBarPageChange(value+1));
-              },
-              controller: _controller,
-              children: markList.map<Widget>((term) {
-                return ListView(
-                  children: term.map<Widget>((mark) {
-                    return PerformanceRow(mark);
+            return ScrollConfiguration(
+              behavior: ScrollBehavior(),
+              child: GlowingOverscrollIndicator(
+                axisDirection: AxisDirection.right,
+                color: Colors.yellow,
+                child: PageView(
+                  onPageChanged: (value) {
+                    _appBarBloc..add(AppBarPageChange(value + 1));
+                  },
+                  controller: _controller,
+                  children: markList.map<Widget>((term) {
+                    return ScrollConfiguration(
+                      behavior: ScrollBehavior(),
+                      child: GlowingOverscrollIndicator(
+                        color: Colors.yellow,
+                        axisDirection: AxisDirection.down,
+                        child: ListView.separated(itemBuilder: (context, position) {
+                          return PerformanceRow(term[position]);
+                        },
+                            separatorBuilder: (context, position) {
+                          return Divider(height: 0,);
+                            },
+                            itemCount: term.length),
+                      ),
+                    );
                   }).toList(),
-                );
-              }).toList(),
+                ),
+              ),
             );
-          }else if (state is PerformanceNotLoaded) {
+          } else if (state is PerformanceNotLoaded) {
             return Center(
               child: Text('Ошибка загрузки'),
             );
@@ -154,43 +180,8 @@ class PerformancePage extends StatelessWidget {
               child: Text('Ошибка'),
             );
           }
-
         },
       ),
     );
   }
 }
-//
-//
-//return Row(
-//mainAxisAlignment: MainAxisAlignment.spaceAround,
-//children: <Widget>[
-////                  Container(
-////                    width: 40,
-////                    child: FlatButton(
-////                      shape: CircleBorder(),
-////                      child: Icon(Icons.chevron_left),
-////                      onPressed: (){
-////                        _controller.previousPage(duration: Duration(milliseconds: 150), curve: Curves.linear);
-////                      },
-////                    ),
-////                  ),
-//Padding(
-//padding: const EdgeInsets.all(8.0),
-//child: Column(
-//crossAxisAlignment: CrossAxisAlignment.start,
-//children: <Widget>[
-//Text('Успеваемость', style: TextStyle(color: Colors.black),),
-//Text(pageName, style: TextStyle(fontSize: 13, color: Colors.black),),
-//],
-//),
-//),
-////                  FlatButton(
-////                    shape: CircleBorder(),
-////                    child: Icon(Icons.chevron_right),
-////                    onPressed: (){
-////                      _controller.nextPage(duration: Duration(milliseconds: 150), curve: Curves.linear);
-////                    },
-////                  ),
-//],
-//);

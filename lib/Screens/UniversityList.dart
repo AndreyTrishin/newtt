@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:timetable_app/Widgets/LoadWidget.dart';
 import 'package:timetable_app/blocs/universeBloc/universeBloc.dart';
 import 'package:timetable_app/blocs/universeBloc/universeEvent.dart';
 import 'package:timetable_app/blocs/universeBloc/universeState.dart';
@@ -25,17 +26,17 @@ class UniversityList extends StatelessWidget {
           builder: (context, state) {
             if (state is UniversityLoading) {
               return Center(
-                child: CircularProgressIndicator(),
+                child: LoadWidget(),
               );
             } else if (state is UniversityLoaded) {
               return ListView(
-                children: state.universityList.map((universe) {
+                children: state.universityList.map((university) {
                   return ListTile(
                     onTap: (){
-                      Navigator.pop(context, universe.name);
+                      Navigator.pop(context, university);
                     },
-                    title: Text(universe.name),
-                    subtitle: Text(universe.city),
+                    title: Text(university.name),
+                    subtitle: Text(university.city),
                   );
                 }).toList(),
               );

@@ -10,7 +10,6 @@ class TimetableInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 255, 217, 122),
@@ -20,24 +19,25 @@ class TimetableInfo extends StatelessWidget {
           style: TextStyle(color: Colors.black),
         ),
       ),
-      body: ListView(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           ListTile(
             title: Text(_scheduleCell.lesson.subject),
           ),
           Container(
             margin: EdgeInsets.fromLTRB(15, 0, 0, 0),
-            alignment: Alignment.centerLeft,
+            decoration: BoxDecoration(
+              color: Color.fromARGB(50, 0, 0, 0),
+              borderRadius: BorderRadius.circular(30)
+            ),
             child: Padding(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10.0),
               child: Text(
                 _scheduleCell.lesson.teacher.teacherName,
                 style: TextStyle(fontSize: fontSize),
               ),
             ),
-            decoration: BoxDecoration(
-                color: Color.fromARGB(20, 0, 0, 0),
-                borderRadius: BorderRadius.circular(30)),
           ),
           Row(
             children: <Widget>[

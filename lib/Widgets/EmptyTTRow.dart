@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:timetable_app/Models/ScheduleElement.dart';
 
 class EmptyTTRow extends StatelessWidget {
-  double fontSize = 13;
+  double fontSize = 26;
 
   ScheduleCell scheduleCell;
   int numberLesson;
@@ -12,8 +13,8 @@ class EmptyTTRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-      height: 110,
+      margin: EdgeInsets.all(ScreenUtil.getInstance().setWidth(5)),
+      height: ScreenUtil.getInstance().setHeight(260),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -23,38 +24,49 @@ class EmptyTTRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Container(
+                  margin: EdgeInsets.fromLTRB(ScreenUtil.getInstance().setWidth(30), 0, 0, 0),
+                  width: ScreenUtil.getInstance().setWidth(70),
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           numberLesson.toString(),
-                          style: TextStyle(fontSize: fontSize),
+                          style: TextStyle(
+                              fontSize:
+                                  ScreenUtil.getInstance().setSp(fontSize)),
                         ),
                         Text(
                           scheduleCell.dateBegin.toString().substring(11, 16),
-                          style: TextStyle(fontSize: fontSize, color: Color.fromARGB(130, 0, 0, 0)),
+                          style: TextStyle(
+                              fontSize:
+                                  ScreenUtil.getInstance().setSp(fontSize),
+                              color: Color.fromARGB(130, 0, 0, 0)),
                         ),
                         Container(
-                          margin: EdgeInsets.fromLTRB(0, 55, 0, 10),
+                          margin: EdgeInsets.fromLTRB(0,
+                              ScreenUtil.getInstance().setHeight(100), 0, 10),
                           child: Text(
                             scheduleCell.dateEnd.toString().substring(11, 16),
-                            style: TextStyle(fontSize: fontSize, color: Color.fromARGB(130, 0, 0, 0)),
+                            style: TextStyle(
+                                fontSize:
+                                    ScreenUtil.getInstance().setSp(fontSize),
+                                color: Color.fromARGB(130, 0, 0, 0)),
                           ),
                         ),
                       ]),
                 ),
                 Container(
-                  margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                    margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
                     child: Text(
-                  'Свободная пара',
-                  style: TextStyle(fontSize: fontSize, color: Color.fromARGB(130, 0, 0, 0)),
-                ))
+                      'Свободная пара',
+                      style: TextStyle(
+                          fontSize: ScreenUtil.getInstance().setSp(fontSize),
+                          color: Color.fromARGB(130, 0, 0, 0)),
+                    ))
               ],
             ),
           ),
-          Divider(
-            height: 0,
-          ),
+          Divider(),
         ],
       ),
     );

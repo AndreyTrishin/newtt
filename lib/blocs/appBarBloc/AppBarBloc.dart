@@ -5,9 +5,8 @@ import 'package:timetable_app/blocs/appBarBloc/AppBarState.dart';
 
 class AppBarBloc extends Bloc<AppBarEvent, AppBarState> {
   final User _user;
-  final List list;
 
-  AppBarBloc([this._user, this.list]);
+  AppBarBloc([this._user]);
 
   @override
   // TODO: implement initialState
@@ -16,12 +15,7 @@ class AppBarBloc extends Bloc<AppBarEvent, AppBarState> {
   @override
   Stream<AppBarState> mapEventToState(AppBarEvent event) async* {
     if (event is AppBarPageChange) {
-      if (list != null) {
-        if (event.newPage != 0 && event.newPage != list.length + 1) {
-          yield AppBarPageChanged(event.newPage);
-        }
-      }
-      else {
+      if (event.newPage != 0) {
         yield AppBarPageChanged(event.newPage);
       }
     }

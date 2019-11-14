@@ -1,8 +1,10 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:timetable_app/Models/Discipline.dart';
 import 'package:timetable_app/Models/Universe.dart';
 import 'package:timetable_app/Models/User.dart';
 import 'package:timetable_app/Widgets/DisciplineRow.dart';
+import 'package:timetable_app/Widgets/LoadWidget.dart';
 import 'package:timetable_app/blocs/appBarBloc/AppBarBloc.dart';
 import 'package:timetable_app/blocs/appBarBloc/AppBarEvent.dart';
 import 'package:timetable_app/blocs/appBarBloc/AppBarState.dart';
@@ -39,7 +41,7 @@ class CurriculumLoad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    _appBarBloc = AppBarBloc(_user, disciplines);
+    _appBarBloc = AppBarBloc(_user);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 255, 217, 122),
@@ -53,10 +55,13 @@ class CurriculumLoad extends StatelessWidget {
                 shape: CircleBorder(),
                 child: Icon(Icons.chevron_left),
                 onPressed: () {
-                  _appBarBloc..add(AppBarPageChange(pageNumber - 1));
                   _controller.previousPage(
                       duration: Duration(milliseconds: 150),
                       curve: Curves.linear);
+                  if (pageNumber != 1) {
+                    pageNumber--;
+                    _appBarBloc..add(AppBarPageChange(pageNumber));
+                  }
                 },
               ),
             ),
@@ -103,7 +108,10 @@ class CurriculumLoad extends StatelessWidget {
                       _controller.nextPage(
                           duration: Duration(milliseconds: 150),
                           curve: Curves.linear);
-                      _appBarBloc..add(AppBarPageChange(pageNumber + 1));
+                      if (pageNumber != disciplines.length) {
+                        pageNumber++;
+                        _appBarBloc..add(AppBarPageChange(pageNumber));
+                      }
                     },
                   ),
                 ),
@@ -126,22 +134,38 @@ class CurriculumLoad extends StatelessWidget {
           builder: (context, state) {
             if (state is CurriculumLoadLoading) {
               return Center(
-                child: CircularProgressIndicator(),
+                child: LoadWidget(),
               );
             } else if (state is CurriculumLoadLoaded) {
               disciplines = state.disciplines;
-              return PageView(
-                onPageChanged: (value) {
-                  _appBarBloc..add(AppBarPageChange(value + 1));
-                },
-                controller: _controller,
-                children: disciplines.map<Widget>((term) {
-                  return ListView(
-                    children: term.map<Widget>((discipline) {
-                      return DisciplineRow(discipline);
+              return ScrollConfiguration(
+                behavior: ScrollBehavior(),
+                child: GlowingOverscrollIndicator(
+                  color: Colors.yellow,
+                  axisDirection: AxisDirection.right,
+                  child: PageView(
+                    onPageChanged: (value) {
+                      _appBarBloc..add(AppBarPageChange(value + 1));
+                    },
+                    controller: _controller,
+                    children: disciplines.map<Widget>((term) {
+                    return ScrollConfiguration(
+                      behavior: ScrollBehavior(),
+                      child: GlowingOverscrollIndicator(
+                        color: Colors.yellow,
+                        axisDirection: AxisDirection.down,
+                        child: ListView.separated(
+
+                            itemBuilder: (context, position){
+                          return DisciplineRow(term[position]);
+                        }, separatorBuilder: (context, position){
+                          return Divider(height: 0,);
+                        }, itemCount: term.length),
+                      ),
+                    );
                     }).toList(),
-                  );
-                }).toList(),
+                  ),
+                ),
               );
             } else if (state is CurriculumLoadNotLoaded) {
               return Center(

@@ -8,6 +8,7 @@ class AppBarEvent extends Equatable {
 
 class AppBarPageChange extends AppBarEvent {
   final int newPage;
+//  final int countPage;
 
   AppBarPageChange(this.newPage);
 

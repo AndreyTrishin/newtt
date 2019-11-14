@@ -5,7 +5,7 @@ import 'package:timetable_app/Screens/TimeTableInfo.dart';
 class TeacherTimetable extends StatelessWidget{
 
 
-  double fontSize = 12;
+  double fontSize = 26;
   int numberLesson;
   ScheduleCell scheduleCell;
 

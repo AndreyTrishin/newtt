@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:timetable_app/APIRequest.dart';
 import 'package:timetable_app/Models/ScheduleElement.dart';
 import 'package:timetable_app/Models/Universe.dart';
@@ -16,7 +17,7 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
 
   static Widget getWidgetList(ScheduleElement element, User user) {
     int index = 0;
-    return ListView(
+    return Column(
       children: element.scheduleCell.map((cell) {
         index++;
         if (index < 6) {
@@ -38,7 +39,7 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
     if (_user.currentRole == 'Обучающийся') {
       if (event is ScheduleLoad) {
         yield ScheduleLoaded(await APIRequest.getSchedule(
-            _user.academicGroupCompoundKey, '2015-09-10'));
+            _user.academicGroupCompoundKey, DateFormat('yyyy-MM-dd').format(DateTime.now())));
       } else if (event is ScheduleDayChange) {
         yield ScheduleDayChanged(await APIRequest.getSchedule(
             _user.academicGroupCompoundKey,
