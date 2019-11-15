@@ -3,10 +3,11 @@ import 'package:timetable_app/Models/ScheduleElement.dart';
 
 class TimetableInfo extends StatelessWidget {
   ScheduleCell _scheduleCell;
+  String _role;
 
   double fontSize = 13;
 
-  TimetableInfo(this._scheduleCell);
+  TimetableInfo(this._scheduleCell, [this._role]);
 
   @override
   Widget build(BuildContext context) {
@@ -28,13 +29,13 @@ class TimetableInfo extends StatelessWidget {
           Container(
             margin: EdgeInsets.fromLTRB(15, 0, 0, 0),
             decoration: BoxDecoration(
-              color: Color.fromARGB(50, 0, 0, 0),
-              borderRadius: BorderRadius.circular(30)
+                color: Color.fromARGB(50, 0, 0, 0),
+                borderRadius: BorderRadius.circular(30)
             ),
             child: Padding(
               padding: const EdgeInsets.all(10.0),
               child: Text(
-                _scheduleCell.lesson.teacher.teacherName,
+                _role == null ? _scheduleCell.lesson.teacher.teacherName : _scheduleCell.lesson.academicGroup,
                 style: TextStyle(fontSize: fontSize),
               ),
             ),
@@ -75,12 +76,14 @@ class TimetableInfo extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.all(15.0),
                       child: Text(
-                          'Начало: ${_scheduleCell.dateBegin.toString().substring(10, 16)}'),
+                          'Начало: ${_scheduleCell.dateBegin.toString()
+                              .substring(10, 16)}'),
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(15, 0, 0, 0),
                       child: Text(
-                          'Конец: ${_scheduleCell.dateEnd.toString().substring(10, 16)}'),
+                          'Конец: ${_scheduleCell.dateEnd.toString().substring(
+                              10, 16)}'),
                     ),
                   ],
                 )
@@ -89,21 +92,22 @@ class TimetableInfo extends StatelessWidget {
           ),
           _scheduleCell.lesson.classroom != null
               ? Container(
-                  margin: EdgeInsets.fromLTRB(0, 15, 0, 0),
-                  child: Row(
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.all(15.0),
-                        child: Icon(Icons.account_balance),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(15.0),
-                        child: Text(
-                            'Аудитория ${_scheduleCell.lesson.classroom.classroomName}'),
-                      )
-                    ],
-                  ),
+            margin: EdgeInsets.fromLTRB(0, 15, 0, 0),
+            child: Row(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Icon(Icons.account_balance),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Text(
+                      'Аудитория ${_scheduleCell.lesson.classroom
+                          .classroomName}'),
                 )
+              ],
+            ),
+          )
               : Container()
         ],
       ),

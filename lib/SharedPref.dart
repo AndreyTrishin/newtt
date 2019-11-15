@@ -18,13 +18,13 @@ class SharedPref {
     prefs.remove(key);
   }
 
-//  setCurrentWindow(currentWindow) async {
-//    final prefs = await SharedPreferences.getInstance();
-//    prefs.setString('currentWindow', currentWindow);
-//  }
-//
-//  Future<String> loadWindow() async {
-//    final prefs = await SharedPreferences.getInstance();
-//    return prefs.getString('currentWindow');
-//  }
+  setCurrentWindow(currentWindow) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('currentWindow', currentWindow);
+  }
+
+  Future<String> loadWindow() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('currentWindow');
+  }
 }

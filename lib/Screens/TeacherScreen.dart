@@ -9,6 +9,7 @@ import 'package:timetable_app/blocs/scheduleBloc/scheduleBloc.dart';
 import 'package:timetable_app/blocs/scheduleBloc/scheduleEvent.dart';
 import 'package:timetable_app/blocs/scheduleBloc/scheduleState.dart';
 
+import '../APIRequest.dart';
 import '../main.dart';
 
 class TeacherScreen extends StatelessWidget {
@@ -25,7 +26,8 @@ class TeacherScreen extends StatelessWidget {
   int day = 0;
 
   int pageNumber = 1;
-  String currentDate = '2015-09-10';
+  String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
 
   Map<int, String> dayMap = {
     1: 'Понедельник',
@@ -54,6 +56,9 @@ class TeacherScreen extends StatelessWidget {
               accountEmail: Text('Преподаватель'),
             ),
             ListTile(
+              onTap: (){
+                Navigator.pop(context);
+              },
               leading: Icon(Icons.access_time),
               title: Text('Расписание занятий'),
             ),
@@ -66,6 +71,7 @@ class TeacherScreen extends StatelessWidget {
                     title: Text("Выйти"),
                     leading: Icon(Icons.exit_to_app),
                     onTap: () {
+                      APIRequest.idServer = null;
                       Navigator.pushReplacement(context,
                           MaterialPageRoute(builder: (context) {
                         return MyHomePage();
@@ -111,11 +117,11 @@ class TeacherScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          'Четверг',
+                          dayMap[DateTime.now().weekday],
                           style: TextStyle(color: Colors.black),
                         ),
                         Text(
-                          '10.09',
+                          DateFormat('dd.MM').format(DateTime.now()),
                           style: TextStyle(fontSize: 13, color: Colors.black),
                         ),
                       ],
@@ -222,10 +228,10 @@ class TeacherScreen extends StatelessWidget {
                   currentDay = value;
                   _appBarBloc
                     ..add(ScheduleAppBarPageChange(
-                        DateTime.parse('2015-09-10').add(Duration(days: day))));
+                        DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.now())).add(Duration(days: day))));
                   _scheduleBloc
                     ..add(ScheduleDayChange(
-                        DateTime.parse('2015-09-10').add(Duration(days: day))));
+                        DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.now())).add(Duration(days: day))));
                 },
                 controller: _controller,
                 itemBuilder: (context, position) {

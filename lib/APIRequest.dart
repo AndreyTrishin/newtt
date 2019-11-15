@@ -14,11 +14,13 @@ import 'package:xml/xml.dart' as xml;
 import 'Models/User.dart';
 
 class APIRequest {
-  static String getServer(id){
+  static String getServer(id) {
     return 'http://81.177.140.25/$id/Study.1cws';
   }
+
   static int idServer;
   static String server;
+
 
   static Future<User> authorisation(name, password) async {
     server = getServer(idServer);
@@ -26,8 +28,9 @@ class APIRequest {
     print(idServer);
 
     User user;
+    http.Response responceAuth;
     try{
-      var responceAuth = await http.post(server,
+      responceAuth = await http.post(server,
           headers: {
             'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
             'SOAPAction': 'http://sgu-infocom.ru/study#WebStudy:Authorization',
@@ -35,29 +38,72 @@ class APIRequest {
           },
           body: Query.getAutorizationQuery(
               name, sha1.convert(utf8.encode(password))));
-      var resultAuth = xml.parse(responceAuth.body);
+    } catch (_){
+      user = null;
+    }
 
-      var responceRecBook = await http.post(server,
+    var resultAuth = xml.parse(responceAuth.body);
+    try {
+      http.Response responceRecBook;
+      xml.XmlDocument resultRecBook;
+      responceRecBook = await http.post(server,
           headers: {
             'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
             'Content-Type': 'application/xml',
           },
           body: Query.getRecordbooksQuery(
               resultAuth.findAllElements('m:UserId').first.text));
-      var resultRecBook = xml.parse(responceRecBook.body);
-      user = User(
+      resultRecBook = xml.parse(responceRecBook.body);
+      List<String> roles = [];
+      for (var e in resultAuth
+          .findAllElements('m:User')
+          .first
+          .findAllElements('m:Roles')) {
+        roles.add(e.findElements('m:Role').first.text);
+      }
+      if (roles.length == 1) {
+        user = User(
+            resultAuth.findAllElements('m:UserId').first.text,
+            resultAuth.findAllElements('m:Login').first.text,
+            resultAuth.findAllElements('m:PasswordHash').first.text,
+            resultRecBook.findAllElements('m:RecordbookId').first.text,
+            resultRecBook.findAllElements('m:CurriculumId').first.text,
+            resultRecBook.findAllElements('m:CurriculumName').first.text,
+            resultRecBook.findAllElements('m:AcademicGroupName').first.text,
+            resultRecBook
+                .findAllElements('m:AcademicGroupCompoundKey')
+                .first
+                .text,
+            resultRecBook.findAllElements('m:SpecialtyName').first.text,
+            'Обучающийся',
+            ['Student']);
+      } else {
+        user = User(
+            resultAuth.findAllElements('m:UserId').first.text,
+            resultAuth.findAllElements('m:Login').first.text,
+            resultAuth.findAllElements('m:PasswordHash').first.text,
+            resultRecBook.findAllElements('m:RecordbookId').first.text,
+            resultRecBook.findAllElements('m:CurriculumId').first.text,
+            resultRecBook.findAllElements('m:CurriculumName').first.text,
+            resultRecBook.findAllElements('m:AcademicGroupName').first.text,
+            resultRecBook.findAllElements('m:AcademicGroupCompoundKey').first.text,
+            resultRecBook.findAllElements('m:SpecialtyName').first.text,
+            null,
+            roles);
+      }
+    } catch (_) {
+      try {
+        user = User(
           resultAuth.findAllElements('m:UserId').first.text,
           resultAuth.findAllElements('m:Login').first.text,
           resultAuth.findAllElements('m:PasswordHash').first.text,
-          resultRecBook.findAllElements('m:RecordbookId').first.text,
-          resultRecBook.findAllElements('m:CurriculumId').first.text,
-          resultRecBook.findAllElements('m:CurriculumName').first.text,
-          resultRecBook.findAllElements('m:AcademicGroupName').first.text,
-          resultRecBook.findAllElements('m:AcademicGroupCompoundKey').first.text,
-          resultRecBook.findAllElements('m:SpecialtyName').first.text
-      );
-    } catch (_){
-      user = null;
+          null, null, null, null, null, null,
+          'Преподаватель',
+          ['Teacher'],
+        );
+      } catch (_) {
+        user = null;
+      }
     }
     print(user);
     return user;
@@ -72,8 +118,6 @@ class APIRequest {
         },
         body: Query.getEducationalPerformance(userId, recbookId));
     var result = xml.parse(responce.body);
-    String r = result.toString();
-//    print(result);
 
     List<List<MarkRecord>> listOfMarks = [];
     String term = 'Первый семестр';
@@ -94,23 +138,25 @@ class APIRequest {
           e.findAllElements('m:TypeOfTheControl').first.text,
         ));
       } else if (e != null) {
+        if(e.findAllElements('m:Term').first.text != ''){
+          listOfMarks.add(list);
+          term = e.findAllElements('m:Term').first.text;
+          list = [];
+          list.add(MarkRecord(
+            e.findAllElements('m:Block').first.text,
+            e.findAllElements('m:Subject').first.text,
+            DateTime.parse(e.findAllElements('m:Date').first.text),
+            e.findAllElements('m:Term').first.text,
+            e.findAllElements('m:Unit').first.text,
+            e.findAllElements('m:Mark').first.text,
+            e.findAllElements('m:Credits').first.text,
+            e.findAllElements('m:Theme').first.text,
+            int.parse(e.findAllElements('m:ClassroomLoad').first.text),
+            int.parse(e.findAllElements('m:TotalLoad').first.text),
+            e.findAllElements('m:TypeOfTheControl').first.text,
+          ));
+        }
 
-        listOfMarks.add(list);
-        term = e.findAllElements('m:Term').first.text;
-        list = [];
-        list.add(MarkRecord(
-          e.findAllElements('m:Block').first.text,
-          e.findAllElements('m:Subject').first.text,
-          DateTime.parse(e.findAllElements('m:Date').first.text),
-          e.findAllElements('m:Term').first.text,
-          e.findAllElements('m:Unit').first.text,
-          e.findAllElements('m:Mark').first.text,
-          e.findAllElements('m:Credits').first.text,
-          e.findAllElements('m:Theme').first.text,
-          int.parse(e.findAllElements('m:ClassroomLoad').first.text),
-          int.parse(e.findAllElements('m:TotalLoad').first.text),
-          e.findAllElements('m:TypeOfTheControl').first.text,
-        ));
       } else {
         listOfMarks.add(list);
       }
@@ -212,12 +258,17 @@ class APIRequest {
     ScheduleElement scheduleElement;
 
     List<ScheduleCell> lessonList = [];
-    try{
+    try {
       for (var e in result.findAllElements('m:ScheduleCell')) {
         var lesson = e.findElements('m:Lesson');
         Color color;
         if (lesson.isNotEmpty) {
-          switch (e.findElements('m:Lesson').first.findElements('m:LessonType').first.text) {
+          switch (e
+              .findElements('m:Lesson')
+              .first
+              .findElements('m:LessonType')
+              .first
+              .text) {
             case 'Лекции':
               color = Color.fromARGB(255, 0, 164, 116);
               break;
@@ -240,17 +291,64 @@ class APIRequest {
               DateTime.parse(e.findElements('m:DateEnd').first.text),
               Lesson(
                   e.findAllElements('m:LessonCompoundKey').first.text,
-                  e.findElements('m:Lesson').first.findElements('m:Subject').first.text,
-                  e.findElements('m:Lesson').first.findElements('m:LessonType').first.text,
+                  e
+                      .findElements('m:Lesson')
+                      .first
+                      .findElements('m:Subject')
+                      .first
+                      .text,
+                  e
+                      .findElements('m:Lesson')
+                      .first
+                      .findElements('m:LessonType')
+                      .first
+                      .text,
                   Teacher(
-                      e.findElements('m:Lesson').first.findElements('m:Teacher').first.findElements('m:TeacherId').first.text,
-                      e.findElements('m:Lesson').first.findElements('m:Teacher').first.findElements('m:TeacherName').first.text),
-                  e.findElements('m:Lesson').first.findElements('m:Classroom').isNotEmpty
+                      e
+                          .findElements('m:Lesson')
+                          .first
+                          .findElements('m:Teacher')
+                          .first
+                          .findElements('m:TeacherId')
+                          .first
+                          .text,
+                      e
+                          .findElements('m:Lesson')
+                          .first
+                          .findElements('m:Teacher')
+                          .first
+                          .findElements('m:TeacherName')
+                          .first
+                          .text),
+                  e
+                          .findElements('m:Lesson')
+                          .first
+                          .findElements('m:Classroom')
+                          .isNotEmpty
                       ? Classroom(
-                      e.findElements('m:Lesson').first.findElements('m:Classroom').first.findElements('m:ClassroomUID').first.text,
-                      e.findElements('m:Lesson').first.findElements('m:Classroom').first.findElements('m:ClassroomName').first.text)
+                          e
+                              .findElements('m:Lesson')
+                              .first
+                              .findElements('m:Classroom')
+                              .first
+                              .findElements('m:ClassroomUID')
+                              .first
+                              .text,
+                          e
+                              .findElements('m:Lesson')
+                              .first
+                              .findElements('m:Classroom')
+                              .first
+                              .findElements('m:ClassroomName')
+                              .first
+                              .text)
                       : null,
-                  e.findElements('m:Lesson').first.findAllElements('m:AcademicGroupName').first.text,
+                  e
+                      .findElements('m:Lesson')
+                      .first
+                      .findAllElements('m:AcademicGroupName')
+                      .first
+                      .text,
                   color)));
         } else {
           lessonList.add(ScheduleCell(
@@ -260,14 +358,16 @@ class APIRequest {
         }
       }
       scheduleElement = ScheduleElement(
-          result.findAllElements('m:Day').first.findAllElements('m:Date').first.text,
+          result
+              .findAllElements('m:Day')
+              .first
+              .findAllElements('m:Date')
+              .first
+              .text,
           result.findAllElements('m:DayOfWeek').first.text,
           lessonList);
-    } catch(_){
-      scheduleElement = ScheduleElement(
-          date,
-          '',
-          null);
+    } catch (_) {
+      scheduleElement = ScheduleElement(date, '', null);
     }
 
     return scheduleElement;
@@ -290,7 +390,6 @@ class APIRequest {
     return list;
   }
 
-
   static getTeacherSchedule(idUser, date) async {
     var responce = await http.post(server,
         headers: {
@@ -303,16 +402,30 @@ class APIRequest {
     ScheduleElement scheduleElement;
 
     List<ScheduleCell> lessonList = [];
-    try{
+    try {
       for (var e in result.findAllElements('m:ScheduleCell')) {
         var lesson = e.findElements('m:Lesson');
         Color color;
         if (lesson.isNotEmpty) {
-          switch (e.findElements('m:Lesson').first.findElements('m:LessonType').first.text) {
+          switch (e
+              .findElements('m:Lesson')
+              .first
+              .findElements('m:LessonType')
+              .first
+              .text) {
             case 'Лекции':
               color = Color.fromARGB(255, 0, 164, 116);
               break;
             case 'Практические':
+              color = Color.fromARGB(255, 48, 74, 197);
+              break;
+            case 'Курсовой проект':
+              color = Color.fromARGB(255, 48, 74, 197);
+              break;
+            case 'Лабораторные':
+              color = Color.fromARGB(255, 48, 74, 197);
+              break;
+            case 'Обучение':
               color = Color.fromARGB(255, 48, 74, 197);
               break;
             case 'Зачет':
@@ -325,13 +438,42 @@ class APIRequest {
               DateTime.parse(e.findElements('m:DateEnd').first.text),
               Lesson(
                   e.findAllElements('m:LessonCompoundKey').first.text,
-                  e.findElements('m:Lesson').first.findElements('m:Subject').first.text,
-                  e.findElements('m:Lesson').first.findElements('m:LessonType').first.text,
+                  e
+                      .findElements('m:Lesson')
+                      .first
+                      .findElements('m:Subject')
+                      .first
+                      .text,
+                  e
+                      .findElements('m:Lesson')
+                      .first
+                      .findElements('m:LessonType')
+                      .first
+                      .text,
                   Teacher(
-                      e.findElements('m:Lesson').first.findElements('m:Teacher').first.findElements('m:TeacherId').first.text,
-                      e.findElements('m:Lesson').first.findElements('m:Teacher').first.findElements('m:TeacherName').first.text),
+                      e
+                          .findElements('m:Lesson')
+                          .first
+                          .findElements('m:Teacher')
+                          .first
+                          .findElements('m:TeacherId')
+                          .first
+                          .text,
+                      e
+                          .findElements('m:Lesson')
+                          .first
+                          .findElements('m:Teacher')
+                          .first
+                          .findElements('m:TeacherName')
+                          .first
+                          .text),
                   null,
-                  e.findElements('m:Lesson').first.findAllElements('m:AcademicGroupName').first.text,
+                  e
+                      .findElements('m:Lesson')
+                      .first
+                      .findAllElements('m:AcademicGroupName')
+                      .first
+                      .text,
                   color)));
         } else {
           lessonList.add(ScheduleCell(
@@ -341,19 +483,18 @@ class APIRequest {
         }
       }
       scheduleElement = ScheduleElement(
-          result.findAllElements('m:Day').first.findAllElements('m:Date').first.text,
+          result
+              .findAllElements('m:Day')
+              .first
+              .findAllElements('m:Date')
+              .first
+              .text,
           result.findAllElements('m:DayOfWeek').first.text,
           lessonList);
-    } catch(_){
-      scheduleElement = ScheduleElement(
-          date,
-          '',
-          null);
+    } catch (_) {
+      scheduleElement = ScheduleElement(date, '', null);
     }
 
     return scheduleElement;
   }
-
-
-
 }

@@ -43,7 +43,7 @@ class PerformancePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _performanceBloc = PerformanceBloc(_user);
-    _appBarBloc = AppBarBloc(_user);
+    _appBarBloc = AppBarBloc();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 255, 217, 122),

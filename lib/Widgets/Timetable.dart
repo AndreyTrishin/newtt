@@ -13,8 +13,8 @@ class Timetable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(ScreenUtil.getInstance().setWidth(5)),
-      height: ScreenUtil.getInstance().setHeight(260),
+//      margin: EdgeInsets.all(ScreenUtil.getInstance().setWidth(5)),
+      height: ScreenUtil.getInstance().setHeight(245),
       child: Column(
         children: <Widget>[
           Container(
@@ -55,7 +55,7 @@ class Timetable extends StatelessWidget {
                 Container(
                   width: ScreenUtil.getInstance().setWidth(970),
                   child: Container(
-                    padding: EdgeInsets.all(10),
+                    padding: EdgeInsets.symmetric(vertical: ScreenUtil.getInstance().setHeight(10), horizontal: ScreenUtil.getInstance().setWidth(10)),
                     margin: EdgeInsets.symmetric(
                         horizontal: ScreenUtil.getInstance().setWidth(18)),
                     decoration: BoxDecoration(
@@ -100,7 +100,8 @@ class Timetable extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
                           Padding(
-                            padding: const EdgeInsets.all(4.0),
+                            padding: EdgeInsets.symmetric(vertical: ScreenUtil.getInstance().setHeight(4), horizontal: ScreenUtil.getInstance().setWidth(4)),
+
                             child: Text(
                               scheduleCell.lesson.academicGroup,
                               style: TextStyle(
@@ -110,7 +111,8 @@ class Timetable extends StatelessWidget {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.all(4.0),
+                            padding: EdgeInsets.symmetric(vertical: ScreenUtil.getInstance().setHeight(4), horizontal: ScreenUtil.getInstance().setWidth(4)),
+
                             child: Text(
                               scheduleCell.lesson.subject,
                               softWrap: false,
@@ -128,7 +130,8 @@ class Timetable extends StatelessWidget {
 //                              margin: EdgeInsets.all(8),
 //                            color: Color.fromARGB(100, 100, 100, 100),
                               child: Padding(
-                                padding: const EdgeInsets.all(4.0),
+                                padding: EdgeInsets.symmetric(vertical: ScreenUtil.getInstance().setHeight(4), horizontal: ScreenUtil.getInstance().setWidth(4)),
+
                                 child: Text(
                                   scheduleCell.lesson.teacher.teacherName,
                                   style: TextStyle(

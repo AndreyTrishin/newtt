@@ -13,8 +13,9 @@ class EmptyTTRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(ScreenUtil.getInstance().setWidth(5)),
-      height: ScreenUtil.getInstance().setHeight(260),
+//      padding: EdgeInsets.symmetric(vertical: ScreenUtil.getInstance().setHeight(5), horizontal: ScreenUtil.getInstance().setWidth(5)),
+
+      height: ScreenUtil.getInstance().setHeight(245),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -44,7 +45,7 @@ class EmptyTTRow extends StatelessWidget {
                         ),
                         Container(
                           margin: EdgeInsets.fromLTRB(0,
-                              ScreenUtil.getInstance().setHeight(100), 0, 10),
+                              ScreenUtil.getInstance().setHeight(90), 0, 10),
                           child: Text(
                             scheduleCell.dateEnd.toString().substring(11, 16),
                             style: TextStyle(

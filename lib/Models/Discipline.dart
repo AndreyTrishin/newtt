@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class Discipline extends Equatable {
   String subject;
   String term;

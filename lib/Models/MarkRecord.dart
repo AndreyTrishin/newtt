@@ -33,6 +33,11 @@ class MarkRecord {
         this.textColor = Color.fromARGB(255, 36, 181, 111);
         this.mark = 'Зачет';
         break;
+      case 'Зачтено':
+        this.color = Color.fromARGB(255, 240, 250, 241);
+        this.textColor = Color.fromARGB(255, 36, 181, 111);
+        this.mark = 'Зачет';
+        break;
       case 'Неудовлетворительно':
         this.color = Colors.red;
         this.textColor = Colors.red;

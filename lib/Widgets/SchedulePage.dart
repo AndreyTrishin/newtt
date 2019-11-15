@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:timetable_app/Models/User.dart';
+import 'package:timetable_app/Widgets/EmptyDayWidget.dart';
 import 'package:timetable_app/Widgets/LoadWidget.dart';
 import 'package:timetable_app/blocs/scheduleAppBarBloc/ScheduleAppBarBloc.dart';
 import 'package:timetable_app/blocs/scheduleAppBarBloc/ScheduleAppBarState.dart';
@@ -147,6 +148,7 @@ class SchedulePage extends StatelessWidget {
           ],
         ),
       ),
+      //todo: При быстрой прокрутке страниц загрузка предыдущих дней не останавливается и отображение нарушается
       body: Container(
         margin: EdgeInsets.fromLTRB(0, ScreenUtil.getInstance().setHeight(30), 0, 0),
         child: BlocBuilder(
@@ -173,12 +175,11 @@ class SchedulePage extends StatelessWidget {
                       : (state.scheduleElement.scheduleCell != null
                           ? ScheduleBloc.getWidgetList(
                               state.scheduleElement, _user)
-                          : Center(
-                              child: Text('Свободный день'),
-                            ));
+                          : EmptyDayWidget());
                 },
               );
             } else if (state is ScheduleDayChanged) {
+              _scheduleBloc..add(null);
 //              currentDate = state.scheduleElement.date;
               return PageView.builder(
                 onPageChanged: (value) {
@@ -198,9 +199,7 @@ class SchedulePage extends StatelessWidget {
                       : (state.scheduleElement.scheduleCell != null
                           ? ScheduleBloc.getWidgetList(
                               state.scheduleElement, _user)
-                          : Center(
-                              child: Text('Свободный день'),
-                            ));
+                          :EmptyDayWidget());
                 },
               );
             } else {

@@ -54,6 +54,7 @@ flutter:
     - res/ic_type_20dp_54a.png
     - res/ic_nav_marks_18dp_black.png
     - res/ic_drive_document_18dp_black_54a.png
+    - res/ic_nav_classes_schedule_18dp_black.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

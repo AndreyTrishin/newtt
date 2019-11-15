@@ -22,7 +22,7 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
         index++;
         if (index < 6) {
           return cell.lesson != null
-              ? (user.currentRole == 'Обучающийся' ? Timetable(cell, index) : TeacherTimetable(cell, index))
+              ? (user.currentRole == 'Обучающийся' ? Timetable(cell, index) : TeacherTimetable(cell, index, user.currentRole))
               : EmptyTTRow(cell, index);
         } else {
           return Container();
@@ -48,7 +48,7 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
     } else {
       if (event is ScheduleLoad) {
         yield ScheduleLoaded(
-            await APIRequest.getTeacherSchedule(_user.id, '2015-09-10'));
+            await APIRequest.getTeacherSchedule(_user.id, DateFormat('yyyy-MM-dd').format(DateTime.now())));
       } else if (event is ScheduleDayChange) {
         yield ScheduleDayChanged(await APIRequest.getTeacherSchedule(
             _user.id, event.date.toString().substring(0, 10)));

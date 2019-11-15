@@ -8,18 +8,20 @@ class User {
   String academicGroupCompoundKey;
   String specialtyName;
   String currentRole;
+  List<String> roles;
+
 
   User(
       this.id,
       this.name,
       this.password,
-      this.recordbookId,
+      [this.recordbookId,
       this.curriculumId,
       this.curriculumName,
       this.academicGroupName,
       this.academicGroupCompoundKey,
       this.specialtyName,
-      [this.currentRole]);
+      this.currentRole, this.roles]);
 
   User.fromJson(Map<String, dynamic> json)
       : id = json['id'],
@@ -48,7 +50,7 @@ class User {
 
   @override
   String toString() {
-    return '$id, $name, $password, $recordbookId, $specialtyName';
+    return '$id, $name, $password, $recordbookId, $specialtyName, $roles';
   }
 
 
