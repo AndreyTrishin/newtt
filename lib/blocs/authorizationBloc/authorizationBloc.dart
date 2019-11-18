@@ -5,7 +5,7 @@ import 'package:timetable_app/blocs/authorizationBloc/authorizationState.dart';
 
 class AuthorizationBloc extends Bloc<AuthorizationEvent, AuthorizationState> {
   @override
-  AuthorizationState get initialState => AuthorizationUnitialized();
+  AuthorizationState get initialState => CanNotAuth();
 
   @override
   Stream<AuthorizationState> mapEventToState(AuthorizationEvent event) async* {

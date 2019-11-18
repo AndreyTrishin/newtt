@@ -161,6 +161,7 @@ class SchedulePage extends StatelessWidget {
                 onPageChanged: (value) {
                   day = value < currentDay ? day - 1 : day + 1;
                   currentDay = value;
+
                   _scheduleBloc
                     ..add(ScheduleDayChange(
                         DateTime.parse(currentDate).add(Duration(days: day))));

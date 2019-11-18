@@ -11,14 +11,10 @@ import 'package:timetable_app/SharedPref.dart';
 
 import 'Screens/MainScreen.dart';
 import 'Screens/UniversityList.dart';
-import 'Widgets/LoadWidget.dart';
 import 'blocs/authCheckContentBloc/authCheckContentState.dart';
 import 'blocs/authorizationBloc/authorizationBloc.dart';
 import 'blocs/authorizationBloc/authorizationEvent.dart';
 import 'blocs/authorizationBloc/authorizationState.dart';
-import 'blocs/universeBloc/universeBloc.dart';
-import 'blocs/universeBloc/universeEvent.dart';
-import 'blocs/universeBloc/universeState.dart';
 
 main() async {
   User user;
@@ -55,11 +51,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   University university;
 
-  UniversityBloc _universityBloc;
-
   @override
   Widget build(BuildContext context) {
-    _universityBloc = UniversityBloc()..add(UniversityLoad());
     _authorizationBloc = AuthorizationBloc();
     ScreenUtil.instance = ScreenUtil(width: 1080, height: 1794)..init(context);
 // TODO: implement build
@@ -72,9 +65,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 fit: BoxFit.cover)),
         child: Container(
           padding: EdgeInsets.fromLTRB(
-              ScreenUtil.getInstance().setWidth(50),
+              ScreenUtil.getInstance().setWidth(100),
               ScreenUtil.getInstance().setHeight(300),
-              ScreenUtil.getInstance().setWidth(50),
+              ScreenUtil.getInstance().setWidth(100),
               0),
           child: Column(
             children: <Widget>[
@@ -92,45 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             .addPostFrameCallback((_) async {
                           un = await Navigator.push(context,
                               MaterialPageRoute(builder: (context) {
-                            return Scaffold(
-                                appBar: AppBar(
-                                  backgroundColor:
-                                      Color.fromARGB(255, 255, 217, 122),
-                                  leading: FlatButton(
-                                    child: Icon(Icons.close),
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                  ),
-                                ),
-                                body: BlocBuilder(
-                                  bloc: _universityBloc,
-                                  builder: (context, state) {
-                                    if (state is UniversityLoading) {
-                                      return Center(
-                                        child: LoadWidget(),
-                                      );
-                                    } else if (state is UniversityLoaded) {
-                                      return ListView(
-                                        children: state.universityList
-                                            .map((university) {
-                                          return ListTile(
-                                            onTap: () {
-                                              Navigator.pop(
-                                                  context, university);
-                                            },
-                                            title: Text(university.name),
-                                            subtitle: Text(university.city),
-                                          );
-                                        }).toList(),
-                                      );
-                                    } else {
-                                      return Center(
-                                        child: Text('Ошибка загрузки'),
-                                      );
-                                    }
-                                  },
-                                ));
+                            return UniversityList();
                           }));
                           university = un;
                           controllerUniversity.text = university.name;
@@ -145,7 +100,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       controller: controllerUniversity,
                       decoration: InputDecoration(labelText: 'Название ВУЗа'),
                       readOnly: true,
-                      onChanged: (value) {
+                      onChanged: (value){
+
                         _authorizationBloc
                           ..add(ChangeUniversity(university,
                               controllerName.text, controllerPassword.text));
@@ -185,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
               ),
               Container(
-                margin: EdgeInsets.symmetric(horizontal: 30),
+//                margin: EdgeInsets.symmetric(horizontal: 30),
                 alignment: Alignment.centerRight,
                 child:
 //                  RaisedButton(
@@ -205,7 +161,7 @@ class _MyHomePageState extends State<MyHomePage> {
 //                    ),
 //                  )
                     BlocBuilder(
-                        bloc: _authorizationBloc,
+                        bloc: _authorizationBloc..add(ChangeUniversity(university, controllerName.text, controllerPassword.text)),
                         builder: (context, state) {
                           print(state);
                           if (state is ChangedUniversity) {

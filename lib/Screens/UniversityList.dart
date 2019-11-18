@@ -33,6 +33,7 @@ class UniversityList extends StatelessWidget {
                 children: state.universityList.map((university) {
                   return ListTile(
                     onTap: (){
+                      _universityBloc.close();
                       Navigator.pop(context, university);
                     },
                     title: Text(university.name),
