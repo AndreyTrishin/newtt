@@ -13,11 +13,11 @@ class AuthCheckContentBloc
   Stream<AuthCheckContentState> mapEventToState(
       AuthCheckContentEvent event) async* {
     if (event is AuthCheckContentChange) {
-      if (event.university == null &&
-          event.university == '' &&
-          event.name == null &&
-          event.name == '' &&
-          event.password == null &&
+      if (event.university == null ||
+          event.university == '' ||
+          event.name == null ||
+          event.name == '' ||
+          event.password == null ||
           event.password == '') {
         yield AuthCheckContentEmpty();
       } else {

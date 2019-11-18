@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:timetable_app/Models/Universe.dart';
 import 'package:timetable_app/Models/User.dart';
 
 class AuthorizationState extends Equatable {
@@ -8,6 +9,7 @@ class AuthorizationState extends Equatable {
 }
 
 class AuthorizationUnitialized extends AuthorizationState {}
+
 class AuthorizationLoading extends AuthorizationState {}
 
 class Authorized extends AuthorizationState {
@@ -22,3 +24,11 @@ class Authorized extends AuthorizationState {
 }
 
 class NotAuthorizated extends AuthorizationState {}
+
+class ChangedUniversity extends AuthorizationState {
+  final University university;
+
+  ChangedUniversity(this.university);
+}
+
+class CanNotAuth extends AuthorizationState {}

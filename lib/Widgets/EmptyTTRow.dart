@@ -45,7 +45,7 @@ class EmptyTTRow extends StatelessWidget {
                         ),
                         Container(
                           margin: EdgeInsets.fromLTRB(0,
-                              ScreenUtil.getInstance().setHeight(90), 0, 10),
+                              ScreenUtil.getInstance().setHeight(82), 0, 10),
                           child: Text(
                             scheduleCell.dateEnd.toString().substring(11, 16),
                             style: TextStyle(
@@ -57,7 +57,7 @@ class EmptyTTRow extends StatelessWidget {
                       ]),
                 ),
                 Container(
-                    margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
+//                    margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
                     child: Text(
                       'Свободная пара',
                       style: TextStyle(

@@ -183,11 +183,13 @@ class SchedulePage extends StatelessWidget {
 //              currentDate = state.scheduleElement.date;
               return PageView.builder(
                 onPageChanged: (value) {
+
                   day = value < currentDay ? day - 1 : day + 1;
                   currentDay = value;
                   _appBarBloc
                     ..add(ScheduleAppBarPageChange(
                         DateTime.now().add(Duration(days: day))));
+
                   _scheduleBloc
                     ..add(ScheduleDayChange(
                         DateTime.now().add(Duration(days: day))));

@@ -60,9 +60,14 @@ class MainScreen extends StatelessWidget {
                         'Учебный план',
                         style: TextStyle(color: state.color),
                       ),
-                      leading: Icon(
-                        Icons.info,
-                        color: state.color,
+                      leading: Container(
+                        width: 20,
+                        height: 20,
+                        child: Image.asset(
+                          'res/ic_nav_info_20dp_black.png',
+                          fit: BoxFit.scaleDown,
+                          color: state.color,
+                        ),
                       ),
                       onTap: () async {
                         sp.setCurrentWindow('Учебный план');
@@ -73,9 +78,14 @@ class MainScreen extends StatelessWidget {
                   } else {
                     return ListTile(
                       title: Text("Учебный план"),
-                      leading: Icon(
-                        Icons.info,
-                        color: Colors.black,
+                      leading: Container(
+                        width: 20,
+                        height: 20,
+                        child: Image.asset(
+                          'res/ic_nav_info_20dp_black.png',
+                          fit: BoxFit.scaleDown,
+                          color: Colors.black,
+                        ),
                       ),
                       onTap: () async {
                         sp.setCurrentWindow('Учебный план');
@@ -95,10 +105,14 @@ class MainScreen extends StatelessWidget {
                         'Расписание занятий',
                         style: TextStyle(color: state.color),
                       ),
-                      leading: Image.asset(
-                        'res/ic_nav_classes_schedule_18dp_black.png',
-                        fit: BoxFit.scaleDown,
-                        color: Colors.red,
+                      leading: Container(
+                        width: 20,
+                        height: 20,
+                        child: Image.asset(
+                          'res/ic_nav_classes_schedule_18dp_black.png',
+                          fit: BoxFit.scaleDown,
+                          color: Colors.red,
+                        ),
                       ),
                       onTap: () async {
                         sp.setCurrentWindow('Расписание занятий');
@@ -109,10 +123,14 @@ class MainScreen extends StatelessWidget {
                   } else {
                     return ListTile(
                       title: Text("Расписание занятий"),
-                      leading: Image.asset(
-                        'res/ic_nav_classes_schedule_18dp_black.png',
-                        fit: BoxFit.scaleDown,
-                        color: Colors.black,
+                      leading: Container(
+                        width: 20,
+                        height: 20,
+                        child: Image.asset(
+                          'res/ic_nav_classes_schedule_18dp_black.png',
+                          fit: BoxFit.scaleDown,
+                          color: Colors.black,
+                        ),
                       ),
                       onTap: () async {
                         sp.setCurrentWindow('Расписание занятий');
@@ -133,8 +151,8 @@ class MainScreen extends StatelessWidget {
                         style: TextStyle(color: state.color),
                       ),
                       leading: Container(
-                          height: 25,
-                          width: 25,
+                          height: 20,
+                          width: 20,
                           child: Image.asset(
                             'res/ic_nav_marks_18dp_black.png',
                             fit: BoxFit.scaleDown,
@@ -150,8 +168,8 @@ class MainScreen extends StatelessWidget {
                     return ListTile(
                       title: Text("Успеваемость"),
                       leading: Container(
-                          height: 25,
-                          width: 25,
+                          height: 20,
+                          width: 20,
                           child: Image.asset(
                             'res/ic_nav_marks_18dp_black.png',
                             fit: BoxFit.scaleDown,

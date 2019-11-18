@@ -5,7 +5,6 @@ import 'package:timetable_app/blocs/authorizationBloc/authorizationState.dart';
 
 class AuthorizationBloc extends Bloc<AuthorizationEvent, AuthorizationState> {
   @override
-  // TODO: implement initialState
   AuthorizationState get initialState => AuthorizationUnitialized();
 
   @override
@@ -17,6 +16,12 @@ class AuthorizationBloc extends Bloc<AuthorizationEvent, AuthorizationState> {
           await APIRequest.authorisation(event.name, event.password));
     } else if (event is ErrorAuthorization) {
       yield NotAuthorizated();
+    } else if(event is ChangeUniversity){
+      if(event.university == null || event.name == '' || event.password == ''){
+        yield CanNotAuth();
+      } else{
+        yield ChangedUniversity(event.university);
+      }
     }
   }
 }

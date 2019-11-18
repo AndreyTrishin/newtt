@@ -11,9 +11,14 @@ import 'package:timetable_app/SharedPref.dart';
 
 import 'Screens/MainScreen.dart';
 import 'Screens/UniversityList.dart';
+import 'Widgets/LoadWidget.dart';
+import 'blocs/authCheckContentBloc/authCheckContentState.dart';
 import 'blocs/authorizationBloc/authorizationBloc.dart';
 import 'blocs/authorizationBloc/authorizationEvent.dart';
 import 'blocs/authorizationBloc/authorizationState.dart';
+import 'blocs/universeBloc/universeBloc.dart';
+import 'blocs/universeBloc/universeEvent.dart';
+import 'blocs/universeBloc/universeState.dart';
 
 main() async {
   User user;
@@ -41,21 +46,22 @@ class _MyHomePageState extends State<MyHomePage> {
   TextEditingController controllerUniversity = TextEditingController();
 
   TextEditingController controllerName =
-  TextEditingController(text: 'Забродина Дарья Сергеевна');
+      TextEditingController(text: 'Забродина Дарья Сергеевна');
 
   TextEditingController controllerPassword =
-  TextEditingController(text: '31694115');
+      TextEditingController(text: '31694115');
 
   AuthorizationBloc _authorizationBloc;
 
   University university;
 
+  UniversityBloc _universityBloc;
+
   @override
   Widget build(BuildContext context) {
-//    _authCheckContentBloc = AuthCheckContentBloc();
+    _universityBloc = UniversityBloc()..add(UniversityLoad());
     _authorizationBloc = AuthorizationBloc();
-    ScreenUtil.instance = ScreenUtil(width: 1080, height: 1794)
-      ..init(context);
+    ScreenUtil.instance = ScreenUtil(width: 1080, height: 1794)..init(context);
 // TODO: implement build
     return Scaffold(
       resizeToAvoidBottomPadding: false,
@@ -72,99 +78,171 @@ class _MyHomePageState extends State<MyHomePage> {
               0),
           child: Column(
             children: <Widget>[
-              TextFormField(
-                controller: controllerUniversity,
-                decoration: InputDecoration(labelText: 'Название ВУЗа'),
-                readOnly: true,
-
-                onTap: () async {
-                  university = await Navigator.push(context,
-                      MaterialPageRoute(builder: (context) {
-                        return UniversityList();
-                      }));
-                  setState(() {
-                    controllerUniversity.text = university.name;
-                  });
+              BlocBuilder(
+                bloc: _authorizationBloc,
+                builder: (context, state) {
+                  if (state is ChangedUniversity) {
+                    return TextFormField(
+                      controller: controllerUniversity,
+                      decoration: InputDecoration(labelText: 'Название ВУЗа'),
+                      readOnly: true,
+                      onTap: () async {
+                        var un;
+                        SchedulerBinding.instance
+                            .addPostFrameCallback((_) async {
+                          un = await Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return Scaffold(
+                                appBar: AppBar(
+                                  backgroundColor:
+                                      Color.fromARGB(255, 255, 217, 122),
+                                  leading: FlatButton(
+                                    child: Icon(Icons.close),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ),
+                                body: BlocBuilder(
+                                  bloc: _universityBloc,
+                                  builder: (context, state) {
+                                    if (state is UniversityLoading) {
+                                      return Center(
+                                        child: LoadWidget(),
+                                      );
+                                    } else if (state is UniversityLoaded) {
+                                      return ListView(
+                                        children: state.universityList
+                                            .map((university) {
+                                          return ListTile(
+                                            onTap: () {
+                                              Navigator.pop(
+                                                  context, university);
+                                            },
+                                            title: Text(university.name),
+                                            subtitle: Text(university.city),
+                                          );
+                                        }).toList(),
+                                      );
+                                    } else {
+                                      return Center(
+                                        child: Text('Ошибка загрузки'),
+                                      );
+                                    }
+                                  },
+                                ));
+                          }));
+                          university = un;
+                          controllerUniversity.text = university.name;
+                          _authorizationBloc
+                            ..add(ChangeUniversity(university,
+                                controllerName.text, controllerPassword.text));
+                        });
+                      },
+                    );
+                  } else {
+                    return TextFormField(
+                      controller: controllerUniversity,
+                      decoration: InputDecoration(labelText: 'Название ВУЗа'),
+                      readOnly: true,
+                      onChanged: (value) {
+                        _authorizationBloc
+                          ..add(ChangeUniversity(university,
+                              controllerName.text, controllerPassword.text));
+                      },
+                      onTap: () async {
+                        SchedulerBinding.instance
+                            .addPostFrameCallback((_) async {
+                          university = await Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return UniversityList();
+                          }));
+                          controllerUniversity.text = university.name;
+                        });
+                      },
+                    );
+                  }
                 },
               ),
               TextFormField(
                 controller: controllerName,
                 decoration:
-                InputDecoration(labelText: 'Ваши фамилия, имя и отчество'),
-//                onSaved: (value) {
-//                  _authCheckContentBloc
-//                    ..add(AuthCheckContentChange(controllerUniversity.text,
-//                        value, controllerPassword.text));
-//                },
+                    InputDecoration(labelText: 'Ваши фамилия, имя и отчество'),
+                onChanged: (value) {
+                  _authorizationBloc
+                    ..add(ChangeUniversity(university, controllerName.text,
+                        controllerPassword.text));
+                },
               ),
-              TextField(
+              TextFormField(
                 obscureText: true,
                 controller: controllerPassword,
                 decoration: InputDecoration(labelText: 'Пароль'),
-//                onChanged: (value) {
-//                  _authCheckContentBloc
-//                    ..add(AuthCheckContentChange(
-//                        controllerUniversity.text, controllerName.text, value));
-//                },
+                onChanged: (value) {
+                  _authorizationBloc
+                    ..add(ChangeUniversity(university, controllerName.text,
+                        controllerPassword.text));
+                },
               ),
               Container(
-                  margin: EdgeInsets.symmetric(horizontal: 30),
-                  alignment: Alignment.centerRight,
-                  child: RaisedButton(
-                    color: Colors.red,
-                    onPressed: () {
-                      _authorizationBloc..add(TryAuthorization());
-                      try {
-                        APIRequest.idServer =
-                        university.id == 1 ? 0 : university.id;
-                      } catch (_) {
-                        _authorizationBloc..add(ErrorAuthorization());
-                      }
-                    },
-                    child: Text(
-                      'ВОЙТИ',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  )
-//                BlocBuilder(
-//                    bloc: _authCheckContentBloc,
-//                    builder: (context, state) {
-//                      print(state);
-//                      if (state is AuthCheckContentNotEmpty) {
-//                        return RaisedButton(
-//                          color: Colors.red,
-//                          onPressed: () {
-//                            _authorizationBloc..add(TryAuthorization());
-//                            try {
-//                              APIRequest.idServer =
-//                                  university.id == 1 ? 0 : university.id;
-//                            } catch (_) {
-//                              _authorizationBloc..add(ErrorAuthorization());
-//                            }
-//                          },
-//                          child: Text(
-//                            'ВОЙТИ',
-//                            style: TextStyle(color: Colors.white),
-//                          ),
-//                        );
-//                      } else if (state is AuthCheckContentEmpty) {
-//                        return RaisedButton(
-//                          color: Colors.red,
-//                          child: Text(
-//                            'ВОЙТИ',
-//                            style: TextStyle(color: Colors.white),
-//                          ),
-//                        );
-//                      } else {
-//                        return RaisedButton(
-//                          color: Colors.red,
-//                          child: Text(
-//                            'ВОЙТИ',
-//                            style: TextStyle(color: Colors.white),
-//                          ),
-//                        );
+                margin: EdgeInsets.symmetric(horizontal: 30),
+                alignment: Alignment.centerRight,
+                child:
+//                  RaisedButton(
+//                    color: Colors.red,
+//                    onPressed: () {
+//                      _authorizationBloc..add(TryAuthorization());
+//                      try {
+//                        APIRequest.idServer =
+//                        university.id == 1 ? 0 : university.id;
+//                      } catch (_) {
+//                        _authorizationBloc..add(ErrorAuthorization());
 //                      }
-//                    }),
+//                    },
+//                    child: Text(
+//                      'ВОЙТИ',
+//                      style: TextStyle(color: Colors.white),
+//                    ),
+//                  )
+                    BlocBuilder(
+                        bloc: _authorizationBloc,
+                        builder: (context, state) {
+                          print(state);
+                          if (state is ChangedUniversity) {
+                            return RaisedButton(
+                              color: Colors.red,
+                              onPressed: () {
+                                _authorizationBloc..add(TryAuthorization());
+                                try {
+                                  APIRequest.idServer =
+                                      university.id == 1 ? 0 : university.id;
+                                } catch (_) {
+                                  _authorizationBloc..add(ErrorAuthorization());
+                                }
+                              },
+                              child: Text(
+                                'ВОЙТИ',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            );
+                          } else if (state is AuthCheckContentEmpty) {
+                            return RaisedButton(
+                              color: Colors.red,
+                              child: Text(
+                                'ВОЙТИ',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            );
+                          } else {
+                            return RaisedButton(
+                              color: Colors.red,
+                              child: Text(
+                                'ВОЙТИ',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            );
+                          }
+                        }),
               ),
               Container(
                 margin: EdgeInsets.all(ScreenUtil.getInstance().setWidth(20)),
@@ -198,14 +276,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                           Navigator.pushReplacement(context,
                                               MaterialPageRoute(
                                                   builder: (context) {
-                                                    state.user.currentRole =
-                                                    'Обучающийся';
-                                                    return MainScreen(
-                                                        state.user);
-                                                  }));
+                                            state.user.currentRole =
+                                                'Обучающийся';
+                                            return MainScreen(state.user);
+                                          }));
                                         },
                                         highlightColor:
-                                        Color.fromARGB(30, 0, 0, 0),
+                                            Color.fromARGB(30, 0, 0, 0),
                                       ),
                                       FlatButton(
                                         child: Text(
@@ -216,14 +293,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                           Navigator.pushReplacement(context,
                                               MaterialPageRoute(
                                                   builder: (context) {
-                                                    state.user.currentRole =
-                                                    'Преподаватель';
-                                                    return TeacherScreen(
-                                                        state.user);
-                                                  }));
+                                            state.user.currentRole =
+                                                'Преподаватель';
+                                            return TeacherScreen(state.user);
+                                          }));
                                         },
                                         highlightColor:
-                                        Color.fromARGB(30, 0, 0, 0),
+                                            Color.fromARGB(30, 0, 0, 0),
                                       ),
                                     ],
                                   );
@@ -233,15 +309,15 @@ class _MyHomePageState extends State<MyHomePage> {
                           SchedulerBinding.instance.addPostFrameCallback((_) {
                             Navigator.pushReplacement(context,
                                 MaterialPageRoute(builder: (context) {
-                                  return MainScreen(state.user);
-                                }));
+                              return MainScreen(state.user);
+                            }));
                           });
                         } else if (state.user.currentRole == 'Преподаватель') {
                           SchedulerBinding.instance.addPostFrameCallback((_) {
                             Navigator.pushReplacement(context,
                                 MaterialPageRoute(builder: (context) {
-                                  return TeacherScreen(state.user);
-                                }));
+                              return TeacherScreen(state.user);
+                            }));
                           });
                         }
 
