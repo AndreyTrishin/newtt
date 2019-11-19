@@ -12,9 +12,9 @@ class PasswordBloc extends Bloc<PasswordEvent, PasswordState> {
     if (event is PasswordStatusChange) {
       if(event.password != ''){
         if (event.status) {
-          yield PasswordOpen(event.password);
-        } else {
           yield PasswordClose(event.password);
+        } else {
+          yield PasswordOpen(event.password);
         }
       } else {
         yield PasswordEmpty();

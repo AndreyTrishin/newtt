@@ -55,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   PasswordBloc _passwordBloc;
 
-  bool passwordStatus = false;
+  bool passwordStatus = true;
 
   @override
   Widget build(BuildContext context) {
@@ -149,7 +149,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             child: FlatButton(
                               shape: CircleBorder(),
                               onPressed: () {
-                                passwordStatus = false;
+                                passwordStatus = true;
                                 _passwordBloc
                                   ..add(PasswordStatusChange(
                                       passwordStatus, controllerPassword.text));
@@ -178,7 +178,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             child: FlatButton(
                               shape: CircleBorder(),
                               onPressed: () {
-                                passwordStatus = true;
+                                passwordStatus = false;
                                 _passwordBloc
                                   ..add(PasswordStatusChange(
                                       passwordStatus, controllerPassword.text));
@@ -269,7 +269,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
                       );
                     } else if (state is Authorized) {
-                      if (state.user != null) {
+                      if (state.user.name != null) {
                         if (state.user.currentRole == null) {
                           SchedulerBinding.instance.addPostFrameCallback((_) {
                             showDialog(
@@ -316,7 +316,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                   );
                                 });
                           });
-                        } else if (state.user.currentRole == 'Обучающийся') {
+                        } else
+                        if (state.user.currentRole == 'Обучающийся') {
                           SchedulerBinding.instance.addPostFrameCallback((_) {
                             Navigator.pushReplacement(context,
                                 MaterialPageRoute(builder: (context) {
@@ -347,11 +348,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               Expanded(
-                child: Align(
+                child:Align(
                   alignment: Alignment.bottomCenter,
                   child: BlocBuilder(
                       bloc: _authorizationBloc,
-                      // ignore: missing_return
                       builder: (context, state) {
                         if(state is AuthorizationLoading){
                           return RaisedButton(
@@ -365,7 +365,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               _authorizationBloc..add(TryAuthorization());
                             },
                           );
-                        } else if(state is Authorized){
+                        } else if(state is Authorized && state.user.name == 'Иван Иванов'){
                           SchedulerBinding.instance.addPostFrameCallback((_) {
                             showDialog(
                                 context: context,

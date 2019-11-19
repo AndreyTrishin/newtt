@@ -78,7 +78,6 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
 //          'Content-Type': 'application/xml',
 //        },
 //        body: Query.getScheduleQuery(key, date, 'AcademicGroup'));
-    dio.clear();
 
     var responce = await dio.post(
       APIRequest.server,
