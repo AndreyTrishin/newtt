@@ -55,6 +55,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   PasswordBloc _passwordBloc;
 
+  bool passwordStatus = false;
+
   @override
   Widget build(BuildContext context) {
     _passwordBloc = PasswordBloc();
@@ -147,9 +149,10 @@ class _MyHomePageState extends State<MyHomePage> {
                             child: FlatButton(
                               shape: CircleBorder(),
                               onPressed: () {
+                                passwordStatus = false;
                                 _passwordBloc
                                   ..add(PasswordStatusChange(
-                                      false, controllerPassword.text));
+                                      passwordStatus, controllerPassword.text));
                               },
                               child: Image.asset(
                                 'res/ic_pass_eye_open_24dp_red.png',
@@ -175,9 +178,10 @@ class _MyHomePageState extends State<MyHomePage> {
                             child: FlatButton(
                               shape: CircleBorder(),
                               onPressed: () {
+                                passwordStatus = true;
                                 _passwordBloc
                                   ..add(PasswordStatusChange(
-                                      true, controllerPassword.text));
+                                      passwordStatus, controllerPassword.text));
                               },
                               child: Image.asset(
                                 'res/ic_pass_eye_closed_24dp_red.png',
@@ -186,7 +190,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                           )),
                       onChanged: (value) {
-                        _passwordBloc..add(PasswordStatusChange(true, controllerPassword.text));
+                        _passwordBloc..add(PasswordStatusChange(passwordStatus, controllerPassword.text));
                         _authorizationBloc
                           ..add(ChangeUniversity(university,
                               controllerName.text, controllerPassword.text));

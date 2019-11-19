@@ -71,7 +71,6 @@ class SchedulePage extends StatelessWidget {
               child: BlocBuilder(
                 bloc: _appBarBloc,
                 builder: (context, state) {
-                  print(state);
                   if (state is ScheduleAppBarDateUnitialized) {
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -157,44 +156,41 @@ class SchedulePage extends StatelessWidget {
       body: Container(
           margin: EdgeInsets.fromLTRB(
               0, ScreenUtil.getInstance().setHeight(30), 0, 0),
-          child: BlocBuilder(
+          child:
+          BlocBuilder(
             bloc: _scheduleBloc..add(ScheduleLoad()),
             builder: (context, state){
               if(state is ScheduleLoading){
                 return LoadWidget();
               } else{
-                return ScrollConfiguration(
-                  behavior: ScrollBehavior(),
-                  child: PageView.builder(
-
-                    onPageChanged: (value){
-                      day = value < currentDay ? day - 1 : day + 1;
-                      currentDay = value;
-                      _scheduleBloc..add(ScheduleDayChange(DateTime.now().add(Duration(days: day))));
-                      _appBarBloc..add(ScheduleAppBarPageChange(DateTime.now().add(Duration(days: day))));
-                    },
-                    itemBuilder: (context, index) {
-                      return BlocBuilder(
-                        bloc: _scheduleBloc,
-                        builder: (context, state){
-                          if(state is ScheduleLoaded && index == 5000){
-                            return state.scheduleElement.scheduleCell != null
-                                ? ScheduleBloc.getWidgetList(
-                                state.scheduleElement, _user)
-                                : EmptyDayWidget();
-                          } else if(state is ScheduleDayChanged && index == currentDay){
-                            return state.scheduleElement.scheduleCell != null
-                                ? ScheduleBloc.getWidgetList(
-                                state.scheduleElement, _user)
-                                : EmptyDayWidget();
-                          } else {
-                            return LoadWidget();
-                          }
-                        },
-                      );
-                    },
-                    controller: _controller,
-                  ),
+                return PageView.builder(
+                  onPageChanged: (value){
+                    day = value < currentDay ? day - 1 : day + 1;
+                    currentDay = value;
+                    _scheduleBloc..add(ScheduleDayChange(DateTime.now().add(Duration(days: day))));
+                    _appBarBloc..add(ScheduleAppBarPageChange(DateTime.now().add(Duration(days: day))));
+                  },
+                  itemBuilder: (context, index) {
+                    return BlocBuilder(
+                      bloc: _scheduleBloc,
+                      builder: (context, state){
+                        if(state is ScheduleLoaded && index == 5000){
+                          return state.scheduleElement.scheduleCell != null
+                              ? ScheduleBloc.getWidgetList(
+                              state.scheduleElement, _user)
+                              : EmptyDayWidget();
+                        } else if(state is ScheduleDayChanged && index == currentDay){
+                          return state.scheduleElement.scheduleCell != null
+                              ? ScheduleBloc.getWidgetList(
+                              state.scheduleElement, _user)
+                              : EmptyDayWidget();
+                        } else {
+                          return LoadWidget();
+                        }
+                      },
+                    );
+                  },
+                  controller: _controller,
                 );
               }
             },

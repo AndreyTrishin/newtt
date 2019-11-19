@@ -10,7 +10,7 @@ class PasswordBloc extends Bloc<PasswordEvent, PasswordState> {
   @override
   Stream<PasswordState> mapEventToState(PasswordEvent event) async* {
     if (event is PasswordStatusChange) {
-      if(event.password == ''){
+      if(event.password != ''){
         if (event.status) {
           yield PasswordOpen(event.password);
         } else {

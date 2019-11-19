@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:timetable_app/Models/Discipline.dart';
@@ -21,9 +20,6 @@ class APIRequest {
 
   static int idServer;
   static String server;
-  Dio dio = Dio();
-  APIRequest([this.dio]);
-
 
   static Future<User> authorisation(name, password) async {
     server = getServer(idServer);
@@ -258,10 +254,11 @@ class APIRequest {
         },
         body: Query.getScheduleQuery(key, date, 'AcademicGroup'));
     ScheduleElement scheduleElement;
+//    dio = Dio();
+
 
 //    var responce = await dio.post(server, data: Query.getScheduleQuery(key, date, 'AcademicGroup'), );
     var result = xml.parse(responce.body);
-    String r = result.toString();
 
 
     List<ScheduleCell> lessonList = [];
@@ -274,19 +271,7 @@ class APIRequest {
             case 'Лекции':
               color = Color.fromARGB(255, 0, 164, 116);
               break;
-            case 'Практические':
-              color = Color.fromARGB(255, 48, 74, 197);
-              break;
-            case 'Курсовой проект':
-              color = Color.fromARGB(255, 48, 74, 197);
-              break;
-            case 'Лабораторные':
-              color = Color.fromARGB(255, 48, 74, 197);
-              break;
-            case 'Зачет':
-              color = Color.fromARGB(255, 48, 74, 197);
-              break;
-            case 'Экзамен':
+            default:
               color = Color.fromARGB(255, 48, 74, 197);
               break;
           }
@@ -296,39 +281,11 @@ class APIRequest {
               DateTime.parse(e.findElements('m:DateEnd').first.text),
               Lesson(
                   e.findAllElements('m:LessonCompoundKey').first.text,
-                  e
-                      .findElements('m:Lesson')
-                      .first
-                      .findElements('m:Subject')
-                      .first
-                      .text,
-                  e
-                      .findElements('m:Lesson')
-                      .first
-                      .findElements('m:LessonType')
-                      .first
-                      .text,
-                  Teacher(
-                      e
-                          .findElements('m:Lesson')
-                          .first
-                          .findElements('m:Teacher')
-                          .first
-                          .findElements('m:TeacherId')
-                          .first
-                          .text,
-                      e
-                          .findElements('m:Lesson')
-                          .first
-                          .findElements('m:Teacher')
-                          .first
-                          .findElements('m:TeacherName')
-                          .first
-                          .text),
-                  e
-                          .findElements('m:Lesson')
-                          .first
-                          .findElements('m:Classroom')
+                  e.findElements('m:Lesson').first.findElements('m:Subject').first.text,
+                  e.findElements('m:Lesson').first.findElements('m:LessonType').first.text,
+                  Teacher(e.findElements('m:Lesson').first.findElements('m:Teacher').first.findElements('m:TeacherId').first.text,
+                      e.findElements('m:Lesson').first.findElements('m:Teacher').first.findElements('m:TeacherName').first.text),
+                  e.findElements('m:Lesson').first.findElements('m:Classroom')
                           .isNotEmpty
                       ? Classroom(
                           e
