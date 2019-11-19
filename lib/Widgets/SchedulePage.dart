@@ -88,8 +88,8 @@ class SchedulePage extends StatelessWidget {
                       ],
                     );
                   } else if (state is ScheduleAppBarDateChanged) {
-                    currentDate =
-                        DateFormat('yyyy-MM-dd').format(state.newDate);
+//                    currentDate =
+//                        DateFormat('yyyy-MM-dd').format(state.newDate);
 
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -132,14 +132,19 @@ class SchedulePage extends StatelessWidget {
                     shape: CircleBorder(),
                     child: Icon(Icons.event),
                     onPressed: () async {
-                      DateTime date = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.parse(currentDate),
-                          firstDate: DateTime(2015),
-                          lastDate: DateTime(2021));
-                      currentDate = date.toString().substring(0, 10);
-                      _scheduleBloc..add(ScheduleDayChange(date));
-                      _appBarBloc..add(ScheduleAppBarPageChange(date));
+                      try {
+                        DateTime date = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.parse(currentDate),
+                            firstDate: DateTime(2015),
+                            lastDate: DateTime(2021));
+                        if (date != null) {
+                          currentDate = DateFormat('yyyy-MM-dd').format(date);
+
+                          _scheduleBloc.add(ScheduleDayChange(date));
+                          _appBarBloc..add(ScheduleAppBarPageChange(date));
+                        }
+                      } catch (_) {}
                     },
                   ),
                 ),
@@ -150,69 +155,110 @@ class SchedulePage extends StatelessWidget {
       ),
       //todo: При быстрой прокрутке страниц загрузка предыдущих дней не останавливается и отображение нарушается
       body: Container(
-        margin: EdgeInsets.fromLTRB(0, ScreenUtil.getInstance().setHeight(30), 0, 0),
-        child: BlocBuilder(
-          bloc: _scheduleBloc..add(ScheduleLoad()),
-          builder: (context, state) {
-            if (state is ScheduleLoading) {
-              return LoadWidget();
-            } else if (state is ScheduleLoaded) {
-              return PageView.builder(
-                onPageChanged: (value) {
-                  day = value < currentDay ? day - 1 : day + 1;
-                  currentDay = value;
+          margin: EdgeInsets.fromLTRB(
+              0, ScreenUtil.getInstance().setHeight(30), 0, 0),
+          child: BlocBuilder(
+            bloc: _scheduleBloc..add(ScheduleLoad()),
+            builder: (context, state){
+              if(state is ScheduleLoading){
+                return LoadWidget();
+              } else{
+                return ScrollConfiguration(
+                  behavior: ScrollBehavior(),
+                  child: PageView.builder(
 
-                  _scheduleBloc
-                    ..add(ScheduleDayChange(
-                        DateTime.parse(currentDate).add(Duration(days: day))));
-                  _appBarBloc
-                    ..add(ScheduleAppBarPageChange(
-                        DateTime.parse(currentDate).add(Duration(days: day))));
-                },
-                controller: _controller,
-                itemBuilder: (context, position) {
-                  return position != currentDay
-                      ? LoadWidget()
-                      : (state.scheduleElement.scheduleCell != null
-                          ? ScheduleBloc.getWidgetList(
-                              state.scheduleElement, _user)
-                          : EmptyDayWidget());
-                },
-              );
-            } else if (state is ScheduleDayChanged) {
-              _scheduleBloc..add(null);
-//              currentDate = state.scheduleElement.date;
-              return PageView.builder(
-                onPageChanged: (value) {
-
-                  day = value < currentDay ? day - 1 : day + 1;
-                  currentDay = value;
-                  _appBarBloc
-                    ..add(ScheduleAppBarPageChange(
-                        DateTime.now().add(Duration(days: day))));
-
-                  _scheduleBloc
-                    ..add(ScheduleDayChange(
-                        DateTime.now().add(Duration(days: day))));
-                },
-                controller: _controller,
-                itemBuilder: (context, position) {
-                  return position != currentDay
-                      ? LoadWidget()
-                      : (state.scheduleElement.scheduleCell != null
-                          ? ScheduleBloc.getWidgetList(
-                              state.scheduleElement, _user)
-                          :EmptyDayWidget());
-                },
-              );
-            } else {
-              return Center(
-                child: Text('Ошибка'),
-              );
-            }
-          },
-        ),
-      ),
+                    onPageChanged: (value){
+                      day = value < currentDay ? day - 1 : day + 1;
+                      currentDay = value;
+                      _scheduleBloc..add(ScheduleDayChange(DateTime.now().add(Duration(days: day))));
+                      _appBarBloc..add(ScheduleAppBarPageChange(DateTime.now().add(Duration(days: day))));
+                    },
+                    itemBuilder: (context, index) {
+                      return BlocBuilder(
+                        bloc: _scheduleBloc,
+                        builder: (context, state){
+                          if(state is ScheduleLoaded && index == 5000){
+                            return state.scheduleElement.scheduleCell != null
+                                ? ScheduleBloc.getWidgetList(
+                                state.scheduleElement, _user)
+                                : EmptyDayWidget();
+                          } else if(state is ScheduleDayChanged && index == currentDay){
+                            return state.scheduleElement.scheduleCell != null
+                                ? ScheduleBloc.getWidgetList(
+                                state.scheduleElement, _user)
+                                : EmptyDayWidget();
+                          } else {
+                            return LoadWidget();
+                          }
+                        },
+                      );
+                    },
+                    controller: _controller,
+                  ),
+                );
+              }
+            },
+          )
+//        BlocBuilder(
+//          bloc: _scheduleBloc..add(ScheduleLoad()),
+//          builder: (context, state) {
+//            if (state is ScheduleLoading) {
+//              return LoadWidget();
+//            } else if (state is ScheduleLoaded) {
+//              return PageView.builder(
+//                onPageChanged: (value) {
+//                  day = value < currentDay ? day - 1 : day + 1;
+//                  currentDay = value;
+//
+//                  _scheduleBloc.add(ScheduleDayChange(
+//                      DateTime.parse(currentDate).add(Duration(days: day))));
+//                  _appBarBloc
+//                    ..add(ScheduleAppBarPageChange(
+//                        DateTime.parse(currentDate).add(Duration(days: day))));
+//                },
+//                controller: _controller,
+//                itemBuilder: (context, position) {
+//                  return position != currentDay
+//                      ? LoadWidget()
+//                      : (state.scheduleElement.scheduleCell != null
+//                          ? ScheduleBloc.getWidgetList(
+//                              state.scheduleElement, _user)
+//                          : EmptyDayWidget());
+//                },
+//              );
+//            } else if (state is ScheduleDayChanged) {
+////              currentDate = state.scheduleElement.date;
+//              return PageView.builder(
+//                onPageChanged: (value) {
+////                  APIRequest.dio.lock();
+//
+//                  day = value < currentDay ? day - 1 : day + 1;
+//                  currentDay = value;
+//                  _appBarBloc
+//                    ..add(ScheduleAppBarPageChange(
+//                        DateTime.now().add(Duration(days: day))));
+//
+//                  _scheduleBloc.add(ScheduleDayChange(
+//                      DateTime.now().add(Duration(days: day))));
+//                },
+//                controller: _controller,
+//                itemBuilder: (context, position) {
+//                  return position != currentDay
+//                      ? LoadWidget()
+//                      : (state.scheduleElement.scheduleCell != null
+//                          ? ScheduleBloc.getWidgetList(
+//                              state.scheduleElement, _user)
+//                          : EmptyDayWidget());
+//                },
+//              );
+//            } else {
+//              return Center(
+//                child: Text('Ошибка'),
+//              );
+//            }
+//          },
+//        ),
+          ),
     );
   }
 }

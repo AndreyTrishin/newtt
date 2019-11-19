@@ -38,3 +38,5 @@ class MainPerformanceChange extends MainState {
 }
 
 class MainUnitialized extends MainState {}
+
+class DrawerStateChanged extends MainState {}

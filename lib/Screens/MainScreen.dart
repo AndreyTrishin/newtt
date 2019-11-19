@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:timetable_app/Models/User.dart';
 import 'package:timetable_app/blocs/mainBloc/mainBloc.dart';
 import 'package:timetable_app/blocs/mainBloc/mainEvent.dart';
@@ -33,6 +34,8 @@ class MainScreen extends StatelessWidget {
     }
   }
 
+  bool pr = false;
+
   Widget build(BuildContext context) {
     _mainBloc = MainBloc(_user);
     _downloadWindow();
@@ -48,7 +51,42 @@ class MainScreen extends StatelessWidget {
                         image: AssetImage('res/background_drawer_header.png'),
                         fit: BoxFit.cover)),
                 accountName: Text('${_user.name}'),
-                accountEmail: Text('${_user.specialtyName}'),
+                accountEmail: GestureDetector(
+                  onTap: () {
+                    print(MainBloc.currentWidget.toString());
+
+                    pr = !pr;
+                    if (pr) {
+                      _mainBloc.add(ChangeDrawerState(pr));
+                    } else {
+                      switch(MainBloc.currentWidget.toString()){
+                        case 'CurriculumLoad' :
+                          _mainBloc.add(MainCurriculumLoadLoad());
+                          break;
+                        case 'SchedulePage' :
+                          _mainBloc.add(MainScheduleLoad());
+                          break;
+                        case 'PerformancePage' :
+                          _mainBloc.add(MainPerformanceLoad());
+                          break;
+                      }
+                    }
+                  },
+                  child: Row(
+                    children: <Widget>[
+                      Text('${_user.specialtyName}'),
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: Icon(
+                            Icons.arrow_drop_down,
+                            color: Colors.white,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
               ),
               //todo: сделать изменение цвета выбранного пункта
               BlocBuilder(
@@ -75,6 +113,28 @@ class MainScreen extends StatelessWidget {
                         _mainBloc.add(MainCurriculumLoadLoad());
                       },
                     );
+                  } else if (state is DrawerStateChanged) {
+                    return ListTile(
+                      leading: Container(
+                        width: 20,
+                        height: 20,
+                        child: Image.asset(
+                          'res/ic_nav_info_20dp_black.png',
+                          fit: BoxFit.scaleDown,
+                          color: Colors.black,
+                        ),
+                      ),
+                      title: Text(
+                        _user.specialtyName,
+                        style: TextStyle(color: Colors.red),
+                      ),
+                      subtitle: Text(
+                        _user.academicGroupName,
+                        style: TextStyle(
+                            color: Colors.red,
+                            fontSize: ScreenUtil.getInstance().setSp(18)),
+                      ),
+                    );
                   } else {
                     return ListTile(
                       title: Text("Учебный план"),
@@ -99,7 +159,9 @@ class MainScreen extends StatelessWidget {
               BlocBuilder(
                 bloc: _mainBloc,
                 builder: (context, state) {
-                  if (state is MainScheduleChange) {
+                  if (state is DrawerStateChanged) {
+                    return Container();
+                  } else if (state is MainScheduleChange) {
                     return ListTile(
                       title: Text(
                         'Расписание занятий',
@@ -144,7 +206,9 @@ class MainScreen extends StatelessWidget {
               BlocBuilder(
                 bloc: _mainBloc,
                 builder: (context, state) {
-                  if (state is MainPerformanceChange) {
+                  if (state is DrawerStateChanged) {
+                    return Container();
+                  } else if (state is MainPerformanceChange) {
                     return ListTile(
                       title: Text(
                         'Успеваемость',
@@ -217,9 +281,7 @@ class MainScreen extends StatelessWidget {
           } else if (state is MainPerformanceChange) {
             return state.currentWidget;
           } else {
-            return Center(
-              child: Text('Ошибка'),
-            );
+            return MainBloc.currentWidget;
           }
         },
       ),

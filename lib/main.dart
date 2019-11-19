@@ -8,6 +8,8 @@ import 'package:timetable_app/Models/Universe.dart';
 import 'package:timetable_app/Models/User.dart';
 import 'package:timetable_app/Screens/TeacherScreen.dart';
 import 'package:timetable_app/SharedPref.dart';
+import 'package:timetable_app/blocs/passwordBloc/passwordBloc.dart';
+import 'package:timetable_app/blocs/passwordBloc/passwordEvent.dart';
 
 import 'Screens/MainScreen.dart';
 import 'Screens/UniversityList.dart';
@@ -15,6 +17,7 @@ import 'blocs/authCheckContentBloc/authCheckContentState.dart';
 import 'blocs/authorizationBloc/authorizationBloc.dart';
 import 'blocs/authorizationBloc/authorizationEvent.dart';
 import 'blocs/authorizationBloc/authorizationState.dart';
+import 'blocs/passwordBloc/passwordState.dart';
 
 main() async {
   User user;
@@ -32,7 +35,6 @@ main() async {
   ));
 }
 
-//todo: сделать нормальную домашнюю страницу
 class MyHomePage extends StatefulWidget {
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -51,8 +53,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   University university;
 
+  PasswordBloc _passwordBloc;
+
   @override
   Widget build(BuildContext context) {
+    _passwordBloc = PasswordBloc();
     _authorizationBloc = AuthorizationBloc();
     ScreenUtil.instance = ScreenUtil(width: 1080, height: 1794)..init(context);
 // TODO: implement build
@@ -100,8 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       controller: controllerUniversity,
                       decoration: InputDecoration(labelText: 'Название ВУЗа'),
                       readOnly: true,
-                      onChanged: (value){
-
+                      onChanged: (value) {
                         _authorizationBloc
                           ..add(ChangeUniversity(university,
                               controllerName.text, controllerPassword.text));
@@ -130,75 +134,122 @@ class _MyHomePageState extends State<MyHomePage> {
                         controllerPassword.text));
                 },
               ),
-              TextFormField(
-                obscureText: true,
-                controller: controllerPassword,
-                decoration: InputDecoration(labelText: 'Пароль'),
-                onChanged: (value) {
-                  _authorizationBloc
-                    ..add(ChangeUniversity(university, controllerName.text,
-                        controllerPassword.text));
+              BlocBuilder(
+                bloc: _passwordBloc,
+                builder: (context, state) {
+                  if (state is PasswordOpen) {
+                    return TextFormField(
+                      controller: controllerPassword,
+                      decoration: InputDecoration(
+                          labelText: 'Пароль',
+                          suffixIcon: Container(
+                            width: ScreenUtil.getInstance().setWidth(40),
+                            child: FlatButton(
+                              shape: CircleBorder(),
+                              onPressed: () {
+                                _passwordBloc
+                                  ..add(PasswordStatusChange(
+                                      false, controllerPassword.text));
+                              },
+                              child: Image.asset(
+                                'res/ic_pass_eye_open_24dp_red.png',
+                                fit: BoxFit.scaleDown,
+                              ),
+                            ),
+                          )),
+                      onChanged: (value) {
+                        _passwordBloc..add(PasswordStatusChange(true, controllerPassword.text));
+                        _authorizationBloc
+                          ..add(ChangeUniversity(university,
+                              controllerName.text, controllerPassword.text));
+                      },
+                    );
+                  } else if(state is PasswordClose) {
+                    return TextFormField(
+                      obscureText: true,
+                      controller: controllerPassword,
+                      decoration: InputDecoration(
+                          labelText: 'Пароль',
+                          suffixIcon: Container(
+                            width: ScreenUtil.getInstance().setWidth(40),
+                            child: FlatButton(
+                              shape: CircleBorder(),
+                              onPressed: () {
+                                _passwordBloc
+                                  ..add(PasswordStatusChange(
+                                      true, controllerPassword.text));
+                              },
+                              child: Image.asset(
+                                'res/ic_pass_eye_closed_24dp_red.png',
+                                fit: BoxFit.scaleDown,
+                              ),
+                            ),
+                          )),
+                      onChanged: (value) {
+                        _passwordBloc..add(PasswordStatusChange(true, controllerPassword.text));
+                        _authorizationBloc
+                          ..add(ChangeUniversity(university,
+                              controllerName.text, controllerPassword.text));
+                      },
+                    );
+                  } else{
+                    return TextFormField(
+                      controller: controllerPassword,
+                      decoration: InputDecoration(
+                          labelText: 'Пароль',),
+                      onChanged: (value) {
+                        _passwordBloc..add(PasswordStatusChange(true, controllerPassword.text));
+                        _authorizationBloc
+                          ..add(ChangeUniversity(university,
+                              controllerName.text, controllerPassword.text));
+                      },
+                    );
+
+                  }
                 },
               ),
               Container(
-//                margin: EdgeInsets.symmetric(horizontal: 30),
                 alignment: Alignment.centerRight,
-                child:
-//                  RaisedButton(
-//                    color: Colors.red,
-//                    onPressed: () {
-//                      _authorizationBloc..add(TryAuthorization());
-//                      try {
-//                        APIRequest.idServer =
-//                        university.id == 1 ? 0 : university.id;
-//                      } catch (_) {
-//                        _authorizationBloc..add(ErrorAuthorization());
-//                      }
-//                    },
-//                    child: Text(
-//                      'ВОЙТИ',
-//                      style: TextStyle(color: Colors.white),
-//                    ),
-//                  )
-                    BlocBuilder(
-                        bloc: _authorizationBloc..add(ChangeUniversity(university, controllerName.text, controllerPassword.text)),
-                        builder: (context, state) {
-                          print(state);
-                          if (state is ChangedUniversity) {
-                            return RaisedButton(
-                              color: Colors.red,
-                              onPressed: () {
-                                _authorizationBloc..add(TryAuthorization());
-                                try {
-                                  APIRequest.idServer =
-                                      university.id == 1 ? 0 : university.id;
-                                } catch (_) {
-                                  _authorizationBloc..add(ErrorAuthorization());
-                                }
-                              },
-                              child: Text(
-                                'ВОЙТИ',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            );
-                          } else if (state is AuthCheckContentEmpty) {
-                            return RaisedButton(
-                              color: Colors.red,
-                              child: Text(
-                                'ВОЙТИ',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            );
-                          } else {
-                            return RaisedButton(
-                              color: Colors.red,
-                              child: Text(
-                                'ВОЙТИ',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            );
-                          }
-                        }),
+                child: BlocBuilder(
+                    bloc: _authorizationBloc
+                      ..add(ChangeUniversity(university, controllerName.text,
+                          controllerPassword.text)),
+                    builder: (context, state) {
+                      if (state is ChangedUniversity) {
+                        return RaisedButton(
+                          color: Colors.red,
+                          onPressed: () {
+                            _authorizationBloc..add(TryAuthorization());
+                            try {
+                              APIRequest.idServer =
+                                  university.id == 1 ? 0 : university.id;
+                            } catch (_) {
+                              _authorizationBloc..add(ErrorAuthorization());
+                            }
+                          },
+                          child: Text(
+                            'ВОЙТИ',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        );
+                      } else if (state is AuthCheckContentEmpty) {
+                        return RaisedButton(
+                          color: Colors.red,
+                          child: Text(
+                            'ВОЙТИ',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        );
+                      } else {
+                        return RaisedButton(
+                          color: Colors.red,
+                          child: Text(
+                            'ВОЙТИ',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        );
+                      }
+                    }),
               ),
               Container(
                 margin: EdgeInsets.all(ScreenUtil.getInstance().setWidth(20)),
@@ -289,6 +340,98 @@ class _MyHomePageState extends State<MyHomePage> {
                       return Container();
                     }
                   },
+                ),
+              ),
+              Expanded(
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: BlocBuilder(
+                      bloc: _authorizationBloc,
+                      // ignore: missing_return
+                      builder: (context, state) {
+                        if(state is AuthorizationLoading){
+                          return RaisedButton(
+                            color: Colors.red,
+                            child: Text(
+                              'ДЕМО',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            onPressed: () {
+                              APIRequest.idServer = 0;
+                              _authorizationBloc..add(TryAuthorization());
+                            },
+                          );
+                        } else if(state is Authorized){
+                          SchedulerBinding.instance.addPostFrameCallback((_) {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: Text('Выберите роль пользователя'),
+                                    actions: <Widget>[
+                                      FlatButton(
+                                        child: Text(
+                                          'Обучающийся',
+                                          style: TextStyle(color: Colors.black),
+                                        ),
+                                        onPressed: () {
+                                          Navigator.pushReplacement(context,
+                                              MaterialPageRoute(
+                                                  builder: (context) {
+                                                    state.user.currentRole =
+                                                    'Обучающийся';
+                                                    return MainScreen(state.user);
+                                                  }));
+                                        },
+                                        highlightColor:
+                                        Color.fromARGB(30, 0, 0, 0),
+                                      ),
+                                      FlatButton(
+                                        child: Text(
+                                          'Преподаватель',
+                                          style: TextStyle(color: Colors.black),
+                                        ),
+                                        onPressed: () {
+                                          Navigator.pushReplacement(context,
+                                              MaterialPageRoute(
+                                                  builder: (context) {
+                                                    state.user.currentRole =
+                                                    'Преподаватель';
+                                                    return TeacherScreen(state.user);
+                                                  }));
+                                        },
+                                        highlightColor:
+                                        Color.fromARGB(30, 0, 0, 0),
+                                      ),
+                                    ],
+                                  );
+                                });
+                          });
+                          return RaisedButton(
+                            color: Colors.red,
+                            child: Text(
+                              'ДЕМО',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            onPressed: () {
+                              APIRequest.idServer = 0;
+                              _authorizationBloc..add(TryAuthorization());
+                            },
+                          );
+                        } else{
+                          return RaisedButton(
+                            color: Colors.red,
+                            child: Text(
+                              'ДЕМО',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            onPressed: () {
+                              APIRequest.idServer = 0;
+                              _authorizationBloc..add(TryAuthorization());
+                            },
+                          );
+                        }
+                      }),
                 ),
               )
             ],

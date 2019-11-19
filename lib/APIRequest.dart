@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:timetable_app/Models/Discipline.dart';
@@ -20,6 +21,8 @@ class APIRequest {
 
   static int idServer;
   static String server;
+  Dio dio = Dio();
+  APIRequest([this.dio]);
 
 
   static Future<User> authorisation(name, password) async {
@@ -254,8 +257,12 @@ class APIRequest {
           'Content-Type': 'application/xml',
         },
         body: Query.getScheduleQuery(key, date, 'AcademicGroup'));
-    var result = xml.parse(responce.body);
     ScheduleElement scheduleElement;
+
+//    var responce = await dio.post(server, data: Query.getScheduleQuery(key, date, 'AcademicGroup'), );
+    var result = xml.parse(responce.body);
+    String r = result.toString();
+
 
     List<ScheduleCell> lessonList = [];
     try {
@@ -263,12 +270,7 @@ class APIRequest {
         var lesson = e.findElements('m:Lesson');
         Color color;
         if (lesson.isNotEmpty) {
-          switch (e
-              .findElements('m:Lesson')
-              .first
-              .findElements('m:LessonType')
-              .first
-              .text) {
+          switch (e.findElements('m:Lesson').first.findElements('m:LessonType').first.text) {
             case 'Лекции':
               color = Color.fromARGB(255, 0, 164, 116);
               break;
@@ -282,6 +284,9 @@ class APIRequest {
               color = Color.fromARGB(255, 48, 74, 197);
               break;
             case 'Зачет':
+              color = Color.fromARGB(255, 48, 74, 197);
+              break;
+            case 'Экзамен':
               color = Color.fromARGB(255, 48, 74, 197);
               break;
           }
@@ -369,6 +374,8 @@ class APIRequest {
     } catch (_) {
       scheduleElement = ScheduleElement(date, '', null);
     }
+
+
 
     return scheduleElement;
   }

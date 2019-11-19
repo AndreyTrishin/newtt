@@ -11,6 +11,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   final User _user;
 
   MainBloc(this._user);
+  static Widget currentWidget;
 
   @override
   // TODO: implement initialState
@@ -19,11 +20,18 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   @override
   Stream<MainState> mapEventToState(MainEvent event) async* {
     if (event is MainCurriculumLoadLoad) {
-      yield MainCurriculumLoadChange(CurriculumLoad(_user), Colors.red);
+      currentWidget = CurriculumLoad(_user);
+      yield MainCurriculumLoadChange(currentWidget, Colors.red);
     } else if (event is MainScheduleLoad){
-      yield MainScheduleChange(SchedulePage(_user), Colors.red);
+      currentWidget = SchedulePage(_user);
+      yield MainScheduleChange(currentWidget, Colors.red);
     } else if(event is MainPerformanceLoad){
-      yield MainPerformanceChange(PerformancePage(_user), Colors.red);
+      currentWidget = PerformancePage(_user);
+      yield MainPerformanceChange(currentWidget, Colors.red);
+    } else if(event is ChangeDrawerState){
+      yield DrawerStateChanged();
+    } else if(event is MainDefault){
+      yield MainUnitialized();
     }
   }
 }

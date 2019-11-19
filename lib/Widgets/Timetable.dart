@@ -42,7 +42,7 @@ class Timetable extends StatelessWidget {
                         ),
                         Container(
                           margin: EdgeInsets.fromLTRB(
-                              0, ScreenUtil.getInstance().setHeight(90), 0, 0),
+                              0, ScreenUtil.getInstance().setHeight(80), 0, 0),
                           child: Text(
                             scheduleCell.dateEnd.toString().substring(11, 16),
                             style: TextStyle(
@@ -53,7 +53,7 @@ class Timetable extends StatelessWidget {
                       ]),
                 ),
                 Container(
-                  width: ScreenUtil.getInstance().setWidth(970),
+                  width: MediaQuery.of(context).size.width - 50,
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: ScreenUtil.getInstance().setHeight(10), horizontal: ScreenUtil.getInstance().setWidth(10)),
                     margin: EdgeInsets.symmetric(
@@ -68,32 +68,35 @@ class Timetable extends StatelessWidget {
                           return TimetableInfo(scheduleCell);
                         }));
                       },
-                      trailing: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: <Widget>[
-                          Text(
-                            scheduleCell.lesson.lessonType
-                                .substring(0, 3)
-                                .toUpperCase(),
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize:
-                                    ScreenUtil.getInstance().setSp(fontSize)),
-                          ),
-                          Container(
-                              margin: EdgeInsets.fromLTRB(0,
-                                  ScreenUtil.getInstance().setWidth(36), 0, 0),
-                              child: Text(
-                                scheduleCell.lesson.classroom != null
-                                    ? scheduleCell
-                                        .lesson.classroom.classroomName
-                                    : '',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: ScreenUtil.getInstance()
-                                        .setSp(fontSize)),
-                              )),
-                        ],
+                      trailing: Container(
+                        margin: EdgeInsets.fromLTRB(0, ScreenUtil.getInstance().setWidth(20), 0, 0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: <Widget>[
+                            Text(
+                              scheduleCell.lesson.lessonType
+                                  .substring(0, 3)
+                                  .toUpperCase(),
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize:
+                                      ScreenUtil.getInstance().setSp(fontSize)),
+                            ),
+                            Container(
+                                margin: EdgeInsets.fromLTRB(0,
+                                    ScreenUtil.getInstance().setWidth(36), 0, 0),
+                                child: Text(
+                                  scheduleCell.lesson.classroom != null
+                                      ? scheduleCell
+                                          .lesson.classroom.classroomName
+                                      : '',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: ScreenUtil.getInstance()
+                                          .setSp(fontSize)),
+                                )),
+                          ],
+                        ),
                       ),
                       title: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

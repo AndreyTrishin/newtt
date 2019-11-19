@@ -11,3 +11,11 @@ class MainCurriculumLoadLoad extends MainEvent {}
 class MainScheduleLoad extends MainEvent {}
 
 class MainPerformanceLoad extends MainEvent {}
+
+class ChangeDrawerState extends MainEvent {
+  final bool pr;
+
+  ChangeDrawerState(this.pr);
+}
+
+class MainDefault extends MainEvent{}
