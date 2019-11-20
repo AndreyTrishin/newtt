@@ -3,12 +3,24 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:timetable_app/Models/ScheduleElement.dart';
 import 'package:timetable_app/Screens/TimeTableInfo.dart';
 
-class Timetable extends StatelessWidget {
-  double fontSize = 26;
+class Timetable extends StatefulWidget {
   int numberLesson;
   ScheduleCell scheduleCell;
 
   Timetable(this.scheduleCell, this.numberLesson);
+
+  @override
+  _TimetableState createState() => _TimetableState();
+}
+
+class _TimetableState extends State<Timetable> {
+  double fontSize = 26;
+
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,13 +41,13 @@ class Timetable extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          numberLesson.toString(),
+                          widget.numberLesson.toString(),
                           style: TextStyle(
                               fontSize:
                                   ScreenUtil.getInstance().setSp(fontSize)),
                         ),
                         Text(
-                          scheduleCell.dateBegin.toString().substring(11, 16),
+                          widget.scheduleCell.dateBegin.toString().substring(11, 16),
                           style: TextStyle(
                               fontSize:
                                   ScreenUtil.getInstance().setSp(fontSize)),
@@ -44,7 +56,7 @@ class Timetable extends StatelessWidget {
                           margin: EdgeInsets.fromLTRB(
                               0, ScreenUtil.getInstance().setHeight(80), 0, 0),
                           child: Text(
-                            scheduleCell.dateEnd.toString().substring(11, 16),
+                            widget.scheduleCell.dateEnd.toString().substring(11, 16),
                             style: TextStyle(
                                 fontSize:
                                     ScreenUtil.getInstance().setSp(fontSize)),
@@ -59,13 +71,13 @@ class Timetable extends StatelessWidget {
                     margin: EdgeInsets.symmetric(
                         horizontal: ScreenUtil.getInstance().setWidth(18)),
                     decoration: BoxDecoration(
-                        color: scheduleCell.lesson.color,
+                        color: widget.scheduleCell.lesson.color,
                         borderRadius: BorderRadius.circular(4)),
                     child: ListTile(
                       onTap: () {
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) {
-                          return TimetableInfo(scheduleCell);
+                          return TimetableInfo(widget.scheduleCell);
                         }));
                       },
                       trailing: Container(
@@ -74,7 +86,7 @@ class Timetable extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: <Widget>[
                             Text(
-                              scheduleCell.lesson.lessonType
+                              widget.scheduleCell.lesson.lessonType
                                   .substring(0, 3)
                                   .toUpperCase(),
                               style: TextStyle(
@@ -86,8 +98,8 @@ class Timetable extends StatelessWidget {
                                 margin: EdgeInsets.fromLTRB(0,
                                     ScreenUtil.getInstance().setWidth(36), 0, 0),
                                 child: Text(
-                                  scheduleCell.lesson.classroom != null
-                                      ? scheduleCell
+                                  widget.scheduleCell.lesson.classroom != null
+                                      ? widget.scheduleCell
                                           .lesson.classroom.classroomName
                                       : '',
                                   style: TextStyle(
@@ -106,7 +118,7 @@ class Timetable extends StatelessWidget {
                             padding: EdgeInsets.symmetric(vertical: ScreenUtil.getInstance().setHeight(4), horizontal: ScreenUtil.getInstance().setWidth(4)),
 
                             child: Text(
-                              scheduleCell.lesson.academicGroup,
+                              widget.scheduleCell.lesson.academicGroup,
                               style: TextStyle(
                                   color: Color.fromARGB(132, 255, 255, 255),
                                   fontSize:
@@ -117,7 +129,7 @@ class Timetable extends StatelessWidget {
                             padding: EdgeInsets.symmetric(vertical: ScreenUtil.getInstance().setHeight(4), horizontal: ScreenUtil.getInstance().setWidth(4)),
 
                             child: Text(
-                              scheduleCell.lesson.subject,
+                              widget.scheduleCell.lesson.subject,
                               softWrap: false,
                               style: TextStyle(
 
@@ -136,7 +148,7 @@ class Timetable extends StatelessWidget {
                                 padding: EdgeInsets.symmetric(vertical: ScreenUtil.getInstance().setHeight(4), horizontal: ScreenUtil.getInstance().setWidth(4)),
 
                                 child: Text(
-                                  scheduleCell.lesson.teacher.teacherName,
+                                  widget.scheduleCell.lesson.teacher.teacherName,
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontSize: ScreenUtil.getInstance()

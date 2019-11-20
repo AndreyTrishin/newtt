@@ -49,14 +49,16 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
   Stream<ScheduleState> mapEventToState(ScheduleEvent event) async* {
     if (_user.currentRole == 'Обучающийся') {
       if (event is ScheduleLoad) {
-        var se = await getSchedule(_user.academicGroupCompoundKey,
-            DateFormat('yyyy-MM-dd').format(DateTime.now()));
-        yield ScheduleLoaded(se);
+//        var se = await getSchedule(_user.academicGroupCompoundKey,
+//            DateFormat('yyyy-MM-dd').format(DateTime.now()), false);
+        yield* getSchedule(_user.academicGroupCompoundKey,
+            DateFormat('yyyy-MM-dd').format(DateTime.now()), false);
       } else if (event is ScheduleDayChange) {
-
-        var se = await getSchedule(_user.academicGroupCompoundKey,
-            DateFormat('yyyy-MM-dd').format(event.date));
-        yield ScheduleDayChanged(se);
+//
+//        var se = await getSchedule(_user.academicGroupCompoundKey,
+//            DateFormat('yyyy-MM-dd').format(event.date));
+        yield* getSchedule(_user.academicGroupCompoundKey,
+            DateFormat('yyyy-MM-dd').format(event.date), true);
       }
     } else {
       if (event is ScheduleLoad) {
@@ -71,19 +73,19 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
 
   Dio dio = Dio();
 
-  Future<ScheduleElement> getSchedule(key, date) async {
-//    var responce = await http.post(APIRequest.server,
+  Stream<ScheduleState> getSchedule(key, date, bool check) async* {
+//    var response = await http.post(APIRequest.server,
 //        headers: {
 //          'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
 //          'Content-Type': 'application/xml',
 //        },
 //        body: Query.getScheduleQuery(key, date, 'AcademicGroup'));
 
-    var responce = await dio.post(
+    var response = await dio.post(
       APIRequest.server,
       data: Query.getScheduleQuery(key, date, 'AcademicGroup'),
     );
-    var result = xml.parse(responce.data);
+    var result = xml.parse(response.data);
 
     ScheduleElement scheduleElement;
 
@@ -191,6 +193,11 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
       scheduleElement = ScheduleElement(date, '', null);
     }
 
-    return scheduleElement;
+    if(check){
+      yield ScheduleDayChanged(scheduleElement);
+
+    } else{
+      yield ScheduleLoaded(scheduleElement);
+    }
   }
 }

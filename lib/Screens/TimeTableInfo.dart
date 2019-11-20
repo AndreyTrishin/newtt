@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:timetable_app/Models/ScheduleElement.dart';
 
 class TimetableInfo extends StatelessWidget {
   ScheduleCell _scheduleCell;
   String _role;
 
-  double fontSize = 13;
+  double fontSize = 26;
 
   TimetableInfo(this._scheduleCell, [this._role]);
 
@@ -36,7 +37,7 @@ class TimetableInfo extends StatelessWidget {
               padding: const EdgeInsets.all(10.0),
               child: Text(
                 _role == null ? _scheduleCell.lesson.teacher.teacherName : _scheduleCell.lesson.academicGroup,
-                style: TextStyle(fontSize: fontSize),
+                style: TextStyle(fontSize: ScreenUtil.getInstance().setSp(fontSize)),
               ),
             ),
           ),
@@ -57,7 +58,7 @@ class TimetableInfo extends StatelessWidget {
                 child: Text(
                   _scheduleCell.lesson.lessonType,
                   style: TextStyle(
-                      color: _scheduleCell.lesson.color, fontSize: fontSize),
+                      color: _scheduleCell.lesson.color, fontSize: ScreenUtil.getInstance().setSp(fontSize)),
                 ),
               )
             ],
