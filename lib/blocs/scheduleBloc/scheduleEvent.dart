@@ -6,7 +6,12 @@ class ScheduleEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class ScheduleLoad extends ScheduleEvent {}
+class ScheduleLoad extends ScheduleEvent {
+  final DateTime date;
+
+  ScheduleLoad(this.date);
+
+}
 
 class ScheduleDayChange extends ScheduleEvent{
   final DateTime date;

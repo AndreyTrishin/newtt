@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:timetable_app/Models/Universe.dart';
-import 'package:timetable_app/blocs/universeBloc/universeEvent.dart';
-import 'package:timetable_app/blocs/universeBloc/universeState.dart';
+import 'package:timetable_app/blocs/universityBloc/universeEvent.dart';
+import 'package:timetable_app/blocs/universityBloc/universeState.dart';
 
 import '../../APIRequest.dart';
 

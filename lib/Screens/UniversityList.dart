@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:timetable_app/Widgets/LoadWidget.dart';
-import 'package:timetable_app/blocs/universeBloc/universeBloc.dart';
-import 'package:timetable_app/blocs/universeBloc/universeEvent.dart';
-import 'package:timetable_app/blocs/universeBloc/universeState.dart';
+import 'package:timetable_app/blocs/universityBloc/universeBloc.dart';
+import 'package:timetable_app/blocs/universityBloc/universeEvent.dart';
+import 'package:timetable_app/blocs/universityBloc/universeState.dart';
 
 class UniversityList extends StatelessWidget {
   UniversityBloc _universityBloc;

@@ -189,7 +189,7 @@ class TeacherScreen extends StatelessWidget {
       ),
       body: Container(
         child: BlocBuilder(
-          bloc: _scheduleBloc..add(ScheduleLoad()),
+          bloc: _scheduleBloc..add(ScheduleLoad(DateTime.parse(currentDate))),
           builder: (context, state) {
             if (state is ScheduleLoading) {
               return Center(

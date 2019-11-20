@@ -27,9 +27,9 @@ class APIRequest {
     print(idServer);
 
     User user;
-    http.Response responceAuth;
+    http.Response responseAuth;
     try{
-      responceAuth = await http.post(server,
+      responseAuth = await http.post(server,
           headers: {
             'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
             'SOAPAction': 'http://sgu-infocom.ru/study#WebStudy:Authorization',
@@ -41,18 +41,18 @@ class APIRequest {
       user = null;
     }
 
-    var resultAuth = xml.parse(responceAuth.body);
+    var resultAuth = xml.parse(responseAuth.body);
     try {
-      http.Response responceRecBook;
+      http.Response responseRecBook;
       xml.XmlDocument resultRecBook;
-      responceRecBook = await http.post(server,
+      responseRecBook = await http.post(server,
           headers: {
             'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
             'Content-Type': 'application/xml',
           },
           body: Query.getRecordbooksQuery(
               resultAuth.findAllElements('m:UserId').first.text));
-      resultRecBook = xml.parse(responceRecBook.body);
+      resultRecBook = xml.parse(responseRecBook.body);
       List<String> roles = [];
       for (var e in resultAuth
           .findAllElements('m:User')
@@ -110,13 +110,13 @@ class APIRequest {
 
   static Future<List<List<MarkRecord>>> getEducationalPerformance(
       userId, recbookId) async {
-    var responce = await http.post(server,
+    var response = await http.post(server,
         headers: {
           'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
           'Content-Type': 'application/xml',
         },
         body: Query.getEducationalPerformance(userId, recbookId));
-    var result = xml.parse(responce.body);
+    var result = xml.parse(response.body);
 
     List<List<MarkRecord>> listOfMarks = [];
     String term = 'Первый семестр';
@@ -165,13 +165,13 @@ class APIRequest {
   }
 
   static Future<List<List<Discipline>>> getCurriculumLoad(curriculumId) async {
-    var responceTerms = await http.post(server,
+    var responseTerms = await http.post(server,
         headers: {
           'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
           'Content-Type': 'application/xml',
         },
         body: Query.getCurriculumTermsQuery(curriculumId));
-    var resultTerms = xml.parse(responceTerms.body);
+    var resultTerms = xml.parse(responseTerms.body);
 
     var termsCount =
         int.parse(resultTerms.findAllElements('m:TermNumber').last.text);
@@ -186,13 +186,13 @@ class APIRequest {
     List<List<Discipline>> list = [];
 
     for (int i = 1; i <= termsCount; i++) {
-      var responceLoad = await http.post(server,
+      var responseLoad = await http.post(server,
           headers: {
             'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
             'Content-Type': 'application/xml',
           },
           body: Query.getCurriculumLoadQuery(curriculumId, termList[i - 1].id));
-      var resultLoad = xml.parse(responceLoad.body);
+      var resultLoad = xml.parse(responseLoad.body);
       Map<String, Discipline> mapOfDiscipline = {};
       for (var e in resultLoad.findAllElements('m:CurriculumLoad')) {
         if (mapOfDiscipline[e.findElements('m:Subject').first.text] == null) {
@@ -247,7 +247,7 @@ class APIRequest {
   }
 
   static Future<ScheduleElement> getSchedule(key, date) async {
-    var responce = await http.post(server,
+    var response = await http.post(server,
         headers: {
           'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
           'Content-Type': 'application/xml',
@@ -257,8 +257,8 @@ class APIRequest {
 //    dio = Dio();
 
 
-//    var responce = await dio.post(server, data: Query.getScheduleQuery(key, date, 'AcademicGroup'), );
-    var result = xml.parse(responce.body);
+//    var response = await dio.post(server, data: Query.getScheduleQuery(key, date, 'AcademicGroup'), );
+    var result = xml.parse(response.body);
 
 
     List<ScheduleCell> lessonList = [];
@@ -338,9 +338,9 @@ class APIRequest {
   }
 
   static Future<List<University>> getUnivercity() async {
-    var responce = await http.get('http://81.177.140.25/university.xml');
+    var response = await http.get('http://81.177.140.25/university.xml');
 
-    var result = xml.parse(utf8.decode(responce.bodyBytes));
+    var result = xml.parse(utf8.decode(response.bodyBytes));
 
     List<University> list = [];
 
@@ -355,14 +355,14 @@ class APIRequest {
   }
 
   static getTeacherSchedule(idUser, date) async {
-    var responce = await http.post(server,
+    var response = await http.post(server,
         headers: {
           'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
           'Content-Type': 'application/xml',
         },
         body: Query.getScheduleQuery(idUser, date, 'Teacher'));
 
-    var result = xml.parse(responce.body);
+    var result = xml.parse(response.body);
     ScheduleElement scheduleElement;
 
     List<ScheduleCell> lessonList = [];

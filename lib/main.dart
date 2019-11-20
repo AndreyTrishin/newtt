@@ -78,139 +78,170 @@ class _MyHomePageState extends State<MyHomePage> {
               0),
           child: Column(
             children: <Widget>[
-              BlocBuilder(
-                bloc: _authorizationBloc,
-                builder: (context, state) {
-                  if (state is ChangedUniversity) {
-                    return TextFormField(
-                      controller: controllerUniversity,
-                      decoration: InputDecoration(labelText: 'Название ВУЗа'),
-                      readOnly: true,
-                      onTap: () async {
-                        var un;
-                        SchedulerBinding.instance
-                            .addPostFrameCallback((_) async {
-                          un = await Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return UniversityList();
-                          }));
-                          university = un;
-                          controllerUniversity.text = university.name;
+              Theme(
+                data: ThemeData(
+                  primaryColor: Colors.red,
+                ),
+                child: BlocBuilder(
+                  bloc: _authorizationBloc,
+                  builder: (context, state) {
+                    if (state is ChangedUniversity) {
+                      return Theme(
+                        data: ThemeData(canvasColor: Colors.red),
+                        child: TextFormField(
+                          controller: controllerUniversity,
+                          decoration: InputDecoration(labelText: 'Название ВУЗа'),
+                          readOnly: true,
+                          onTap: () async {
+                            var un;
+                            SchedulerBinding.instance
+                                .addPostFrameCallback((_) async {
+                              un = await Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return UniversityList();
+                              }));
+                              university = un;
+                              controllerUniversity.text = university.name;
+                              _authorizationBloc
+                                ..add(ChangeUniversity(
+                                    university,
+                                    controllerName.text,
+                                    controllerPassword.text));
+                            });
+                          },
+                        ),
+                      );
+                    } else {
+                      return TextFormField(
+
+                        controller: controllerUniversity,
+                        decoration: InputDecoration(labelText: 'Название ВУЗа'),
+                        readOnly: true,
+                        onChanged: (value) {
                           _authorizationBloc
                             ..add(ChangeUniversity(university,
                                 controllerName.text, controllerPassword.text));
-                        });
-                      },
-                    );
-                  } else {
-                    return TextFormField(
-                      controller: controllerUniversity,
-                      decoration: InputDecoration(labelText: 'Название ВУЗа'),
-                      readOnly: true,
-                      onChanged: (value) {
-                        _authorizationBloc
-                          ..add(ChangeUniversity(university,
-                              controllerName.text, controllerPassword.text));
-                      },
-                      onTap: () async {
-                        SchedulerBinding.instance
-                            .addPostFrameCallback((_) async {
-                          university = await Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return UniversityList();
-                          }));
-                          controllerUniversity.text = university.name;
-                        });
-                      },
-                    );
-                  }
-                },
+                        },
+                        onTap: () async {
+                          SchedulerBinding.instance
+                              .addPostFrameCallback((_) async {
+                            university = await Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                              return UniversityList();
+                            }));
+                            controllerUniversity.text = university.name;
+                          });
+                        },
+                      );
+                    }
+                  },
+                ),
               ),
-              TextFormField(
-                controller: controllerName,
-                decoration:
-                    InputDecoration(labelText: 'Ваши фамилия, имя и отчество'),
-                onChanged: (value) {
-                  _authorizationBloc
-                    ..add(ChangeUniversity(university, controllerName.text,
-                        controllerPassword.text));
-                },
-              ),
-              BlocBuilder(
-                bloc: _passwordBloc,
-                builder: (context, state) {
-                  if (state is PasswordOpen) {
-                    return TextFormField(
-                      controller: controllerPassword,
-                      decoration: InputDecoration(
-                          labelText: 'Пароль',
-                          suffixIcon: Container(
-                            width: ScreenUtil.getInstance().setWidth(40),
-                            child: FlatButton(
-                              shape: CircleBorder(),
-                              onPressed: () {
-                                passwordStatus = true;
-                                _passwordBloc
-                                  ..add(PasswordStatusChange(
-                                      passwordStatus, controllerPassword.text));
-                              },
-                              child: Image.asset(
-                                'res/ic_pass_eye_open_24dp_red.png',
-                                fit: BoxFit.scaleDown,
-                              ),
-                            ),
-                          )),
-                      onChanged: (value) {
-                        _passwordBloc..add(PasswordStatusChange(true, controllerPassword.text));
-                        _authorizationBloc
-                          ..add(ChangeUniversity(university,
-                              controllerName.text, controllerPassword.text));
-                      },
-                    );
-                  } else if(state is PasswordClose) {
-                    return TextFormField(
-                      obscureText: true,
-                      controller: controllerPassword,
-                      decoration: InputDecoration(
-                          labelText: 'Пароль',
-                          suffixIcon: Container(
-                            width: ScreenUtil.getInstance().setWidth(40),
-                            child: FlatButton(
-                              shape: CircleBorder(),
-                              onPressed: () {
-                                passwordStatus = false;
-                                _passwordBloc
-                                  ..add(PasswordStatusChange(
-                                      passwordStatus, controllerPassword.text));
-                              },
-                              child: Image.asset(
-                                'res/ic_pass_eye_closed_24dp_red.png',
-                                fit: BoxFit.scaleDown,
-                              ),
-                            ),
-                          )),
-                      onChanged: (value) {
-                        _passwordBloc..add(PasswordStatusChange(passwordStatus, controllerPassword.text));
-                        _authorizationBloc
-                          ..add(ChangeUniversity(university,
-                              controllerName.text, controllerPassword.text));
-                      },
-                    );
-                  } else{
-                    return TextFormField(
-                      controller: controllerPassword,
-                      decoration: InputDecoration(
-                          labelText: 'Пароль',),
-                      onChanged: (value) {
-                        _passwordBloc..add(PasswordStatusChange(true, controllerPassword.text));
-                        _authorizationBloc
-                          ..add(ChangeUniversity(university,
-                              controllerName.text, controllerPassword.text));
-                      },
-                    );
+              Theme(
+                data: ThemeData(
+                    primaryColor: Colors.red,
+                ),
+                child: TextFormField(
+                  cursorColor: Colors.red,
 
-                  }
-                },
+
+                  controller: controllerName,
+                  decoration:
+                      InputDecoration(labelText: 'Ваши фамилия, имя и отчество',
+                      border: UnderlineInputBorder(borderSide: BorderSide(color: Colors.red))),
+                  onChanged: (value) {
+                    _authorizationBloc
+                      ..add(ChangeUniversity(university, controllerName.text,
+                          controllerPassword.text));
+                  },
+                ),
+              ),
+              Theme(
+                data: ThemeData(
+                  primaryColor: Colors.red,
+                ),
+                child: BlocBuilder(
+                  bloc: _passwordBloc,
+                  builder: (context, state) {
+                    if (state is PasswordOpen) {
+                      return TextFormField(
+                        controller: controllerPassword,
+                        decoration: InputDecoration(
+                            labelText: 'Пароль',
+                            suffixIcon: Container(
+                              width: ScreenUtil.getInstance().setWidth(40),
+                              child: FlatButton(
+                                shape: CircleBorder(),
+                                onPressed: () {
+                                  passwordStatus = true;
+                                  _passwordBloc
+                                    ..add(PasswordStatusChange(
+                                        passwordStatus, controllerPassword.text));
+                                },
+                                child: Image.asset(
+                                  'res/ic_pass_eye_open_24dp_red.png',
+                                  fit: BoxFit.scaleDown,
+                                ),
+                              ),
+                            )),
+                        onChanged: (value) {
+                          _passwordBloc
+                            ..add(PasswordStatusChange(
+                                true, controllerPassword.text));
+                          _authorizationBloc
+                            ..add(ChangeUniversity(university,
+                                controllerName.text, controllerPassword.text));
+                        },
+                      );
+                    } else if (state is PasswordClose) {
+                      return TextFormField(
+                        obscureText: true,
+                        controller: controllerPassword,
+                        decoration: InputDecoration(
+                            labelText: 'Пароль',
+                            suffixIcon: Container(
+                              width: ScreenUtil.getInstance().setWidth(40),
+                              child: FlatButton(
+                                shape: CircleBorder(),
+                                onPressed: () {
+                                  passwordStatus = false;
+                                  _passwordBloc
+                                    ..add(PasswordStatusChange(
+                                        passwordStatus, controllerPassword.text));
+                                },
+                                child: Image.asset(
+                                  'res/ic_pass_eye_closed_24dp_red.png',
+                                  fit: BoxFit.scaleDown,
+                                ),
+                              ),
+                            )),
+                        onChanged: (value) {
+                          _passwordBloc
+                            ..add(PasswordStatusChange(
+                                passwordStatus, controllerPassword.text));
+                          _authorizationBloc
+                            ..add(ChangeUniversity(university,
+                                controllerName.text, controllerPassword.text));
+                        },
+                      );
+                    } else {
+                      return TextFormField(
+                        controller: controllerPassword,
+                        decoration: InputDecoration(
+                          labelText: 'Пароль',
+                        ),
+                        onChanged: (value) {
+                          _passwordBloc
+                            ..add(PasswordStatusChange(
+                                true, controllerPassword.text));
+                          _authorizationBloc
+                            ..add(ChangeUniversity(university,
+                                controllerName.text, controllerPassword.text));
+                        },
+                      );
+                    }
+                  },
+                ),
               ),
               Container(
                 alignment: Alignment.centerRight,
@@ -316,8 +347,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   );
                                 });
                           });
-                        } else
-                        if (state.user.currentRole == 'Обучающийся') {
+                        } else if (state.user.currentRole == 'Обучающийся') {
                           SchedulerBinding.instance.addPostFrameCallback((_) {
                             Navigator.pushReplacement(context,
                                 MaterialPageRoute(builder: (context) {
@@ -348,12 +378,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               Expanded(
-                child:Align(
+                child: Align(
                   alignment: Alignment.bottomCenter,
                   child: BlocBuilder(
                       bloc: _authorizationBloc,
                       builder: (context, state) {
-                        if(state is AuthorizationLoading){
+                        if (state is AuthorizationLoading) {
                           return RaisedButton(
                             color: Colors.red,
                             child: Text(
@@ -365,7 +395,8 @@ class _MyHomePageState extends State<MyHomePage> {
                               _authorizationBloc..add(TryAuthorization());
                             },
                           );
-                        } else if(state is Authorized && state.user.name == 'Иван Иванов'){
+                        } else if (state is Authorized &&
+                            state.user.name == 'Иван Иванов') {
                           SchedulerBinding.instance.addPostFrameCallback((_) {
                             showDialog(
                                 context: context,
@@ -382,13 +413,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                           Navigator.pushReplacement(context,
                                               MaterialPageRoute(
                                                   builder: (context) {
-                                                    state.user.currentRole =
-                                                    'Обучающийся';
-                                                    return MainScreen(state.user);
-                                                  }));
+                                            state.user.currentRole =
+                                                'Обучающийся';
+                                            return MainScreen(state.user);
+                                          }));
                                         },
                                         highlightColor:
-                                        Color.fromARGB(30, 0, 0, 0),
+                                            Color.fromARGB(30, 0, 0, 0),
                                       ),
                                       FlatButton(
                                         child: Text(
@@ -399,13 +430,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                           Navigator.pushReplacement(context,
                                               MaterialPageRoute(
                                                   builder: (context) {
-                                                    state.user.currentRole =
-                                                    'Преподаватель';
-                                                    return TeacherScreen(state.user);
-                                                  }));
+                                            state.user.currentRole =
+                                                'Преподаватель';
+                                            return TeacherScreen(state.user);
+                                          }));
                                         },
                                         highlightColor:
-                                        Color.fromARGB(30, 0, 0, 0),
+                                            Color.fromARGB(30, 0, 0, 0),
                                       ),
                                     ],
                                   );
@@ -422,7 +453,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               _authorizationBloc..add(TryAuthorization());
                             },
                           );
-                        } else{
+                        } else {
                           return RaisedButton(
                             color: Colors.red,
                             child: Text(

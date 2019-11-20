@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 import 'package:timetable_app/APIRequest.dart';
 import 'package:timetable_app/Models/ScheduleElement.dart';
@@ -12,9 +11,6 @@ import 'package:timetable_app/Widgets/TeacherTimetable.dart';
 import 'package:timetable_app/Widgets/Timetable.dart';
 import 'package:timetable_app/blocs/scheduleBloc/scheduleEvent.dart';
 import 'package:timetable_app/blocs/scheduleBloc/scheduleState.dart';
-import 'package:xml/xml.dart' as xml;
-
-import '../../Query.dart';
 
 class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
   final User _user;
@@ -49,16 +45,13 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
   Stream<ScheduleState> mapEventToState(ScheduleEvent event) async* {
     if (_user.currentRole == 'Обучающийся') {
       if (event is ScheduleLoad) {
-//        var se = await getSchedule(_user.academicGroupCompoundKey,
-//            DateFormat('yyyy-MM-dd').format(DateTime.now()), false);
-        yield* getSchedule(_user.academicGroupCompoundKey,
-            DateFormat('yyyy-MM-dd').format(DateTime.now()), false);
+        var se = await APIRequest.getSchedule(_user.academicGroupCompoundKey,
+            DateFormat('yyyy-MM-dd').format(event.date));
+        yield ScheduleLoaded(se);
       } else if (event is ScheduleDayChange) {
-//
-//        var se = await getSchedule(_user.academicGroupCompoundKey,
-//            DateFormat('yyyy-MM-dd').format(event.date));
-        yield* getSchedule(_user.academicGroupCompoundKey,
-            DateFormat('yyyy-MM-dd').format(event.date), true);
+        var se = await APIRequest.getSchedule(_user.academicGroupCompoundKey,
+            DateFormat('yyyy-MM-dd').format(event.date));
+        yield ScheduleDayChanged(se);
       }
     } else {
       if (event is ScheduleLoad) {
@@ -68,136 +61,6 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
         yield ScheduleDayChanged(await APIRequest.getTeacherSchedule(
             _user.id, event.date.toString().substring(0, 10)));
       }
-    }
-  }
-
-  Dio dio = Dio();
-
-  Stream<ScheduleState> getSchedule(key, date, bool check) async* {
-//    var response = await http.post(APIRequest.server,
-//        headers: {
-//          'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
-//          'Content-Type': 'application/xml',
-//        },
-//        body: Query.getScheduleQuery(key, date, 'AcademicGroup'));
-
-    var response = await dio.post(
-      APIRequest.server,
-      data: Query.getScheduleQuery(key, date, 'AcademicGroup'),
-    );
-    var result = xml.parse(response.data);
-
-    ScheduleElement scheduleElement;
-
-    List<ScheduleCell> lessonList = [];
-    try {
-      for (var e in result.findAllElements('m:ScheduleCell')) {
-        var lesson = e.findElements('m:Lesson');
-        Color color;
-        if (lesson.isNotEmpty) {
-          switch (e
-              .findElements('m:Lesson')
-              .first
-              .findElements('m:LessonType')
-              .first
-              .text) {
-            case 'Лекции':
-              color = Color.fromARGB(255, 0, 164, 116);
-              break;
-            default:
-              color = Color.fromARGB(255, 48, 74, 197);
-              break;
-          }
-//        print(e.findElements('m:Lesson').first.findElements('m:LessonType').first.text);
-          lessonList.add(ScheduleCell(
-              DateTime.parse(e.findElements('m:DateBegin').first.text),
-              DateTime.parse(e.findElements('m:DateEnd').first.text),
-              Lesson(
-                  e.findAllElements('m:LessonCompoundKey').first.text,
-                  e
-                      .findElements('m:Lesson')
-                      .first
-                      .findElements('m:Subject')
-                      .first
-                      .text,
-                  e
-                      .findElements('m:Lesson')
-                      .first
-                      .findElements('m:LessonType')
-                      .first
-                      .text,
-                  Teacher(
-                      e
-                          .findElements('m:Lesson')
-                          .first
-                          .findElements('m:Teacher')
-                          .first
-                          .findElements('m:TeacherId')
-                          .first
-                          .text,
-                      e
-                          .findElements('m:Lesson')
-                          .first
-                          .findElements('m:Teacher')
-                          .first
-                          .findElements('m:TeacherName')
-                          .first
-                          .text),
-                  e
-                          .findElements('m:Lesson')
-                          .first
-                          .findElements('m:Classroom')
-                          .isNotEmpty
-                      ? Classroom(
-                          e
-                              .findElements('m:Lesson')
-                              .first
-                              .findElements('m:Classroom')
-                              .first
-                              .findElements('m:ClassroomUID')
-                              .first
-                              .text,
-                          e
-                              .findElements('m:Lesson')
-                              .first
-                              .findElements('m:Classroom')
-                              .first
-                              .findElements('m:ClassroomName')
-                              .first
-                              .text)
-                      : null,
-                  e
-                      .findElements('m:Lesson')
-                      .first
-                      .findAllElements('m:AcademicGroupName')
-                      .first
-                      .text,
-                  color)));
-        } else {
-          lessonList.add(ScheduleCell(
-              DateTime.parse(e.findElements('m:DateBegin').first.text),
-              DateTime.parse(e.findElements('m:DateEnd').first.text),
-              null));
-        }
-      }
-      scheduleElement = ScheduleElement(
-          result
-              .findAllElements('m:Day')
-              .first
-              .findAllElements('m:Date')
-              .first
-              .text,
-          result.findAllElements('m:DayOfWeek').first.text,
-          lessonList);
-    } catch (_) {
-      scheduleElement = ScheduleElement(date, '', null);
-    }
-
-    if(check){
-      yield ScheduleDayChanged(scheduleElement);
-
-    } else{
-      yield ScheduleLoaded(scheduleElement);
     }
   }
 }

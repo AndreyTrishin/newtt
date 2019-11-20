@@ -31,7 +31,7 @@ dependencies:
   equatable: 0.6.0
   intl: 0.16.0
   flutter_screenutil: 0.6.0
-  dio: 3.0.4
+  just_debounce_it: 3.0.0+2
 
 dev_dependencies:
   flutter_test:
