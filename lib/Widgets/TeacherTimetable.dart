@@ -12,7 +12,7 @@ class TeacherTimetable extends StatelessWidget{
 
   String _role;
 
-  TeacherTimetable(this.scheduleCell, this.numberLesson, this._role);
+  TeacherTimetable(this.scheduleCell, this.numberLesson);
 
   @override
   Widget build(BuildContext context) {

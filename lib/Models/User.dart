@@ -9,12 +9,14 @@ class User {
   String specialtyName;
   String currentRole;
   List<String> roles;
+  String server;
 
 
   User(
       this.id,
       this.name,
       this.password,
+      this.server,
       [this.recordbookId,
       this.curriculumId,
       this.curriculumName,
@@ -27,6 +29,7 @@ class User {
       : id = json['id'],
         name = json['name'],
         password = json['password'],
+        server = json['server'],
         recordbookId = json['recordbookId'],
         curriculumId = json['curriculumId'],
         curriculumName = json['curriculumName'],
@@ -39,6 +42,7 @@ class User {
         'id': id,
         'name': name,
         'password': password,
+        'server': server,
         'recordbookId': recordbookId,
         'curriculumId': curriculumId,
         'curriculumName': curriculumName,
@@ -50,7 +54,7 @@ class User {
 
   @override
   String toString() {
-    return '$id, $name, $password, $recordbookId, $specialtyName, $roles';
+    return '$id, $name, $password, $recordbookId, $specialtyName, $roles, $server';
   }
 
 

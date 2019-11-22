@@ -34,22 +34,9 @@ class DisciplineInfo extends StatelessWidget {
                 Container(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Container(
-                          child: _discipline.labHours != 0
-                              ? Text(
-                                  'Лабораторные: ${_discipline.labHours} часов')
-                              : null),
-                      Container(
-                          child: _discipline.lecHours != 0
-                              ? Text('Лекции: ${_discipline.lecHours} часов')
-                              : null),
-                      Container(
-                          child: _discipline.pracHours != 0
-                              ? Text(
-                                  'Практические: ${_discipline.pracHours} часов')
-                              : null),
-                    ],
+                    children: _discipline.load.map((load){
+                      return Text('${load.loadName}: ${load.amount}');
+                    }).toList(),
                   ),
                 ),
               ],

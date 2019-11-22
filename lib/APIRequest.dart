@@ -65,6 +65,7 @@ class APIRequest {
             resultAuth.findAllElements('m:UserId').first.text,
             resultAuth.findAllElements('m:Login').first.text,
             resultAuth.findAllElements('m:PasswordHash').first.text,
+            idServer.toString(),
             resultRecBook.findAllElements('m:RecordbookId').first.text,
             resultRecBook.findAllElements('m:CurriculumId').first.text,
             resultRecBook.findAllElements('m:CurriculumName').first.text,
@@ -81,6 +82,7 @@ class APIRequest {
             resultAuth.findAllElements('m:UserId').first.text,
             resultAuth.findAllElements('m:Login').first.text,
             resultAuth.findAllElements('m:PasswordHash').first.text,
+            idServer.toString(),
             resultRecBook.findAllElements('m:RecordbookId').first.text,
             resultRecBook.findAllElements('m:CurriculumId').first.text,
             resultRecBook.findAllElements('m:CurriculumName').first.text,
@@ -96,6 +98,7 @@ class APIRequest {
           resultAuth.findAllElements('m:UserId').first.text,
           resultAuth.findAllElements('m:Login').first.text,
           resultAuth.findAllElements('m:PasswordHash').first.text,
+          idServer.toString(),
           null, null, null, null, null, null,
           'Преподаватель',
           ['Teacher'],
@@ -110,7 +113,7 @@ class APIRequest {
 
   static Future<List<List<MarkRecord>>> getEducationalPerformance(
       userId, recbookId) async {
-    var response = await http.post(server,
+    var response = await http.post(getServer(idServer),
         headers: {
           'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
           'Content-Type': 'application/xml',
@@ -165,13 +168,16 @@ class APIRequest {
   }
 
   static Future<List<List<Discipline>>> getCurriculumLoad(curriculumId) async {
-    var responseTerms = await http.post(server,
+    print(server);
+    var responseTerms = await http.post(getServer(idServer),
         headers: {
           'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
           'Content-Type': 'application/xml',
         },
         body: Query.getCurriculumTermsQuery(curriculumId));
     var resultTerms = xml.parse(responseTerms.body);
+
+
 
     var termsCount =
         int.parse(resultTerms.findAllElements('m:TermNumber').last.text);
@@ -186,7 +192,7 @@ class APIRequest {
     List<List<Discipline>> list = [];
 
     for (int i = 1; i <= termsCount; i++) {
-      var responseLoad = await http.post(server,
+      var responseLoad = await http.post(getServer(idServer),
           headers: {
             'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
             'Content-Type': 'application/xml',
@@ -201,25 +207,11 @@ class APIRequest {
               e.findElements('m:Term').first.text,
               '',
               false,
-              0,
-              0,
-              0,
+              [],
               Colors.black);
         }
 
         switch (e.findElements('m:LoadType').first.text) {
-          case 'Лабораторные':
-            mapOfDiscipline[e.findElements('m:Subject').first.text].labHours =
-                int.parse(e.findElements('m:Amount').first.text);
-            break;
-          case 'Практические':
-            mapOfDiscipline[e.findElements('m:Subject').first.text].pracHours =
-                int.parse(e.findElements('m:Amount').first.text);
-            break;
-          case 'Лекции':
-            mapOfDiscipline[e.findElements('m:Subject').first.text].lecHours =
-                int.parse(e.findElements('m:Amount').first.text);
-            break;
           case 'Экзамен':
             mapOfDiscipline[e.findElements('m:Subject').first.text].type =
                 'Экзамен';
@@ -236,6 +228,9 @@ class APIRequest {
             mapOfDiscipline[e.findElements('m:Subject').first.text].isControl =
                 true;
             break;
+          default:
+            mapOfDiscipline[e.findElements('m:Subject').first.text].load.add(MLoad(e.findElements('m:LoadType').first.text, int.parse(e.findElements('m:Amount').first.text)));
+            break;
         }
       }
       List<Discipline> disciplineList = mapOfDiscipline.values.toList();
@@ -247,7 +242,7 @@ class APIRequest {
   }
 
   static Future<ScheduleElement> getSchedule(key, date) async {
-    var response = await http.post(server,
+    var response = await http.post(getServer(idServer),
         headers: {
           'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
           'Content-Type': 'application/xml',
@@ -257,7 +252,7 @@ class APIRequest {
 //    dio = Dio();
 
 
-//    var response = await dio.post(server, data: Query.getScheduleQuery(key, date, 'AcademicGroup'), );
+//    var response = await dio.post(getServer(idServer), data: Query.getScheduleQuery(key, date, 'AcademicGroup'), );
     var result = xml.parse(response.body);
 
 
@@ -355,7 +350,7 @@ class APIRequest {
   }
 
   static getTeacherSchedule(idUser, date) async {
-    var response = await http.post(server,
+    var response = await http.post(getServer(idServer),
         headers: {
           'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
           'Content-Type': 'application/xml',

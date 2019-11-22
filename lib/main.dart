@@ -26,28 +26,22 @@ main() async {
   } catch (_) {
     user = null;
   }
-
-  runApp(MaterialApp(
+ runApp(MaterialApp(
     title: 'Университет',
-//    home: MyHomePage(),
-    home: user == null ? MyHomePage() : MainScreen(user),
+    home: MyHomePage(user),
+//    home: user == null ? MyHomePage() : MainScreen(user),
     color: Colors.amberAccent,
   ));
 }
 
-class MyHomePage extends StatefulWidget {
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
+class MyHomePage extends StatelessWidget {
+  User _user;
+  MyHomePage(this._user);
   TextEditingController controllerUniversity = TextEditingController();
 
-  TextEditingController controllerName =
-      TextEditingController(text: 'Забродина Дарья Сергеевна');
+  TextEditingController controllerName = TextEditingController(text: 'Забродина Дарья Сергеевна');
 
-  TextEditingController controllerPassword =
-      TextEditingController(text: '31694115');
+  TextEditingController controllerPassword = TextEditingController(text: '31694115');
 
   AuthorizationBloc _authorizationBloc;
 
@@ -63,7 +57,9 @@ class _MyHomePageState extends State<MyHomePage> {
     _authorizationBloc = AuthorizationBloc();
     ScreenUtil.instance = ScreenUtil(width: 1080, height: 1794)..init(context);
 // TODO: implement build
-    return Scaffold(
+    return
+//      _user == null ?
+      Scaffold(
       resizeToAvoidBottomPadding: false,
       body: Container(
         decoration: BoxDecoration(
@@ -90,7 +86,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         data: ThemeData(canvasColor: Colors.red),
                         child: TextFormField(
                           controller: controllerUniversity,
-                          decoration: InputDecoration(labelText: 'Название ВУЗа'),
+                          decoration:
+                              InputDecoration(labelText: 'Название ВУЗа'),
                           readOnly: true,
                           onTap: () async {
                             var un;
@@ -113,7 +110,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       );
                     } else {
                       return TextFormField(
-
                         controller: controllerUniversity,
                         decoration: InputDecoration(labelText: 'Название ВУЗа'),
                         readOnly: true,
@@ -139,16 +135,15 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               Theme(
                 data: ThemeData(
-                    primaryColor: Colors.red,
+                  primaryColor: Colors.red,
                 ),
                 child: TextFormField(
                   cursorColor: Colors.red,
-
-
                   controller: controllerName,
-                  decoration:
-                      InputDecoration(labelText: 'Ваши фамилия, имя и отчество',
-                      border: UnderlineInputBorder(borderSide: BorderSide(color: Colors.red))),
+                  decoration: InputDecoration(
+                      labelText: 'Ваши фамилия, имя и отчество',
+                      border: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red))),
                   onChanged: (value) {
                     _authorizationBloc
                       ..add(ChangeUniversity(university, controllerName.text,
@@ -175,8 +170,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                 onPressed: () {
                                   passwordStatus = true;
                                   _passwordBloc
-                                    ..add(PasswordStatusChange(
-                                        passwordStatus, controllerPassword.text));
+                                    ..add(PasswordStatusChange(passwordStatus,
+                                        controllerPassword.text));
                                 },
                                 child: Image.asset(
                                   'res/ic_pass_eye_open_24dp_red.png',
@@ -206,8 +201,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                 onPressed: () {
                                   passwordStatus = false;
                                   _passwordBloc
-                                    ..add(PasswordStatusChange(
-                                        passwordStatus, controllerPassword.text));
+                                    ..add(PasswordStatusChange(passwordStatus,
+                                        controllerPassword.text));
                                 },
                                 child: Image.asset(
                                   'res/ic_pass_eye_closed_24dp_red.png',
@@ -349,6 +344,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           });
                         } else if (state.user.currentRole == 'Обучающийся') {
                           SchedulerBinding.instance.addPostFrameCallback((_) {
+                            SharedPref().save('user', state.user);
                             Navigator.pushReplacement(context,
                                 MaterialPageRoute(builder: (context) {
                               return MainScreen(state.user);
@@ -474,5 +470,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
+//    : MainScreen(_user);
   }
 }

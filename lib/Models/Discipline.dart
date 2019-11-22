@@ -8,20 +8,25 @@ class Discipline extends Equatable {
   String type;
   bool isControl;
   Color color;
-  int labHours;
-  int lecHours;
-  int pracHours;
+  List<MLoad> load;
 
-  Discipline(this.subject, this.term, this.type, this.isControl, this.labHours, this.lecHours, this.pracHours, this.color);
+  Discipline(this.subject, this.term, this.type, this.isControl, this.load, this.color);
 
   @override
   // TODO: implement props
-  List<Object> get props => [this.subject, this.term, this.type, this.isControl, this.labHours, this.lecHours, this.pracHours, this.color];
+  List<Object> get props => [this.subject, this.term, this.type, this.isControl, this.load, this.color];
 
   @override
   String toString() {
-    return '${this.subject + this.term + this.type + this.isControl.toString() + this.labHours.toString() + this.lecHours.toString() + this.pracHours.toString()}';
+    return '${this.subject + this.term + this.type + this.isControl.toString()}';
   }
 
 
+}
+
+class MLoad {
+  final String loadName;
+  final int amount;
+
+  MLoad(this.loadName, this.amount);
 }

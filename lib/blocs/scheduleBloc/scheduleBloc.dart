@@ -3,12 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:timetable_app/APIRequest.dart';
-import 'package:timetable_app/Models/ScheduleElement.dart';
-import 'package:timetable_app/Models/Universe.dart';
 import 'package:timetable_app/Models/User.dart';
-import 'package:timetable_app/Widgets/EmptyTTRow.dart';
-import 'package:timetable_app/Widgets/TeacherTimetable.dart';
-import 'package:timetable_app/Widgets/Timetable.dart';
 import 'package:timetable_app/blocs/scheduleBloc/scheduleEvent.dart';
 import 'package:timetable_app/blocs/scheduleBloc/scheduleState.dart';
 
@@ -16,27 +11,6 @@ class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
   final User _user;
 
   ScheduleBloc(this._user);
-
-  static Widget getWidgetList(ScheduleElement element, User user) {
-    int index = 0;
-    return ScrollConfiguration(
-      behavior: null,
-      child: ListView(
-        children: element.scheduleCell.map((cell) {
-          index++;
-          if (index < 6) {
-            return cell.lesson != null
-                ? (user.currentRole == 'Обучающийся'
-                    ? Timetable(cell, index)
-                    : TeacherTimetable(cell, index, user.currentRole))
-                : EmptyTTRow(cell, index);
-          } else {
-            return Container();
-          }
-        }).toList(),
-      ),
-    );
-  }
 
   @override
   ScheduleState get initialState => ScheduleLoading();

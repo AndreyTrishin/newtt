@@ -1,7 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:just_debounce_it/just_debounce_it.dart';
 import 'package:timetable_app/Models/Universe.dart';
 import 'package:timetable_app/Models/User.dart';
+import 'package:timetable_app/Widgets/EmptyDayWidget.dart';
+import 'package:timetable_app/Widgets/EmptyTTRow.dart';
+import 'package:timetable_app/Widgets/LoadWidget.dart';
+import 'package:timetable_app/Widgets/TeacherTimetable.dart';
 import 'package:timetable_app/blocs/scheduleAppBarBloc/ScheduleAppBarBloc.dart';
 import 'package:timetable_app/blocs/scheduleAppBarBloc/ScheduleAppBarState.dart';
 import 'package:timetable_app/blocs/scheduleAppBarBloc/scheduleAppBarEvent.dart';
@@ -14,6 +20,8 @@ import '../main.dart';
 
 class TeacherScreen extends StatelessWidget {
   final User _user;
+
+  Function() target;
 
   TeacherScreen(this._user);
 
@@ -41,6 +49,11 @@ class TeacherScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    target = () {
+      _scheduleBloc
+          .add(ScheduleDayChange(DateTime.now().add(Duration(days: day))));
+    };
+
     _appBarBloc = ScheduleAppBarBloc();
     _scheduleBloc = ScheduleBloc(_user);
     return Scaffold(
@@ -74,7 +87,7 @@ class TeacherScreen extends StatelessWidget {
                       APIRequest.idServer = null;
                       Navigator.pushReplacement(context,
                           MaterialPageRoute(builder: (context) {
-                        return MyHomePage();
+                        return MyHomePage(null);
                       }));
                     },
                   ),
@@ -188,72 +201,75 @@ class TeacherScreen extends StatelessWidget {
         ),
       ),
       body: Container(
-        child: BlocBuilder(
-          bloc: _scheduleBloc..add(ScheduleLoad(DateTime.parse(currentDate))),
-          builder: (context, state) {
-            if (state is ScheduleLoading) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            } else if (state is ScheduleLoaded) {
-              return PageView.builder(
-                onPageChanged: (value) {
-                  day = value < currentDay ? day - 1 : day + 1;
-                  currentDay = value;
-                  _scheduleBloc
-                    ..add(ScheduleDayChange(
-                        DateTime.parse(currentDate).add(Duration(days: day))));
-                  _appBarBloc
-                    ..add(ScheduleAppBarPageChange(
-                        DateTime.parse(currentDate).add(Duration(days: day))));
-                },
-                controller: _controller,
-                itemBuilder: (context, position) {
-                  return position != currentDay
-                      ? Center(
-                          child: CircularProgressIndicator(),
-                        )
-                      : (state.scheduleElement.scheduleCell != null
-                          ? ScheduleBloc.getWidgetList(state.scheduleElement, _user)
-                          : Center(
-                              child: Text('Свободный день'),
-                            ));
-                },
-              );
-            } else if (state is ScheduleDayChanged) {
-//              currentDate = state.scheduleElement.date;
-              return PageView.builder(
-                onPageChanged: (value) {
-                  day = value < currentDay ? day - 1 : day + 1;
-                  currentDay = value;
-                  _appBarBloc
-                    ..add(ScheduleAppBarPageChange(
-                        DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.now())).add(Duration(days: day))));
-                  _scheduleBloc
-                    ..add(ScheduleDayChange(
-                        DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.now())).add(Duration(days: day))));
-                },
-                controller: _controller,
-                itemBuilder: (context, position) {
-                  return position != currentDay
-                      ? Center(
-                          child: CircularProgressIndicator(),
-                        )
-                      : (state.scheduleElement.scheduleCell != null
-                          ? ScheduleBloc.getWidgetList(state.scheduleElement, _user)
-                          : Center(
-                              child: Text('Свободный день'),
-                            ));
-                },
-              );
-            } else {
-              return Center(
-                child: Text('Ошибка'),
-              );
-            }
-          },
-        ),
-      ),
+          margin: EdgeInsets.fromLTRB(
+              0, ScreenUtil.getInstance().setHeight(30), 0, 0),
+          child: BlocBuilder(
+            bloc: _scheduleBloc..add(ScheduleLoad(DateTime.parse(currentDate))),
+            builder: (context, state) {
+              if (state is ScheduleLoading) {
+                return LoadWidget();
+              } else {
+                return PageView.builder(
+                  onPageChanged: (value) {
+                    Debounce.clear(target);
+                    day = value < currentDay ? day - 1 : day + 1;
+                    currentDay = value;
+                    _appBarBloc.add(ScheduleAppBarPageChange(
+                        DateTime.now().add(Duration(days: day))));
+                    Debounce.seconds(1, target);
+                  },
+                  itemBuilder: (context, index) {
+                    print(state);
+                    return BlocBuilder(
+                      bloc: _scheduleBloc,
+                      builder: (context, state) {
+                        if (state is ScheduleLoaded && index == 5000) {
+                          int i = 0;
+                          return state.scheduleElement.scheduleCell != null
+                              ? ListView(
+                            children: state.scheduleElement.scheduleCell
+                                .map((cell) {
+                              i++;
+                              if(i<6){
+
+                                return cell.lesson != null
+                                    ? TeacherTimetable(cell, i)
+                                    : EmptyTTRow(cell, i);
+                              } else {
+                                return Container();
+                              }
+                            }).toList(),
+                          )
+                              : EmptyDayWidget();
+                        } else if (state is ScheduleDayChanged &&
+                            index == currentDay) {
+                          int i = 0;
+                          return state.scheduleElement.scheduleCell != null
+                              ? ListView(
+                            children: state.scheduleElement.scheduleCell
+                                .map((cell) {
+                              i++;
+                              if(i<6){
+                                return cell.lesson != null
+                                    ? TeacherTimetable(cell, i)
+                                    : EmptyTTRow(cell, i);
+                              } else {
+                                return Container();
+                              }
+                            }).toList(),
+                          )
+                              : EmptyDayWidget();
+                        } else {
+                          return LoadWidget();
+                        }
+                      },
+                    );
+                  },
+                  controller: _controller,
+                );
+              }
+            },
+          )),
     );
   }
 }

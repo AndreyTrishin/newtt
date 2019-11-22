@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:timetable_app/APIRequest.dart';
 import 'package:timetable_app/Models/User.dart';
 import 'package:timetable_app/blocs/mainBloc/mainBloc.dart';
 import 'package:timetable_app/blocs/mainBloc/mainEvent.dart';
@@ -31,12 +32,17 @@ class MainScreen extends StatelessWidget {
       case 'Успеваемость':
         _mainBloc.add(MainPerformanceLoad());
         break;
+      default:
+        _mainBloc.add(MainCurriculumLoadLoad());
+        break;
     }
   }
 
   bool pr = false;
 
   Widget build(BuildContext context) {
+    APIRequest.idServer = int.parse(_user.server);
+    ScreenUtil.instance = ScreenUtil(width: 1080, height: 1794)..init(context);
     _mainBloc = MainBloc(_user);
     _downloadWindow();
     return Scaffold(
@@ -44,7 +50,6 @@ class MainScreen extends StatelessWidget {
         child: Container(
           child: Column(
             children: <Widget>[
-              //todo: сделать стрелку справа от имени
               UserAccountsDrawerHeader(
                 decoration: BoxDecoration(
                     image: DecorationImage(
@@ -260,7 +265,7 @@ class MainScreen extends StatelessWidget {
                       onTap: () {
                         Navigator.pushReplacement(context,
                             MaterialPageRoute(builder: (context) {
-                          return MyHomePage();
+                          return MyHomePage(null);
                         }));
                       },
                     ),

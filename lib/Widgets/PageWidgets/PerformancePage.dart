@@ -10,7 +10,7 @@ import 'package:timetable_app/blocs/performanceBloc/performanceBloc.dart';
 import 'package:timetable_app/blocs/performanceBloc/performanceEvent.dart';
 import 'package:timetable_app/blocs/performanceBloc/performanceState.dart';
 
-import 'LoadWidget.dart';
+import '../LoadWidget.dart';
 
 class PerformancePage extends StatelessWidget {
   PageController _controller = PageController();
