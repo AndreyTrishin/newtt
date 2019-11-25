@@ -26,7 +26,7 @@ main() async {
   } catch (_) {
     user = null;
   }
- runApp(MaterialApp(
+  runApp(MaterialApp(
     title: 'Университет',
     home: MyHomePage(user),
 //    home: user == null ? MyHomePage() : MainScreen(user),
@@ -36,12 +36,16 @@ main() async {
 
 class MyHomePage extends StatelessWidget {
   User _user;
+
   MyHomePage(this._user);
+
   TextEditingController controllerUniversity = TextEditingController();
 
-  TextEditingController controllerName = TextEditingController(text: 'Забродина Дарья Сергеевна');
+  TextEditingController controllerName =
+      TextEditingController(text: 'Забродина Дарья Сергеевна');
 
-  TextEditingController controllerPassword = TextEditingController(text: '31694115');
+  TextEditingController controllerPassword =
+      TextEditingController(text: '31694115ddd');
 
   AuthorizationBloc _authorizationBloc;
 
@@ -56,10 +60,9 @@ class MyHomePage extends StatelessWidget {
     _passwordBloc = PasswordBloc();
     _authorizationBloc = AuthorizationBloc();
     ScreenUtil.instance = ScreenUtil(width: 1080, height: 1794)..init(context);
-// TODO: implement build
     return
 //      _user == null ?
-      Scaffold(
+        Scaffold(
       resizeToAvoidBottomPadding: false,
       body: Container(
         decoration: BoxDecoration(
@@ -270,7 +273,25 @@ class MyHomePage extends StatelessWidget {
                             style: TextStyle(color: Colors.white),
                           ),
                         );
-                      } else {
+                      } else if(state is Authorized) {
+                        return RaisedButton(
+                          color: Colors.red,
+                          onPressed: () {
+                            _authorizationBloc..add(TryAuthorization());
+                            try {
+                              APIRequest.idServer =
+                              university.id == 1 ? 0 : university.id;
+                            } catch (_) {
+                              _authorizationBloc..add(ErrorAuthorization());
+                            }
+                          },
+                          child: Text(
+                            'ВОЙТИ',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        );
+
+                      } else{
                         return RaisedButton(
                           color: Colors.red,
                           child: Text(
@@ -287,6 +308,7 @@ class MyHomePage extends StatelessWidget {
                 child: BlocBuilder(
                   bloc: _authorizationBloc,
                   builder: (context, state) {
+                    print(state);
                     if (state is AuthorizationLoading) {
                       _authorizationBloc
                         ..add(LoadAuthorization(
@@ -295,75 +317,83 @@ class MyHomePage extends StatelessWidget {
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
                       );
                     } else if (state is Authorized) {
-                      if (state.user.name != null) {
-                        if (state.user.currentRole == null) {
-                          SchedulerBinding.instance.addPostFrameCallback((_) {
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    title: Text('Выберите роль пользователя'),
-                                    actions: <Widget>[
-                                      FlatButton(
-                                        child: Text(
-                                          'Обучающийся',
-                                          style: TextStyle(color: Colors.black),
+                      if (state.user != null) {
+                        if (state.user.name != null) {
+                          if (state.user.currentRole == null) {
+                            SchedulerBinding.instance.addPostFrameCallback((_) {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      title: Text('Выберите роль пользователя'),
+                                      actions: <Widget>[
+                                        FlatButton(
+                                          child: Text(
+                                            'Обучающийся',
+                                            style:
+                                                TextStyle(color: Colors.black),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.pushReplacement(context,
+                                                MaterialPageRoute(
+                                                    builder: (context) {
+                                              state.user.currentRole =
+                                                  'Обучающийся';
+                                              return MainScreen(state.user);
+                                            }));
+                                          },
+                                          highlightColor:
+                                              Color.fromARGB(30, 0, 0, 0),
                                         ),
-                                        onPressed: () {
-                                          Navigator.pushReplacement(context,
-                                              MaterialPageRoute(
-                                                  builder: (context) {
-                                            state.user.currentRole =
-                                                'Обучающийся';
-                                            return MainScreen(state.user);
-                                          }));
-                                        },
-                                        highlightColor:
-                                            Color.fromARGB(30, 0, 0, 0),
-                                      ),
-                                      FlatButton(
-                                        child: Text(
-                                          'Преподаватель',
-                                          style: TextStyle(color: Colors.black),
+                                        FlatButton(
+                                          child: Text(
+                                            'Преподаватель',
+                                            style:
+                                                TextStyle(color: Colors.black),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.pushReplacement(context,
+                                                MaterialPageRoute(
+                                                    builder: (context) {
+                                              state.user.currentRole =
+                                                  'Преподаватель';
+                                              return TeacherScreen(state.user);
+                                            }));
+                                          },
+                                          highlightColor:
+                                              Color.fromARGB(30, 0, 0, 0),
                                         ),
-                                        onPressed: () {
-                                          Navigator.pushReplacement(context,
-                                              MaterialPageRoute(
-                                                  builder: (context) {
-                                            state.user.currentRole =
-                                                'Преподаватель';
-                                            return TeacherScreen(state.user);
-                                          }));
-                                        },
-                                        highlightColor:
-                                            Color.fromARGB(30, 0, 0, 0),
-                                      ),
-                                    ],
-                                  );
-                                });
-                          });
-                        } else if (state.user.currentRole == 'Обучающийся') {
-                          SchedulerBinding.instance.addPostFrameCallback((_) {
-                            SharedPref().save('user', state.user);
-                            Navigator.pushReplacement(context,
-                                MaterialPageRoute(builder: (context) {
-                              return MainScreen(state.user);
-                            }));
-                          });
-                        } else if (state.user.currentRole == 'Преподаватель') {
-                          SchedulerBinding.instance.addPostFrameCallback((_) {
-                            Navigator.pushReplacement(context,
-                                MaterialPageRoute(builder: (context) {
-                              return TeacherScreen(state.user);
-                            }));
-                          });
+                                      ],
+                                    );
+                                  });
+                            });
+                          } else if (state.user.currentRole == 'Обучающийся') {
+                            SchedulerBinding.instance.addPostFrameCallback((_) {
+                              SharedPref().save('user', state.user);
+                              Navigator.pushReplacement(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return MainScreen(state.user);
+                              }));
+                            });
+                          } else if (state.user.currentRole ==
+                              'Преподаватель') {
+                            SchedulerBinding.instance.addPostFrameCallback((_) {
+                              Navigator.pushReplacement(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return TeacherScreen(state.user);
+                              }));
+                            });
+                          }
+
+                          return Container();
+                        } else {
+
+                          return Text('Ошибка авторизации');
                         }
-
-                        return Container();
                       } else {
-//                        _authorizationBloc..add(ErrorAuthorization());
-
-                        return Text('Ошибка авторизации');
+                        //----------------
+//                        _authorizationBloc..add(ChangeUniversity(university, controllerName.text, controllerPassword.text));
+                        return Container(child: Text('Ошибка авторизации'),);
                       }
                     } else if (state is NotAuthorizated) {
                       return Text('Ошибка авторизации');
@@ -391,53 +421,61 @@ class MyHomePage extends StatelessWidget {
                               _authorizationBloc..add(TryAuthorization());
                             },
                           );
-                        } else if (state is Authorized &&
-                            state.user.name == 'Иван Иванов') {
-                          SchedulerBinding.instance.addPostFrameCallback((_) {
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    title: Text('Выберите роль пользователя'),
-                                    actions: <Widget>[
-                                      FlatButton(
-                                        child: Text(
-                                          'Обучающийся',
-                                          style: TextStyle(color: Colors.black),
-                                        ),
-                                        onPressed: () {
-                                          Navigator.pushReplacement(context,
-                                              MaterialPageRoute(
-                                                  builder: (context) {
-                                            state.user.currentRole =
-                                                'Обучающийся';
-                                            return MainScreen(state.user);
-                                          }));
-                                        },
-                                        highlightColor:
-                                            Color.fromARGB(30, 0, 0, 0),
-                                      ),
-                                      FlatButton(
-                                        child: Text(
-                                          'Преподаватель',
-                                          style: TextStyle(color: Colors.black),
-                                        ),
-                                        onPressed: () {
-                                          Navigator.pushReplacement(context,
-                                              MaterialPageRoute(
-                                                  builder: (context) {
-                                            state.user.currentRole =
-                                                'Преподаватель';
-                                            return TeacherScreen(state.user);
-                                          }));
-                                        },
-                                        highlightColor:
-                                            Color.fromARGB(30, 0, 0, 0),
-                                      ),
-                                    ],
-                                  );
-                                });
-                          });
+                        } else if (state is Authorized) {
+                          if (state.user != null) {
+                            if (state.user.name == 'Иван Иванов') {
+                              SchedulerBinding.instance
+                                  .addPostFrameCallback((_) {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title:
+                                            Text('Выберите роль пользователя'),
+                                        actions: <Widget>[
+                                          FlatButton(
+                                            child: Text(
+                                              'Обучающийся',
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            ),
+                                            onPressed: () {
+                                              Navigator.pushReplacement(context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) {
+                                                state.user.currentRole =
+                                                    'Обучающийся';
+                                                return MainScreen(state.user);
+                                              }));
+                                            },
+                                            highlightColor:
+                                                Color.fromARGB(30, 0, 0, 0),
+                                          ),
+                                          FlatButton(
+                                            child: Text(
+                                              'Преподаватель',
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            ),
+                                            onPressed: () {
+                                              Navigator.pushReplacement(context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) {
+                                                state.user.currentRole =
+                                                    'Преподаватель';
+                                                return TeacherScreen(
+                                                    state.user);
+                                              }));
+                                            },
+                                            highlightColor:
+                                                Color.fromARGB(30, 0, 0, 0),
+                                          ),
+                                        ],
+                                      );
+                                    });
+                              });
+                            }
+                          }
                           return RaisedButton(
                             color: Colors.red,
                             child: Text(
