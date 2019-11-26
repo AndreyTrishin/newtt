@@ -34,18 +34,22 @@ main() async {
   ));
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
   User _user;
 
   MyHomePage(this._user);
 
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
   TextEditingController controllerUniversity = TextEditingController();
 
   TextEditingController controllerName =
       TextEditingController(text: 'Забродина Дарья Сергеевна');
 
-  TextEditingController controllerPassword =
-      TextEditingController(text: '31694115ddd');
+  TextEditingController controllerPassword = TextEditingController();
 
   AuthorizationBloc _authorizationBloc;
 
@@ -55,10 +59,24 @@ class MyHomePage extends StatelessWidget {
 
   bool passwordStatus = true;
 
+
+  @override
+  void initState() {
+    super.initState();
+
+    _passwordBloc = PasswordBloc(controllerPassword.text)..add(PasswordStatusChange(controllerPassword.text, passwordStatus));
+    _authorizationBloc = AuthorizationBloc();
+  }
+
+  @override
+  void dispose() {
+    _passwordBloc.close();
+    _authorizationBloc.close();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    _passwordBloc = PasswordBloc();
-    _authorizationBloc = AuthorizationBloc();
     ScreenUtil.instance = ScreenUtil(width: 1080, height: 1794)..init(context);
     return
 //      _user == null ?
@@ -101,10 +119,10 @@ class MyHomePage extends StatelessWidget {
                                 return UniversityList();
                               }));
                               university = un;
-                              controllerUniversity.text = university.name;
+                              controllerUniversity.text = university != null ? university.name : '';
                               _authorizationBloc
                                 ..add(ChangeUniversity(
-                                    university,
+                                    university != null ? university.name : '',
                                     controllerName.text,
                                     controllerPassword.text));
                             });
@@ -118,7 +136,7 @@ class MyHomePage extends StatelessWidget {
                         readOnly: true,
                         onChanged: (value) {
                           _authorizationBloc
-                            ..add(ChangeUniversity(university,
+                            ..add(ChangeUniversity(university != null ? university.name : '',
                                 controllerName.text, controllerPassword.text));
                         },
                         onTap: () async {
@@ -128,7 +146,7 @@ class MyHomePage extends StatelessWidget {
                                 MaterialPageRoute(builder: (context) {
                               return UniversityList();
                             }));
-                            controllerUniversity.text = university.name;
+                            controllerUniversity.text = university != null ? university.name : '';
                           });
                         },
                       );
@@ -149,7 +167,7 @@ class MyHomePage extends StatelessWidget {
                           borderSide: BorderSide(color: Colors.red))),
                   onChanged: (value) {
                     _authorizationBloc
-                      ..add(ChangeUniversity(university, controllerName.text,
+                      ..add(ChangeUniversity(university != null ? university.name : '', controllerName.text,
                           controllerPassword.text));
                   },
                 ),
@@ -159,7 +177,7 @@ class MyHomePage extends StatelessWidget {
                   primaryColor: Colors.red,
                 ),
                 child: BlocBuilder(
-                  bloc: _passwordBloc,
+                  bloc: _passwordBloc..add(PasswordStatusChange(controllerPassword.text, passwordStatus)),
                   builder: (context, state) {
                     if (state is PasswordOpen) {
                       return TextFormField(
@@ -173,8 +191,7 @@ class MyHomePage extends StatelessWidget {
                                 onPressed: () {
                                   passwordStatus = true;
                                   _passwordBloc
-                                    ..add(PasswordStatusChange(passwordStatus,
-                                        controllerPassword.text));
+                                    ..add(PasswordStatusChange(controllerPassword.text, passwordStatus));
                                 },
                                 child: Image.asset(
                                   'res/ic_pass_eye_open_24dp_red.png',
@@ -184,10 +201,9 @@ class MyHomePage extends StatelessWidget {
                             )),
                         onChanged: (value) {
                           _passwordBloc
-                            ..add(PasswordStatusChange(
-                                true, controllerPassword.text));
+                            ..add(PasswordStatusChange(controllerPassword.text, passwordStatus));
                           _authorizationBloc
-                            ..add(ChangeUniversity(university,
+                            ..add(ChangeUniversity(university != null ? university.name : '',
                                 controllerName.text, controllerPassword.text));
                         },
                       );
@@ -204,8 +220,7 @@ class MyHomePage extends StatelessWidget {
                                 onPressed: () {
                                   passwordStatus = false;
                                   _passwordBloc
-                                    ..add(PasswordStatusChange(passwordStatus,
-                                        controllerPassword.text));
+                                    ..add(PasswordStatusChange(controllerPassword.text, passwordStatus));
                                 },
                                 child: Image.asset(
                                   'res/ic_pass_eye_closed_24dp_red.png',
@@ -216,9 +231,9 @@ class MyHomePage extends StatelessWidget {
                         onChanged: (value) {
                           _passwordBloc
                             ..add(PasswordStatusChange(
-                                passwordStatus, controllerPassword.text));
+                                controllerPassword.text, passwordStatus));
                           _authorizationBloc
-                            ..add(ChangeUniversity(university,
+                            ..add(ChangeUniversity(university != null ? university.name : '',
                                 controllerName.text, controllerPassword.text));
                         },
                       );
@@ -231,9 +246,9 @@ class MyHomePage extends StatelessWidget {
                         onChanged: (value) {
                           _passwordBloc
                             ..add(PasswordStatusChange(
-                                true, controllerPassword.text));
+                                controllerPassword.text, passwordStatus));
                           _authorizationBloc
-                            ..add(ChangeUniversity(university,
+                            ..add(ChangeUniversity(university != null ? university.name : '',
                                 controllerName.text, controllerPassword.text));
                         },
                       );
@@ -245,7 +260,7 @@ class MyHomePage extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 child: BlocBuilder(
                     bloc: _authorizationBloc
-                      ..add(ChangeUniversity(university, controllerName.text,
+                      ..add(ChangeUniversity(university != null ? university.name : '', controllerName.text,
                           controllerPassword.text)),
                     builder: (context, state) {
                       if (state is ChangedUniversity) {
@@ -273,14 +288,14 @@ class MyHomePage extends StatelessWidget {
                             style: TextStyle(color: Colors.white),
                           ),
                         );
-                      } else if(state is Authorized) {
+                      } else if (state is Authorized) {
                         return RaisedButton(
                           color: Colors.red,
                           onPressed: () {
                             _authorizationBloc..add(TryAuthorization());
                             try {
                               APIRequest.idServer =
-                              university.id == 1 ? 0 : university.id;
+                                  university.id == 1 ? 0 : university.id;
                             } catch (_) {
                               _authorizationBloc..add(ErrorAuthorization());
                             }
@@ -290,8 +305,7 @@ class MyHomePage extends StatelessWidget {
                             style: TextStyle(color: Colors.white),
                           ),
                         );
-
-                      } else{
+                      } else {
                         return RaisedButton(
                           color: Colors.red,
                           child: Text(
@@ -308,7 +322,6 @@ class MyHomePage extends StatelessWidget {
                 child: BlocBuilder(
                   bloc: _authorizationBloc,
                   builder: (context, state) {
-                    print(state);
                     if (state is AuthorizationLoading) {
                       _authorizationBloc
                         ..add(LoadAuthorization(
@@ -317,83 +330,95 @@ class MyHomePage extends StatelessWidget {
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
                       );
                     } else if (state is Authorized) {
+                      controllerPassword.text = '';
                       if (state.user != null) {
                         if (state.user.name != null) {
-                          if (state.user.currentRole == null) {
-                            SchedulerBinding.instance.addPostFrameCallback((_) {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      title: Text('Выберите роль пользователя'),
-                                      actions: <Widget>[
-                                        FlatButton(
-                                          child: Text(
-                                            'Обучающийся',
-                                            style:
-                                                TextStyle(color: Colors.black),
+                          if (state.user.name != 'Ошибка') {
+                            if (state.user.currentRole == null) {
+                              SchedulerBinding.instance
+                                  .addPostFrameCallback((_) {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title:
+                                            Text('Выберите роль пользователя'),
+                                        actions: <Widget>[
+                                          FlatButton(
+                                            child: Text(
+                                              'Обучающийся',
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            ),
+                                            onPressed: () {
+                                              Navigator.pushReplacement(context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) {
+                                                state.user.currentRole =
+                                                    'Обучающийся';
+                                                return MainScreen(state.user);
+                                              }));
+                                            },
+                                            highlightColor:
+                                                Color.fromARGB(30, 0, 0, 0),
                                           ),
-                                          onPressed: () {
-                                            Navigator.pushReplacement(context,
-                                                MaterialPageRoute(
-                                                    builder: (context) {
-                                              state.user.currentRole =
-                                                  'Обучающийся';
-                                              return MainScreen(state.user);
-                                            }));
-                                          },
-                                          highlightColor:
-                                              Color.fromARGB(30, 0, 0, 0),
-                                        ),
-                                        FlatButton(
-                                          child: Text(
-                                            'Преподаватель',
-                                            style:
-                                                TextStyle(color: Colors.black),
+                                          FlatButton(
+                                            child: Text(
+                                              'Преподаватель',
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            ),
+                                            onPressed: () {
+                                              Navigator.pushReplacement(context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) {
+                                                state.user.currentRole =
+                                                    'Преподаватель';
+                                                return TeacherScreen(
+                                                    state.user);
+                                              }));
+                                            },
+                                            highlightColor:
+                                                Color.fromARGB(30, 0, 0, 0),
                                           ),
-                                          onPressed: () {
-                                            Navigator.pushReplacement(context,
-                                                MaterialPageRoute(
-                                                    builder: (context) {
-                                              state.user.currentRole =
-                                                  'Преподаватель';
-                                              return TeacherScreen(state.user);
-                                            }));
-                                          },
-                                          highlightColor:
-                                              Color.fromARGB(30, 0, 0, 0),
-                                        ),
-                                      ],
-                                    );
-                                  });
-                            });
-                          } else if (state.user.currentRole == 'Обучающийся') {
-                            SchedulerBinding.instance.addPostFrameCallback((_) {
-                              SharedPref().save('user', state.user);
-                              Navigator.pushReplacement(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return MainScreen(state.user);
-                              }));
-                            });
-                          } else if (state.user.currentRole ==
-                              'Преподаватель') {
-                            SchedulerBinding.instance.addPostFrameCallback((_) {
-                              Navigator.pushReplacement(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return TeacherScreen(state.user);
-                              }));
-                            });
+                                        ],
+                                      );
+                                    });
+                              });
+                            } else if (state.user.currentRole ==
+                                'Обучающийся') {
+                              SchedulerBinding.instance
+                                  .addPostFrameCallback((_) {
+                                SharedPref().save('user', state.user);
+                                Navigator.pushReplacement(context,
+                                    MaterialPageRoute(builder: (context) {
+                                  return MainScreen(state.user);
+                                }));
+                              });
+                            } else if (state.user.currentRole ==
+                                'Преподаватель') {
+                              SchedulerBinding.instance
+                                  .addPostFrameCallback((_) {
+                                Navigator.pushReplacement(context,
+                                    MaterialPageRoute(builder: (context) {
+                                  return TeacherScreen(state.user);
+                                }));
+                              });
+                            }
+                          } else {
+                            return Text('Неправильный пароль');
                           }
 
                           return Container();
                         } else {
-
                           return Text('Ошибка авторизации');
                         }
                       } else {
                         //----------------
-//                        _authorizationBloc..add(ChangeUniversity(university, controllerName.text, controllerPassword.text));
-                        return Container(child: Text('Ошибка авторизации'),);
+                        //                        _authorizationBloc..add(ChangeUniversity(university, controllerName.text, controllerPassword.text));
+                        return Container(
+                          child: Text('Ошибка авторизации'),
+                        );
                       }
                     } else if (state is NotAuthorizated) {
                       return Text('Ошибка авторизации');

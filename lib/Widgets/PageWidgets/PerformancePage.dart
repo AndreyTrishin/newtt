@@ -172,8 +172,24 @@ class PerformancePage extends StatelessWidget {
               ),
             );
           } else if (state is PerformanceNotLoaded) {
-            return Center(
-              child: Text('Ошибка загрузки'),
+//            Scaffold.of(context).showSnackBar(SnackBar(content: Text('ошибка'),));
+            return Container(
+              child: Align(
+                alignment: Alignment.center,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text('Ошибка загрузки'),
+                    FlatButton(
+                      child: Text('Повторить', style: TextStyle(color: Colors.red),),
+                      onPressed: (){
+                        _performanceBloc..add(TryPerformanceLoad());
+                        _performanceBloc..add(PerformanceLoad());
+                      },
+                    )
+                  ],
+                ),
+              ),
             );
           } else {
             return Center(

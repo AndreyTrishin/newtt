@@ -23,11 +23,9 @@ class APIRequest {
 
   static Future<User> authorisation(name, password) async {
     server = getServer(idServer);
-    print(server);
-    print(idServer);
 
     User user;
-    http.Response responseAuth;
+    var responseAuth;
     try{
       responseAuth = await http.post(server,
           headers: {
@@ -36,7 +34,7 @@ class APIRequest {
             'Content-Type': 'text/xml;charset=UTF-8',
           },
           body: Query.getAutorizationQuery(
-              name, sha1.convert(utf8.encode(password))));
+              name, sha1.convert(utf8.encode(password)))).timeout(Duration(seconds: 4));
     } catch (_){
       user = null;
     }
@@ -104,24 +102,29 @@ class APIRequest {
           ['Teacher'],
         );
       } catch (_) {
-        user = null;
+        user = User(null, 'Ошибка', null, null);
       }
     }
-    print(user);
     return user;
   }
 
   static Future<List<List<MarkRecord>>> getEducationalPerformance(
       userId, recbookId) async {
-    var response = await http.post(getServer(idServer),
-        headers: {
-          'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
-          'Content-Type': 'application/xml',
-        },
-        body: Query.getEducationalPerformance(userId, recbookId));
+    http.Response response;
+    List<List<MarkRecord>> listOfMarks = [];
+    try{
+      response = await http.post(getServer(idServer),
+          headers: {
+            'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
+            'Content-Type': 'application/xml',
+          },
+          body: Query.getEducationalPerformance(userId, recbookId)).timeout(Duration(seconds: 5));
+    } catch(_){
+      listOfMarks = null;
+    }
+
     var result = xml.parse(response.body);
 
-    List<List<MarkRecord>> listOfMarks = [];
     String term = 'Первый семестр';
     List<MarkRecord> list = [];
     for (var e in result.findAllElements('m:MarkRecord')) {
@@ -168,20 +171,25 @@ class APIRequest {
   }
 
   static Future<List<List<Discipline>>> getCurriculumLoad(curriculumId) async {
-    print(server);
-    var responseTerms = await http.post(getServer(idServer),
-        headers: {
-          'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
-          'Content-Type': 'application/xml',
-        },
-        body: Query.getCurriculumTermsQuery(curriculumId));
+    List<Term> termList = [];
+    http.Response responseTerms;
+    try{
+      responseTerms = await http.post(getServer(idServer),
+          headers: {
+            'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
+            'Content-Type': 'application/xml',
+          },
+          body: Query.getCurriculumTermsQuery(curriculumId)).timeout(Duration(seconds: 5));
+    } catch (_){
+      termList = null;
+    }
+
     var resultTerms = xml.parse(responseTerms.body);
 
 
 
     var termsCount =
         int.parse(resultTerms.findAllElements('m:TermNumber').last.text);
-    List<Term> termList = [];
     for (var term in resultTerms.findAllElements('m:Term')) {
       termList.add(Term(
         term.findElements('m:TermId').first.text,
@@ -192,12 +200,18 @@ class APIRequest {
     List<List<Discipline>> list = [];
 
     for (int i = 1; i <= termsCount; i++) {
-      var responseLoad = await http.post(getServer(idServer),
-          headers: {
-            'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
-            'Content-Type': 'application/xml',
-          },
-          body: Query.getCurriculumLoadQuery(curriculumId, termList[i - 1].id));
+      http.Response responseLoad;
+      try{
+        responseLoad = await http.post(getServer(idServer),
+            headers: {
+              'Authorization': 'Basic 0JDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA6',
+              'Content-Type': 'application/xml',
+            },
+            body: Query.getCurriculumLoadQuery(curriculumId, termList[i - 1].id)).timeout(Duration(seconds: 5));
+      } catch (_){
+        termList = null;
+      }
+
       var resultLoad = xml.parse(responseLoad.body);
       Map<String, Discipline> mapOfDiscipline = {};
       for (var e in resultLoad.findAllElements('m:CurriculumLoad')) {

@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:timetable_app/Models/Universe.dart';
 import 'package:timetable_app/Models/User.dart';
 
 class AuthorizationState extends Equatable {
@@ -18,15 +17,13 @@ class Authorized extends AuthorizationState {
   Authorized(this.user);
 
   @override
-  List<Object> get props {
-    return [user];
-  }
+  List<Object> get props => [user];
 }
 
 class NotAuthorizated extends AuthorizationState {}
 
 class ChangedUniversity extends AuthorizationState {
-  final University university;
+  final String university;
 
   ChangedUniversity(this.university);
 }

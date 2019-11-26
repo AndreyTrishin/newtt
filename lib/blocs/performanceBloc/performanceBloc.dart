@@ -25,6 +25,9 @@ class PerformanceBloc extends Bloc<PerformanceEvent, PerformanceState>{
       } catch(_){
         yield PerformanceNotLoaded();
       }
+    } else if(event is TryPerformanceLoad){
+      yield PerformanceLoading();
+
     }
   }
 }

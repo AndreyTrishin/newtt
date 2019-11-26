@@ -10,5 +10,5 @@ class PasswordStatusChange extends PasswordEvent {
   final bool status;
   final String password;
 
-  PasswordStatusChange(this.status, this.password);
+  PasswordStatusChange(this.password, [this.status]);
 }

@@ -58,7 +58,6 @@ class MainScreen extends StatelessWidget {
                 accountName: Text('${_user.name}'),
                 accountEmail: GestureDetector(
                   onTap: () {
-                    print(MainBloc.currentWidget.toString());
 
                     pr = !pr;
                     if (pr) {

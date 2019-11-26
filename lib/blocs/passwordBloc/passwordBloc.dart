@@ -3,9 +3,13 @@ import 'package:timetable_app/blocs/passwordBloc/passwordEvent.dart';
 import 'package:timetable_app/blocs/passwordBloc/passwordState.dart';
 
 class PasswordBloc extends Bloc<PasswordEvent, PasswordState> {
+  final String password;
+
+
+  PasswordBloc(this.password);
   @override
   // TODO: implement initialState
-  PasswordState get initialState => PasswordEmpty();
+  PasswordState get initialState => PasswordUninitialized();
 
   @override
   Stream<PasswordState> mapEventToState(PasswordEvent event) async* {

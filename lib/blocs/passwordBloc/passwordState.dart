@@ -19,3 +19,4 @@ class PasswordClose extends PasswordState {
 }
 
 class PasswordEmpty extends PasswordState {}
+class PasswordUninitialized extends PasswordState {}

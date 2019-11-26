@@ -11,3 +11,4 @@ class PerformanceLoad extends PerformanceEvent {
   @override
   String toString() => 'PerformanceLoad';
 }
+class TryPerformanceLoad extends PerformanceEvent{}

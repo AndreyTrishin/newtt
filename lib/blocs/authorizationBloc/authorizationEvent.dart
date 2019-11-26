@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:timetable_app/Models/Universe.dart';
 
 class AuthorizationEvent extends Equatable {
   @override
@@ -28,7 +27,7 @@ class ErrorAuthorization extends AuthorizationEvent {
 }
 
 class ChangeUniversity extends AuthorizationEvent{
-  final University university;
+  final String university;
   final String name, password;
 
   ChangeUniversity(this.university, this.name, this.password);

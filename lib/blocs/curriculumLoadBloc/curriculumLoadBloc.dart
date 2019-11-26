@@ -25,7 +25,6 @@ class CurriculumLoadBloc
         if (currentState is CurriculumLoadLoading) {
           final disciplines = await APIRequest.getCurriculumLoad(_user.curriculumId);
           yield CurriculumLoadLoaded(disciplines: disciplines);
-          return;
         }
       } catch (_) {
         yield CurriculumLoadNotLoaded();
